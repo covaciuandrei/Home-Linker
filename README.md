@@ -1,14 +1,13 @@
-# Stockify
+# HomeLinker
 
-A Flutter template project.
+A real estate mobile application Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project will be a Flutter application for both android and ios devices where you can list and see appartments or homes.
 
-This starting template includes:
-- applocalizations
-- implementation of navigations with AutoRouter
+This main features this app will have are:
+- applocalizations for making the app available in both english and romanian
+- navigation between pages with AutoRouter
 - bloc cubit for state management
-- script for regenerating the files
-# Home-Linker
+- a script for regenerating the files
