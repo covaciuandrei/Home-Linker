@@ -3,13 +3,13 @@
   "@appTitle": {
     "description": "Application name."
   },
-  "settingsTabName": "Settings",
-  "@settingsTabName": {
-    "description": "Settings tab name"
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "The word 'welcome'"
   },
-  "homeTabName": "Home",
-  "@homeTabName": {
-    "description": "Home tab name"
+  "to": "to",
+  "@to": {
+    "description": "The preposition 'to'"
   } 
 }
 
