@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_state.dart';
-import 'package:homelinker/cubit/login/login_cubit.dart';
+import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/models/blue_shadow_background.dart';
 import 'package:homelinker/presentation/models/svg_icon.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatelessWidget {
+  const SignupPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginCubit, BaseState>(
+    return BlocConsumer<SignupCubit, BaseState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
@@ -89,13 +89,21 @@ class LoginPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {},
-                                    child: const Text(
-                                      'Forgot password?',
-                                      style: TextStyle(color: Colors.white),
+                                const SizedBox(height: 16),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                          width: 1,
+                                          color: Colors.white,
+                                          style: BorderStyle.solid)),
+                                  child: const TextField(
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.fromLTRB(
+                                          30, 10.0, 5.0, 10.0),
+                                      hintText: 'Password',
+                                      hintStyle: TextStyle(color: Colors.white),
+                                      border: InputBorder.none,
                                     ),
                                   ),
                                 ),
@@ -109,7 +117,7 @@ class LoginPage extends StatelessWidget {
                                             Colors.white),
                                   ),
                                   child: const Text(
-                                    'Login',
+                                    'Sign Up',
                                     style: TextStyle(color: Colors.lightBlue),
                                   ),
                                   onPressed: () {},
@@ -122,7 +130,7 @@ class LoginPage extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 60),
                           child: TextButton(
                             child: const Text(
-                              "Don't have an account? Create one",
+                              "Already have an account? Log in",
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {},

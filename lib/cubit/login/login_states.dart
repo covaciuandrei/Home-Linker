@@ -1,3 +1,3 @@
-import 'package:homelinker/cubit/base_state.dart';
+part of 'package:homelinker/cubit/login/login_cubit.dart';
 
 class LoadingFinishedState extends BaseState {}

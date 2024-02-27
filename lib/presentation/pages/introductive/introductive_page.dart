@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
-import 'package:homelinker/presentation/models/background_clipper.dart';
+import 'package:homelinker/presentation/models/introductive_background.dart';
 import 'package:homelinker/presentation/models/svg_icon.dart';
 
 class IntroductivePage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _IntroductivePageState extends State<IntroductivePage> {
           body: Stack(
             children: [
               ClipPath(
-                clipper: BackgroundClipper(),
+                clipper: IntroductiveBackground(),
                 child: Container(
                   width: double.infinity,
                   color: Colors.lightBlue,
@@ -120,7 +120,7 @@ class _IntroductivePageState extends State<IntroductivePage> {
                                     const Color.fromRGBO(250, 250, 250, 1)),
                               ),
                               child: const Text(
-                                'Sign up',
+                                'Sign Up',
                                 style: TextStyle(
                                   color: Colors.lightBlue,
                                   fontSize: 16,
@@ -128,7 +128,8 @@ class _IntroductivePageState extends State<IntroductivePage> {
                                 ),
                               ),
                               onPressed: () {
-                                AutoRouter.of(context).push(const LoginRoute());
+                                AutoRouter.of(context)
+                                    .push(const SignupRoute());
                               },
                             ),
                           ),

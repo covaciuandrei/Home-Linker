@@ -7,6 +7,7 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
+import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<IntroductiveCubit>(
             create: (context) => getIt<IntroductiveCubit>()),
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
+        BlocProvider<SignupCubit>(create: (context) => getIt<SignupCubit>()),
       ],
       child: MaterialApp.router(
         routerDelegate: _appRouter.delegate(),
