@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
 
-class IntroductiveBackground extends CustomClipper<Path> {
+class IntroductiveBackground extends StatelessWidget {
+  const IntroductiveBackground({super.key, required this.child});
+
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ClipPath(
+          clipper: IntroductiveBackgroundFade(),
+          child: Container(
+            width: double.infinity,
+            color: Colors.lightBlue,
+            child: const SizedBox.expand(),
+          ),
+        ),
+        Positioned.fill(child: child)
+      ],
+    );
+  }
+}
+
+class IntroductiveBackgroundFade extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();

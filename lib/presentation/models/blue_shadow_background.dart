@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BlueShadowBackground extends StatelessWidget {
-  const BlueShadowBackground({super.key, required this.content});
-  final Widget content;
+  const BlueShadowBackground({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class BlueShadowBackground extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: content,
+          child: child,
         ),
       ],
     );
