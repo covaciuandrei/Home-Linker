@@ -1,9 +1,14 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/models/blue_shadow_background.dart';
+import 'package:homelinker/presentation/models/main_button.dart';
+import 'package:homelinker/presentation/models/main_text_button.dart';
+import 'package:homelinker/presentation/models/main_text_field.dart';
 import 'package:homelinker/presentation/models/svg_icon.dart';
 
 class SignupPage extends StatelessWidget {
@@ -11,13 +16,17 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final emailTextController = TextEditingController();
+    final passwordTextController = TextEditingController();
+    final repeatTextController = TextEditingController();
+
     return BlocConsumer<SignupCubit, BaseState>(
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(),
           body: BlueShadowBackground(
-            content: Center(
+            child: Center(
               child: Column(
                 children: [
                   Expanded(
@@ -53,74 +62,27 @@ class SignupPage extends StatelessWidget {
                             child: Column(
                               children: [
                                 const SizedBox(height: 16),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                        width: 1,
-                                        color: Colors.white,
-                                        style: BorderStyle.solid),
-                                  ),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.fromLTRB(
-                                          30, 10.0, 5.0, 10.0),
-                                      hintText: 'Email',
-                                      hintStyle: TextStyle(color: Colors.white),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
+                                MainTextField(
+                                  textController: emailTextController,
+                                  placeholder: 'Email',
                                 ),
                                 const SizedBox(height: 16),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                          width: 1,
-                                          color: Colors.white,
-                                          style: BorderStyle.solid)),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.fromLTRB(
-                                          30, 10.0, 5.0, 10.0),
-                                      hintText: 'Password',
-                                      hintStyle: TextStyle(color: Colors.white),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
+                                MainTextField(
+                                  textController: passwordTextController,
+                                  placeholder: 'Password',
                                 ),
                                 const SizedBox(height: 16),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                          width: 1,
-                                          color: Colors.white,
-                                          style: BorderStyle.solid)),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.fromLTRB(
-                                          30, 10.0, 5.0, 10.0),
-                                      hintText: 'Password',
-                                      hintStyle: TextStyle(color: Colors.white),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
+                                MainTextField(
+                                  textController: repeatTextController,
+                                  placeholder: 'Repeat Password',
                                 ),
                                 const SizedBox(height: 20),
-                                TextButton(
-                                  style: ButtonStyle(
-                                    fixedSize: MaterialStateProperty.all(
-                                        const Size.fromWidth(150)),
-                                    backgroundColor:
-                                        const MaterialStatePropertyAll(
-                                            Colors.white),
-                                  ),
-                                  child: const Text(
-                                    'Sign Up',
-                                    style: TextStyle(color: Colors.lightBlue),
-                                  ),
-                                  onPressed: () {},
+                                MainButton(
+                                  onPressed: () {
+                                    AutoRouter.of(context)
+                                        .push(const SignUpSuccessfullyRoute());
+                                  },
+                                  text: 'Sign Up',
                                 ),
                               ],
                             ),
@@ -128,12 +90,12 @@ class SignupPage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 60),
-                          child: TextButton(
-                            child: const Text(
-                              "Already have an account? Log in",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () {},
+                          child: MainTextButton(
+                            text: "Already have an account? Log in",
+                            onPressed: () {
+                              AutoRouter.of(context)
+                                  .replace(const LoginRoute());
+                            },
                           ),
                         ),
                       ],
