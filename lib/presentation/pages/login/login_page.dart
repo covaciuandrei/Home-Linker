@@ -79,6 +79,8 @@ class LoginPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
+                                  // onPressed: () => AutoRouter.of(context)
+                                  //     .push(const HomeRoute()),
                                   onPressed: () =>
                                       AutoRouter.of(context).pushAndPopUntil(
                                     const HomeRoute(),
