@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/injection.dart';
+import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
             create: (context) => getIt<IntroductiveCubit>()),
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
         BlocProvider<SignupCubit>(create: (context) => getIt<SignupCubit>()),
+        BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
       ],
       child: MaterialApp.router(
         routerDelegate: _appRouter.delegate(),

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:homelinker/presentation/pages/introductive/introductive_page.dart';
 import 'package:homelinker/presentation/pages/login/login_page.dart';
+import 'package:homelinker/presentation/pages/home/home_page.dart';
 import 'package:homelinker/presentation/pages/reset_password/forgot_password_page.dart';
 import 'package:homelinker/presentation/pages/reset_password/reset_password_page.dart';
 import 'package:homelinker/presentation/pages/reset_password/reset_password_successfully_page.dart';
@@ -18,6 +19,7 @@ import 'package:injectable/injectable.dart';
     AutoRoute(path: '/forgot_password', page: ForgotPasswordPage),
     AutoRoute(path: '/reset_password', page: ResetPasswordPage),
     AutoRoute(path: '/reset_pass_done', page: ResetPasswordSuccessfullyPage),
+    AutoRoute(path: '/home_page', page: HomePage),
   ],
 )
 @singleton

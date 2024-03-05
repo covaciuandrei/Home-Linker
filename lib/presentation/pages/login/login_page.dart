@@ -73,15 +73,17 @@ class LoginPage extends StatelessWidget {
                                   alignment: Alignment.centerRight,
                                   child: MainTextButton(
                                     text: 'Forgot password?',
-                                    onPressed: () {
-                                      AutoRouter.of(context)
-                                          .push(const ForgotPasswordRoute());
-                                    },
+                                    onPressed: () => AutoRouter.of(context)
+                                        .push(const ForgotPasswordRoute()),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
-                                  onPressed: () {},
+                                  onPressed: () =>
+                                      AutoRouter.of(context).pushAndPopUntil(
+                                    const HomeRoute(),
+                                    predicate: (route) => false,
+                                  ),
                                   text: 'Log in',
                                 )
                               ],
