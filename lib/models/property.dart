@@ -1,7 +1,7 @@
 class Property {
   Property({
     required this.ownerName,
-    required this.type,
+    required this.propertyType,
     required this.areaSize,
     required this.location,
     required this.price,
@@ -9,7 +9,7 @@ class Property {
     required this.listingType,
   });
   final String ownerName;
-  final PropertyType type;
+  final PropertyType propertyType;
   final int areaSize;
   final String location;
   final double price;
@@ -17,6 +17,6 @@ class Property {
   final ListingType listingType;
 }
 
-enum PropertyType { apartment, house, hotel }
+enum PropertyType { apartment, house }
 
 enum ListingType { sale, rent }
