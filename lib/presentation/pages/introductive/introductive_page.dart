@@ -5,8 +5,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
-import 'package:homelinker/presentation/models/introductive_background.dart';
-import 'package:homelinker/presentation/models/svg_icon.dart';
+import 'package:homelinker/presentation/widgets/introductive_background.dart';
+import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 class IntroductivePage extends StatefulWidget {
   const IntroductivePage({super.key});

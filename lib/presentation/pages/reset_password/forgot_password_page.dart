@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:homelinker/core/app_router.gr.dart';
-import 'package:homelinker/presentation/models/blue_shadow_background.dart';
-import 'package:homelinker/presentation/models/main_button.dart';
-import 'package:homelinker/presentation/models/main_text_field.dart';
+import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
+import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:homelinker/presentation/widgets/main_text_field.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key});

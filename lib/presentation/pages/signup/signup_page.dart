@@ -5,11 +5,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
-import 'package:homelinker/presentation/models/blue_shadow_background.dart';
-import 'package:homelinker/presentation/models/main_button.dart';
-import 'package:homelinker/presentation/models/main_text_button.dart';
-import 'package:homelinker/presentation/models/main_text_field.dart';
-import 'package:homelinker/presentation/models/svg_icon.dart';
+import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
+import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:homelinker/presentation/widgets/main_text_button.dart';
+import 'package:homelinker/presentation/widgets/main_text_field.dart';
+import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
