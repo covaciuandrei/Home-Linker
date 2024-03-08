@@ -5,6 +5,7 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
 
+@RoutePage()
 class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key});
 

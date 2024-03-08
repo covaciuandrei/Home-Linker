@@ -11,11 +11,10 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../cubit/home/home_cubit.dart' as _i4;
-import '../cubit/introductive/introductive_cubit.dart' as _i5;
-import '../cubit/login/login_cubit.dart' as _i6;
-import '../cubit/signup/signup_cubit.dart' as _i7;
-import 'app_router.dart' as _i3;
+import '../cubit/home/home_cubit.dart' as _i3;
+import '../cubit/introductive/introductive_cubit.dart' as _i4;
+import '../cubit/login/login_cubit.dart' as _i5;
+import '../cubit/signup/signup_cubit.dart' as _i6;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i1.GetIt $initGetIt(
@@ -28,10 +27,9 @@ _i1.GetIt $initGetIt(
     environment,
     environmentFilter,
   );
-  gh.singleton<_i3.$AppRouter>(_i3.$AppRouter());
-  gh.factory<_i4.HomeCubit>(() => _i4.HomeCubit());
-  gh.factory<_i5.IntroductiveCubit>(() => _i5.IntroductiveCubit());
-  gh.factory<_i6.LoginCubit>(() => _i6.LoginCubit());
-  gh.factory<_i7.SignupCubit>(() => _i7.SignupCubit());
+  gh.factory<_i3.HomeCubit>(() => _i3.HomeCubit());
+  gh.factory<_i4.IntroductiveCubit>(() => _i4.IntroductiveCubit());
+  gh.factory<_i5.LoginCubit>(() => _i5.LoginCubit());
+  gh.factory<_i6.SignupCubit>(() => _i6.SignupCubit());
   return getIt;
 }

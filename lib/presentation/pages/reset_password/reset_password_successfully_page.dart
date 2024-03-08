@@ -4,6 +4,7 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 
+@RoutePage()
 class ResetPasswordSuccessfullyPage extends StatelessWidget {
   const ResetPasswordSuccessfullyPage({super.key});
 
@@ -42,4 +43,3 @@ class ResetPasswordSuccessfullyPage extends StatelessWidget {
     );
   }
 }
-

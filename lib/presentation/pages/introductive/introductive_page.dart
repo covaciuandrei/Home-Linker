@@ -8,6 +8,7 @@ import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
 import 'package:homelinker/presentation/widgets/introductive_background.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
+@RoutePage()
 class IntroductivePage extends StatefulWidget {
   const IntroductivePage({super.key});
 

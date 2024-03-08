@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 
+@RoutePage()
 class SignUpSuccessfullyPage extends StatelessWidget {
   const SignUpSuccessfullyPage({super.key});
 

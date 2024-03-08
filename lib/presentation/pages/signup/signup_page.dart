@@ -11,6 +11,7 @@ import 'package:homelinker/presentation/widgets/main_text_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
+@RoutePage()
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
 
