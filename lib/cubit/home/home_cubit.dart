@@ -19,6 +19,11 @@ class HomeCubit extends BaseCubit {
       ownerName: 'Andrei Covaciu',
       price: 50000,
       propertyType: PropertyType.apartment,
+      isFavorite: true,
+      bathrooms: 1,
+      bedrooms: 1,
+      constructionYear: 2000,
+      parkingSpaces: 1,
     ),
     Property(
       areaSize: 120,
@@ -29,6 +34,11 @@ class HomeCubit extends BaseCubit {
       ownerName: 'Sebastian Dancau',
       price: 950,
       propertyType: PropertyType.apartment,
+      isFavorite: false,
+      bathrooms: 1,
+      bedrooms: 1,
+      constructionYear: 2000,
+      parkingSpaces: 1,
     ),
     Property(
       areaSize: 250,
@@ -39,6 +49,11 @@ class HomeCubit extends BaseCubit {
       ownerName: 'Andrei Covaciu',
       price: 375000,
       propertyType: PropertyType.house,
+      isFavorite: true,
+      bathrooms: 2,
+      bedrooms: 5,
+      constructionYear: 1990,
+      parkingSpaces: 1,
     ),
     Property(
       areaSize: 215,
@@ -49,6 +64,11 @@ class HomeCubit extends BaseCubit {
       ownerName: 'Andrei Covaciu',
       price: 4000,
       propertyType: PropertyType.house,
+      isFavorite: true,
+      bathrooms: 3,
+      bedrooms: 4,
+      constructionYear: 2020,
+      parkingSpaces: 1,
     ),
     Property(
       areaSize: 215,
@@ -59,6 +79,11 @@ class HomeCubit extends BaseCubit {
       ownerName: 'Matteo Darmian',
       price: 625000,
       propertyType: PropertyType.house,
+      isFavorite: false,
+      bathrooms: 2,
+      bedrooms: 3,
+      constructionYear: 2000,
+      parkingSpaces: 1,
     ),
   ];
 
@@ -70,7 +95,7 @@ class HomeCubit extends BaseCubit {
 
   void resetFilter() {
     safeEmit(PendingState());
-    Future.delayed(const Duration(milliseconds: 100)); // Simulating delay
+    Future.delayed(const Duration(milliseconds: 100));
     safeEmit(DataLoadedState(properties: properties));
   }
 

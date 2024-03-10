@@ -1,10 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/models/filters.dart';
 import 'package:homelinker/models/property.dart';
+import 'package:homelinker/presentation/widgets/listing_price.dart';
+import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
@@ -37,16 +40,7 @@ class _HomePageState extends State<HomePage> {
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
           child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.lightBlue,
-              title: const Text(
-                'Home Linker',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            appBar: const MainAppBar(title: 'HomeLinker'),
             body: Column(
               children: [
                 Padding(
@@ -100,210 +94,16 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.only(bottom: 60),
                     itemCount: properties.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 10),
-                        child: SizedBox(
-                          height: 170,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color.fromRGBO(250, 250, 250, 1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 0.5),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20)),
-                                    child: Image.network(
-                                      properties[index].imageLink,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            children: [
-                                              Flexible(
-                                                child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(10, 0, 0, 6),
-                                                    child: RichText(
-                                                      text: TextSpan(
-                                                        text: formatPrice(
-                                                            properties[index]
-                                                                .price),
-                                                        style: const TextStyle(
-                                                          fontSize: 20,
-                                                          color:
-                                                              Colors.lightBlue,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        children: <TextSpan>[
-                                                          const TextSpan(
-                                                            text: '\$',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .lightBlue,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 20),
-                                                          ),
-                                                          TextSpan(
-                                                            text: properties[
-                                                                            index]
-                                                                        .listingType ==
-                                                                    ListingType
-                                                                        .rent
-                                                                ? '/month'
-                                                                : '',
-                                                            style: const TextStyle(
-                                                                color: Colors
-                                                                    .lightBlue,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )),
-                                              ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      '${properties[index].propertyType.name.capitalize()} ${properties[index].areaSize} m²',
-                                                      style: const TextStyle(
-                                                        color: Colors.lightBlue,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.location_on_outlined,
-                                                    color: Colors.lightBlue,
-                                                    size: 20,
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      properties[index]
-                                                          .location,
-                                                      style: const TextStyle(
-                                                        color: Colors.lightBlue,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Flexible(
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.circle,
-                                                      color: properties[index]
-                                                                  .listingType ==
-                                                              ListingType.sale
-                                                          ? Colors.lightGreen
-                                                          : const Color
-                                                              .fromARGB(255,
-                                                              132, 101, 216),
-                                                      size: 12,
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 4,
-                                                          horizontal: 8),
-                                                      child: Text(
-                                                        'For ${properties[index].listingType.name.capitalize()}',
-                                                        style: const TextStyle(
-                                                          color:
-                                                              Colors.lightBlue,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  _isSaved = !_isSaved;
-                                                });
-                                              },
-                                              child: _isSaved
-                                                  ? const Icon(
-                                                      Icons.favorite,
-                                                      color: Colors.lightBlue,
-                                                      size: 30,
-                                                    )
-                                                  : const Icon(
-                                                      Icons
-                                                          .favorite_border_outlined,
-                                                      color: Colors.lightBlue,
-                                                      size: 30,
-                                                    ),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      return PropertyItem(
+                        property: properties[index],
+                        onPressed: () => AutoRouter.of(context)
+                            .push(PropertyRoute(property: properties[index])),
+                        onFavoriteIconPressed: () {
+                          setState(() {
+                            _isSaved = !_isSaved;
+                          });
+                        },
+                        isSaved: _isSaved,
                       );
                     },
                   ),
@@ -313,6 +113,170 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+    );
+  }
+}
+
+class PropertyItem extends StatelessWidget {
+  const PropertyItem({
+    super.key,
+    required this.onPressed,
+    required this.property,
+    required this.isSaved,
+    required this.onFavoriteIconPressed,
+  });
+
+  final VoidCallback onPressed;
+  final Property property;
+  final VoidCallback onFavoriteIconPressed;
+  final bool isSaved;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: SizedBox(
+          height: 170,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: const Color.fromRGBO(250, 250, 250, 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.7),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 0.5),
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    child: Image.network(
+                      property.imageLink,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(9),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 0, 0, 6),
+                                  child: ListingPrice(
+                                    property: property,
+                                    textSize: 20,
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  '${property.propertyType.name.capitalize()} ${property.areaSize} m²',
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(20, 112, 161, 1),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on_outlined,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      size: 20,
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        property.location,
+                                        style: const TextStyle(
+                                          color:
+                                              Color.fromRGBO(20, 112, 161, 1),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Flexible(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: property.listingType ==
+                                              ListingType.sale
+                                          ? Colors.lightGreen
+                                          : const Color.fromARGB(
+                                              255, 132, 101, 216),
+                                      size: 12,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4, horizontal: 8),
+                                      child: Text(
+                                        'For ${property.listingType.name.capitalize()}',
+                                        style: const TextStyle(
+                                          color:
+                                              Color.fromRGBO(20, 112, 161, 1),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: onFavoriteIconPressed,
+                              child: isSaved
+                                  ? const Icon(
+                                      Icons.favorite,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      size: 30,
+                                    )
+                                  : const Icon(
+                                      Icons.favorite_border_outlined,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      size: 30,
+                                    ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -338,7 +302,7 @@ class FilterItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Container(
           decoration: const BoxDecoration(
-            color: Colors.lightBlue,
+            color: Color.fromRGBO(70, 179, 231, 1),
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           height: 90,
@@ -365,14 +329,5 @@ class FilterItem extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-String formatPrice(double price) {
-  if (price >= 1000) {
-    double formattedPrice = price / 1000.0;
-    return '${formattedPrice.toStringAsFixed(formattedPrice.truncateToDouble() == formattedPrice ? 0 : 1)}k';
-  } else {
-    return price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2);
   }
 }

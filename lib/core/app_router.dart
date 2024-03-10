@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
-// extend the generated private router
 class AppRouter extends $AppRouter {
   @override
   RouteType get defaultRouteType => const RouteType.material();
@@ -18,5 +17,6 @@ class AppRouter extends $AppRouter {
     AutoRoute(
         path: '/reset_pass_done', page: ResetPasswordSuccessfullyRoute.page),
     AutoRoute(path: '/home_page', page: HomeRoute.page),
+    AutoRoute(path: '/property', page: PropertyRoute.page),
   ];
 }
