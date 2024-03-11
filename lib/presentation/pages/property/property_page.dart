@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:homelinker/models/property.dart';
+import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/property_sellling_point.dart';
 import 'package:homelinker/utils/extension_methods.dart';
@@ -29,6 +30,7 @@ class PropertyPage extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
+          const BackArrowButton(),
           Column(
             children: [
               Padding(
