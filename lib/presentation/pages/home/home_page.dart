@@ -8,6 +8,7 @@ import 'package:homelinker/models/filters.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
+import 'package:homelinker/presentation/widgets/main_drawer.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage> {
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
           child: Scaffold(
             appBar: const MainAppBar(title: 'HomeLinker'),
+            drawer: const MainDrawer(),
             body: Column(
               children: [
                 Padding(
