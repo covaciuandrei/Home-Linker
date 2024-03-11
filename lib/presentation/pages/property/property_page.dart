@@ -44,163 +44,56 @@ class PropertyPage extends StatelessWidget {
                       topRight: Radius.circular(20),
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: Text(
-                                      property.propertyType.name.capitalize(),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(28, 83, 119, 1),
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on_outlined,
-                                        size: 20,
-                                        color: Color.fromRGBO(20, 112, 161, 1),
-                                      ),
-                                      Text(
-                                        property.location,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Color.fromRGBO(20, 112, 161, 1),
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    'Listed by ${property.ownerName}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ListingPrice(
-                              property: property,
-                              textSize: 26,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        height: 200,
-                        child: Column(
-                          children: [
-                            Flexible(
-                              child: Row(
-                                children: [
-                                  PropertySellingPoint(
-                                    icon: Icons.calendar_month_outlined,
-                                    text: 'Year ${property.constructionYear}',
-                                  ),
-                                  PropertySellingPoint(
-                                    icon: Icons.real_estate_agent_outlined,
-                                    text: 'For ${property.listingType.name}',
-                                  ),
-                                  PropertySellingPoint(
-                                    icon: Icons.landscape_outlined,
-                                    text: 'Size ${property.areaSize} m²',
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Flexible(
-                              child: Row(
-                                children: [
-                                  PropertySellingPoint(
-                                    icon: Icons.bathroom_outlined,
-                                    text:
-                                        '${property.bathrooms} ${property.bathrooms == 1 ? 'bathroom' : 'bathrooms'}',
-                                  ),
-                                  PropertySellingPoint(
-                                    icon: Icons.bed_outlined,
-                                    text:
-                                        '${property.bedrooms} ${property.bedrooms == 1 ? 'bedroom' : 'bedrooms'}',
-                                  ),
-                                  PropertySellingPoint(
-                                    icon: Icons.local_parking_outlined,
-                                    text:
-                                        '${property.parkingSpaces} ${property.parkingSpaces == 1 ? 'parking space' : 'parking spaces'}',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        Padding(
                           padding: const EdgeInsets.symmetric(
-                            vertical: 4,
+                            vertical: 8,
                             horizontal: 20,
                           ),
-                          child: const SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Text(
+                                        property.propertyType.name.capitalize(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color.fromRGBO(28, 83, 119, 1),
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
                                     Row(
                                       children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(bottom: 4),
-                                          child: Text(
-                                            'Description',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Color.fromRGBO(
-                                                  28, 83, 119, 1),
-                                              fontSize: 20,
-                                            ),
+                                        const Icon(
+                                          Icons.location_on_outlined,
+                                          size: 20,
+                                          color:
+                                              Color.fromRGBO(20, 112, 161, 1),
+                                        ),
+                                        Text(
+                                          property.location,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromRGBO(20, 112, 161, 1),
+                                            fontSize: 14,
                                           ),
                                         ),
                                       ],
                                     ),
                                     Text(
-                                      '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(20, 112, 161, 1),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(20, 112, 161, 1),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-                                      style: TextStyle(
+                                      'Listed by ${property.ownerName}',
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Color.fromRGBO(20, 112, 161, 1),
                                         fontSize: 14,
@@ -208,12 +101,112 @@ class PropertyPage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              ListingPrice(
+                                property: property,
+                                textSize: 26,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        PropertySellingPointLine(
+                            property: property,
+                            isFirstLine: true,
+                            icons: const [
+                              Icons.calendar_month_outlined,
+                              Icons.real_estate_agent_outlined,
+                              Icons.landscape_outlined
+                            ]),
+                        PropertySellingPointLine(
+                          property: property,
+                          icons: const [
+                            Icons.bathroom_outlined,
+                            Icons.bed_outlined,
+                            Icons.local_parking_outlined,
+                          ],
+                          isFirstLine: false,
+                        ),
+                        // Container(
+                        //   height: MediaQuery.of(context).size.height * 0.1,
+                        //   padding: const EdgeInsets.symmetric(horizontal: 10),
+                        //   child: Row(
+                        //     children: [
+                        //       PropertySellingPoint(
+                        //         icon: Icons.bathroom_outlined,
+                        //         text:
+                        //             '${property.bathrooms} ${property.bathrooms == 1 ? 'bathroom' : 'bathrooms'}',
+                        //       ),
+                        //       PropertySellingPoint(
+                        //         icon: Icons.bed_outlined,
+                        //         text:
+                        //             '${property.bedrooms} ${property.bedrooms == 1 ? 'bedroom' : 'bedrooms'}',
+                        //       ),
+                        //       PropertySellingPoint(
+                        //         icon: Icons.local_parking_outlined,
+                        //         text:
+                        //             '${property.parkingSpaces} ${property.parkingSpaces == 1 ? 'parking space' : 'parking spaces'}',
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 20,
+                          ),
+                          child: const Column(
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: 4),
+                                        child: Text(
+                                          'Description',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromRGBO(28, 83, 119, 1),
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromRGBO(20, 112, 161, 1),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -222,6 +215,48 @@ class PropertyPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class PropertySellingPointLine extends StatelessWidget {
+  const PropertySellingPointLine({
+    super.key,
+    required this.property,
+    required this.icons,
+    required this.isFirstLine,
+  });
+
+  final Property property;
+  final List<IconData> icons;
+  final bool isFirstLine;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: MediaQuery.of(context).size.height * 0.1,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            PropertySellingPoint(
+              icon: icons[0],
+              text: isFirstLine
+                  ? 'Year ${property.constructionYear}'
+                  : '${property.bathrooms} ${property.bathrooms == 1 ? 'bathroom' : 'bathrooms'}',
+            ),
+            PropertySellingPoint(
+              icon: icons[1],
+              text: isFirstLine
+                  ? 'For ${property.listingType.name}'
+                  : '${property.bedrooms} ${property.bedrooms == 1 ? 'bedroom' : 'bedrooms'}',
+            ),
+            PropertySellingPoint(
+              icon: icons[2],
+              text: isFirstLine
+                  ? 'Size ${property.areaSize} m²'
+                  : '${property.parkingSpaces} ${property.parkingSpaces == 1 ? 'parking space' : 'parking spaces'}',
+            ),
+          ],
+        ));
   }
 }
 
