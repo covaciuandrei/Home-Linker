@@ -26,7 +26,7 @@ import 'package:homelinker/presentation/pages/reset_password/reset_password_succ
 import 'package:homelinker/presentation/pages/signup/signup_page.dart' as _i10;
 import 'package:homelinker/presentation/pages/signup/signup_successfully_page.dart'
     as _i9;
-import 'package:homelinker/presentation/profile/profile_page.dart' as _i5;
+import 'package:homelinker/presentation/pages/profile/profile_page.dart' as _i5;
 
 abstract class $AppRouter extends _i11.RootStackRouter {
   $AppRouter({super.navigatorKey});
