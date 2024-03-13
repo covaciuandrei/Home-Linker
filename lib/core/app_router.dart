@@ -18,5 +18,6 @@ class AppRouter extends $AppRouter {
         path: '/reset_pass_done', page: ResetPasswordSuccessfullyRoute.page),
     AutoRoute(path: '/home_page', page: HomeRoute.page),
     AutoRoute(path: '/property', page: PropertyRoute.page),
+    AutoRoute(path: '/profile', page: ProfileRoute.page),
   ];
 }

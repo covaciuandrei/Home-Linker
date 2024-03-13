@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:homelinker/core/app_router.gr.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({
@@ -49,7 +50,10 @@ class MainDrawer extends StatelessWidget {
                 ),
               ],
             ),
-            onTap: () => AutoRouter.of(context).pop(),
+            onTap: () {
+              AutoRouter.of(context).push(const ProfileRoute());
+              AutoRouter.of(context).pop();
+            },
           ),
         ],
       ),
