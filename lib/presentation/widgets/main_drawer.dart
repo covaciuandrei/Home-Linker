@@ -31,7 +31,7 @@ class MainDrawer extends StatelessWidget {
                 ),
               ],
             ),
-            onTap: () => AutoRouter.of(context).pop(),
+            onTap: () => AutoRouter.of(context).popForced(),
           ),
           ListTile(
             title: const Row(
@@ -52,7 +52,7 @@ class MainDrawer extends StatelessWidget {
             ),
             onTap: () {
               AutoRouter.of(context).push(const ProfileRoute());
-              AutoRouter.of(context).pop();
+              AutoRouter.of(context).popForced();
             },
           ),
         ],

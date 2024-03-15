@@ -26,7 +26,7 @@ class BackArrowButton extends StatelessWidget {
           color: Color.fromRGBO(20, 112, 161, 1),
         ),
       ),
-      onTap: () => AutoRouter.of(context).pop(),
+      onTap: () => AutoRouter.of(context).popForced(),
     );
   }
 }
