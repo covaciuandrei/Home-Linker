@@ -19,5 +19,6 @@ class AppRouter extends $AppRouter {
     AutoRoute(path: '/home_page', page: HomeRoute.page),
     AutoRoute(path: '/property', page: PropertyRoute.page),
     AutoRoute(path: '/profile', page: ProfileRoute.page),
+    AutoRoute(path: '/settings', page: SettingsRoute.page),
   ];
 }

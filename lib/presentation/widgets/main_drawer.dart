@@ -31,7 +31,10 @@ class MainDrawer extends StatelessWidget {
                 ),
               ],
             ),
-            onTap: () => AutoRouter.of(context).popForced(),
+            onTap: () {
+              AutoRouter.of(context).push(const SettingsRoute());
+              AutoRouter.of(context).popForced();
+            },
           ),
           ListTile(
             title: const Row(

@@ -5,8 +5,8 @@ import 'package:injectable/injectable.dart';
 part 'package:homelinker/cubit/profile/profile_states.dart';
 
 @injectable
-class PropertyCubit extends BaseCubit {
-  PropertyCubit() : super(InitialState());
+class ProfileCubit extends BaseCubit {
+  ProfileCubit() : super(InitialState());
 
   Future<void> load() async {
     safeEmit(PendingState());
