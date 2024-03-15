@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 class SvgIcon extends StatelessWidget {
   final String iconName;
   final double size;
-  final Color color;
+  final Color? color;
 
   const SvgIcon({
     required this.iconName,
-    required this.color,
+    this.color,
     this.size = 24,
     super.key,
   });
@@ -17,7 +17,8 @@ class SvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       'lib/assets/images/$iconName.svg',
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      colorFilter:
+          color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
       height: size,
     );
   }

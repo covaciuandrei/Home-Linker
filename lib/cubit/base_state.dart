@@ -10,3 +10,5 @@ class BaseState extends Equatable {
 class InitialState extends BaseState {}
 
 class PendingState extends BaseState {}
+
+class SomethingWentWrongState extends BaseState {}
