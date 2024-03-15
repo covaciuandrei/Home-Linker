@@ -18,7 +18,7 @@ class SettingsPage extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           return Scaffold(
-            appBar: const MainAppBar(title: ''),
+            appBar: const MainAppBar(),
             body: BlueShadowBackground(
               child: Container(
                 width: MediaQuery.of(context).size.width,

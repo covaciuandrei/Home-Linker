@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MainAppBar({
     super.key,
-    required this.title,
+    this.title,
     this.color = const Color.fromRGBO(70, 179, 231, 1),
   });
 
@@ -16,7 +16,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: const IconThemeData(color: Colors.white, size: 28),
       backgroundColor: color,
       title: Text(
-        title ?? '',
+        title ?? 'Settings',
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
