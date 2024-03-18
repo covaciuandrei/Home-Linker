@@ -42,11 +42,13 @@ class MainButton extends StatelessWidget {
                   color: iconColor ?? Colors.lightBlue,
                 ),
               ),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.lightBlue,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.lightBlue,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

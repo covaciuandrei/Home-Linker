@@ -10,17 +10,22 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/dropdown_picker.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 @RoutePage()
 class NewPropertyPage extends StatefulWidget {
   const NewPropertyPage({Key? key}) : super(key: key);
 
   @override
-  _NewPropertyPageState createState() => _NewPropertyPageState();
+  State<NewPropertyPage> createState() => _NewPropertyPageState();
 }
 
 class _NewPropertyPageState extends State<NewPropertyPage> {
   File? _selectedImage;
+  int parkingSpaces = 0;
+  int constructionYear = DateTime.now().year;
+  int bedrooms = 1;
+  int bathrooms = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -176,11 +181,24 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      DropdownPicker(
-                                        list: [
-                                          PropertyType.apartment.name,
-                                          PropertyType.house.name,
-                                        ],
+                                      MainButton(
+                                        width: 100,
+                                        text: '$constructionYear',
+                                        onPressed: () async {
+                                          int? selectedValue =
+                                              await _showAlertDialog(
+                                            context: context,
+                                            number: constructionYear,
+                                            minValue: 1900,
+                                            maxValue: DateTime.now().year,
+                                          );
+                                          if (selectedValue != null) {
+                                            setState(() {
+                                              constructionYear =
+                                                  selectedValue; // Update parkingSpaces with the returned value
+                                            });
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
@@ -197,11 +215,24 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      DropdownPicker(
-                                        list: [
-                                          ListingType.sale.name,
-                                          ListingType.rent.name,
-                                        ],
+                                      MainButton(
+                                        width: 100,
+                                        text: '$bedrooms',
+                                        onPressed: () async {
+                                          int? selectedValue =
+                                              await _showAlertDialog(
+                                            context: context,
+                                            number: bedrooms,
+                                            minValue: 1,
+                                            maxValue: 20,
+                                          );
+                                          if (selectedValue != null) {
+                                            setState(() {
+                                              bedrooms =
+                                                  selectedValue; // Update parkingSpaces with the returned value
+                                            });
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
@@ -225,11 +256,24 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      DropdownPicker(
-                                        list: [
-                                          PropertyType.apartment.name,
-                                          PropertyType.house.name,
-                                        ],
+                                      MainButton(
+                                        width: 100,
+                                        text: '$bathrooms',
+                                        onPressed: () async {
+                                          int? selectedValue =
+                                              await _showAlertDialog(
+                                            context: context,
+                                            number: bathrooms,
+                                            minValue: 1,
+                                            maxValue: 10,
+                                          );
+                                          if (selectedValue != null) {
+                                            setState(() {
+                                              bathrooms =
+                                                  selectedValue; // Update parkingSpaces with the returned value
+                                            });
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
@@ -246,11 +290,24 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      DropdownPicker(
-                                        list: [
-                                          ListingType.sale.name,
-                                          ListingType.rent.name,
-                                        ],
+                                      MainButton(
+                                        width: 100,
+                                        text: '$parkingSpaces',
+                                        onPressed: () async {
+                                          int? selectedValue =
+                                              await _showAlertDialog(
+                                            context: context,
+                                            number: parkingSpaces,
+                                            minValue: 0,
+                                            maxValue: 10,
+                                          );
+                                          if (selectedValue != null) {
+                                            setState(() {
+                                              parkingSpaces =
+                                                  selectedValue; // Update parkingSpaces with the returned value
+                                            });
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
@@ -351,13 +408,29 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
+                            // TextField(
+                            //   keyboardType: TextInputType.multiline,
+                            //   maxLines: null,
+                            // ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.white),
+                              ),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              width: MediaQuery.of(context).size.width,
+                              height: 200,
+                              child: const MultiLineInputBox(),
+                            ),
+                            const SizedBox(height: 20),
                             MainButton(
                               text: 'Add Property',
                               onPressed: () {},
                               width: 200,
                             ),
-                            SizedBox(height: 200),
+                            const SizedBox(height: 75),
                           ],
                         ),
                       ),
@@ -371,4 +444,81 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
       },
     );
   }
+}
+
+class MultiLineInputBox extends StatelessWidget {
+  const MultiLineInputBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(7.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          // minWidth: _contextWidth(),
+          // maxWidth: _contextWidth(),
+          // minHeight: AppMeasurements.isLandscapePhone(context) ? 25.0 : 25.0,
+          maxHeight: 55.0,
+        ),
+        child: const SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          reverse: false,
+
+          // here's the actual text box
+          child: TextField(
+            cursorColor: Colors.white,
+            style: TextStyle(fontSize: 16, color: Colors.white),
+            keyboardType: TextInputType.multiline,
+            maxLines: null, //grow automatically
+            // focusNode: mrFocus,
+            // controller: _textController,
+            // onSubmitted: currentIsComposing ? _handleSubmitted : null,
+            decoration: InputDecoration.collapsed(
+                hintText: 'Please enter the description',
+                hintStyle: TextStyle(color: Colors.white)),
+          ),
+          // ends the actual text box
+        ),
+      ),
+    );
+  }
+}
+
+Future<int?> _showAlertDialog({
+  required BuildContext context,
+  required int number,
+  required int minValue,
+  required int maxValue,
+}) async {
+  return showDialog<int>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Pick a value"),
+        content: StatefulBuilder(
+          builder: (context, sBsetState) {
+            return NumberPicker(
+              selectedTextStyle: const TextStyle(color: Colors.red),
+              value: number,
+              minValue: minValue,
+              maxValue: maxValue,
+              onChanged: (value) {
+                sBsetState(() {
+                  number = value; // Update number here
+                });
+              },
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop(number);
+            },
+          )
+        ],
+      );
+    },
+  );
 }
