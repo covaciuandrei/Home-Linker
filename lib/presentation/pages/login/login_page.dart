@@ -80,15 +80,14 @@ class LoginPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
-                                  // onPressed: () => AutoRouter.of(context)
-                                  //     .push(const HomeRoute()),
+                                  width: 150,
+                                  text: 'Log in',
                                   onPressed: () =>
                                       AutoRouter.of(context).pushAndPopUntil(
                                     const HomeRoute(),
                                     predicate: (route) => false,
                                   ),
-                                  text: 'Log in',
-                                )
+                                ),
                               ],
                             ),
                           ),

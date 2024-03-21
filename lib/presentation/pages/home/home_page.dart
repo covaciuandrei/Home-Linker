@@ -41,6 +41,17 @@ class _HomePageState extends State<HomePage> {
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
           child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.lightBlue,
+              foregroundColor: Colors.white,
+              onPressed: () {
+                AutoRouter.of(context).push(const NewPropertyRoute());
+              },
+              child: const Icon(
+                Icons.add,
+                size: 30,
+              ),
+            ),
             appBar: const MainAppBar(title: 'HomeLinker'),
             drawer: const MainDrawer(),
             body: Column(

@@ -28,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
         listener: (context, state) {},
         builder: (context, state) {
           return Scaffold(
-            appBar: const MainAppBar(title: ''),
+            appBar: const MainAppBar(title: 'Profile'),
             body: BlueShadowBackground(
               child: Container(
                 width: MediaQuery.of(context).size.width,

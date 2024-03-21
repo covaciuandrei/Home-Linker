@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
-import 'package:homelinker/presentation/pages/introductive/introductive_page.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
+import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
@@ -18,7 +18,7 @@ class SettingsPage extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           return Scaffold(
-            appBar: const MainAppBar(title: ''),
+            appBar: const MainAppBar(),
             body: BlueShadowBackground(
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -61,7 +61,8 @@ class SettingsPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    LongMainButton(
+                    MainButton(
+                      width: 240,
                       text: 'Logout',
                       onPressed: () {},
                     ),

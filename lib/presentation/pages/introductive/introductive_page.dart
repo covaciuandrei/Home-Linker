@@ -6,6 +6,7 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
 import 'package:homelinker/presentation/widgets/introductive_background.dart';
+import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
@@ -80,15 +81,19 @@ class _IntroductivePageState extends State<IntroductivePage> {
                   padding: const EdgeInsets.only(bottom: 100),
                   child: Column(
                     children: [
-                      LongMainButton(
+                      MainButton(
                         text: 'Log in',
+                        width: 240,
+                        height: 44,
                         onPressed: () {
                           AutoRouter.of(context).push(const LoginRoute());
                         },
                       ),
                       const SizedBox(height: 16),
-                      LongMainButton(
+                      MainButton(
                         text: 'Sign Up',
+                        width: 240,
+                        height: 44,
                         onPressed: () {
                           AutoRouter.of(context).push(const SignupRoute());
                         },
@@ -101,40 +106,6 @@ class _IntroductivePageState extends State<IntroductivePage> {
           ),
         );
       },
-    );
-  }
-}
-
-class LongMainButton extends StatelessWidget {
-  const LongMainButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-  });
-
-  final String text;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 240,
-      height: 44,
-      child: TextButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all(const Color.fromRGBO(250, 250, 250, 1)),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.lightBlue,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 }
