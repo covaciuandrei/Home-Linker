@@ -8,7 +8,7 @@
 PRODUCT_NAME = homelinker
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.homelinker
+PRODUCT_BUNDLE_IDENTIFIER = com.covaciuandrei.homelinker
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 com.covaciuandrei. All rights reserved.

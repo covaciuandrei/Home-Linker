@@ -1,4 +1,4 @@
-package com.example.homelinker
+package com.covaciuandrei.homelinker
 
 import io.flutter.embedding.android.FlutterActivity
 
