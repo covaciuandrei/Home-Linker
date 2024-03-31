@@ -63,6 +63,7 @@ lib/assets/localization/untranslated.txt
 # Android related
 **/android/**/gradle-wrapper.jar
 .gradle/
+**android/app/google-services.json
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
@@ -72,6 +73,7 @@ lib/assets/localization/untranslated.txt
 *.jks
 
 # iOS/XCode related
+**/ios/Runner/GoogleService-Info.plist
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
 **/ios/**/*.moved-aside
