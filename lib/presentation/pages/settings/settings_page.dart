@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -62,10 +63,15 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                     MainButton(
-                      width: 240,
-                      text: 'Logout',
-                      onPressed: () {},
-                    ),
+                        width: 240,
+                        text: 'Logout',
+                        onPressed: () {
+                          try {
+                            FirebaseAuth.instance.signOut;
+                          } catch (e) {
+                            print(e);
+                          }
+                        }),
                     const Padding(
                       padding: EdgeInsets.only(bottom: 30, top: 50),
                       child: Text(
