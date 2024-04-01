@@ -6,26 +6,70 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
+import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final emailTextController = TextEditingController();
-    final passwordTextController = TextEditingController();
-    final repeatTextController = TextEditingController();
+  State<SignupPage> createState() => _SignupPageState();
+}
 
+class _SignupPageState extends State<SignupPage> {
+  final emailTextController = TextEditingController();
+  final passwordTextController = TextEditingController();
+  final repeatPasswordTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<SignupCubit>(context).loadPage();
+    emailTextController.addListener(() => BlocProvider.of<SignupCubit>(context)
+        .checkEmailValidity(emailTextController.text));
+    passwordTextController.addListener(
+        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+              passwordTextController.text,
+              repeatPasswordTextController.text,
+            ));
+    repeatPasswordTextController.addListener(
+        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+              passwordTextController.text,
+              repeatPasswordTextController.text,
+            ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<SignupCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is SignUpSuccessfullyState) {
+          AutoRouter.of(context).replace(const SignUpSuccessfullyRoute());
+        } else if (state is NavigateToLoginState) {
+          AutoRouter.of(context).replace(const LoginRoute());
+        } else if (state is NavigateToIntroductiveState) {
+          AutoRouter.of(context).pop();
+        }
+      },
       builder: (context, state) {
+        bool isEmailValid = state is RightInputState;
+        bool isPasswordValid = state is RightInputState;
+        bool isButtonAvailable = isEmailValid && isPasswordValid;
+
         return Scaffold(
-          appBar: AppBar(),
+          appBar: MainAppBar(
+            color: Colors.white,
+            onBackButtonPressed: () {
+              BlocProvider.of<SignupCubit>(context).back();
+              emailTextController.text = '';
+              passwordTextController.text = '';
+              repeatPasswordTextController.text = '';
+            },
+          ),
           body: BlueShadowBackground(
             child: Center(
               child: Column(
@@ -71,18 +115,18 @@ class SignupPage extends StatelessWidget {
                                 MainTextField(
                                   textController: passwordTextController,
                                   placeholder: 'Password',
+                                  isPassword: true,
                                 ),
                                 const SizedBox(height: 16),
                                 MainTextField(
-                                  textController: repeatTextController,
+                                  textController: repeatPasswordTextController,
                                   placeholder: 'Repeat Password',
+                                  isPassword: true,
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
-                                  onPressed: () {
-                                    AutoRouter.of(context)
-                                        .push(const SignUpSuccessfullyRoute());
-                                  },
+                                  isEnabled: isButtonAvailable,
+                                  onPressed: () {},
                                   text: 'Sign Up',
                                 ),
                               ],
