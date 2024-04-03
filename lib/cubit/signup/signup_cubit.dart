@@ -23,8 +23,11 @@ class SignupCubit extends BaseCubit {
     super.onChange(change);
   }
 
-  void loadPage() {
-    safeEmit(PageLoadedState());
+  Future<void> loadPage() async {
+    safeEmit(PendingState());
+
+    Future.delayed(
+        const Duration(milliseconds: 50), () => safeEmit(PageLoadedState()));
   }
 
   Future<void> createAccount(
@@ -68,15 +71,15 @@ class SignupCubit extends BaseCubit {
     if (_isPasswordValid && _isEmailValid) {
       safeEmit(RightInputState());
     } else {
-      safeEmit(InputsErrorState());
+      safeEmit(InputErrorState());
     }
   }
 
-  void login() {
+  void goToLogin() {
     safeEmit(NavigateToLoginState());
   }
 
-  void back() {
+  void goBack() {
     safeEmit(NavigateToIntroductiveState());
   }
 }

@@ -6,7 +6,6 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
-import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
@@ -24,6 +23,7 @@ class _SignupPageState extends State<SignupPage> {
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
   final repeatPasswordTextController = TextEditingController();
+  bool isButtonAvailable = false;
 
   @override
   void initState() {
@@ -56,20 +56,13 @@ class _SignupPageState extends State<SignupPage> {
         }
       },
       builder: (context, state) {
-        bool isEmailValid = state is RightInputState;
-        bool isPasswordValid = state is RightInputState;
-        bool isButtonAvailable = isEmailValid && isPasswordValid;
-
+        if (state is RightInputState) {
+          isButtonAvailable = true;
+        } else if (state is InputErrorState) {
+          isButtonAvailable = false;
+        }
         return Scaffold(
-          appBar: MainAppBar(
-            color: Colors.white,
-            onBackButtonPressed: () {
-              BlocProvider.of<SignupCubit>(context).back();
-              emailTextController.text = '';
-              passwordTextController.text = '';
-              repeatPasswordTextController.text = '';
-            },
-          ),
+          appBar: AppBar(),
           body: BlueShadowBackground(
             child: Center(
               child: Column(
@@ -126,7 +119,13 @@ class _SignupPageState extends State<SignupPage> {
                                 const SizedBox(height: 20),
                                 MainButton(
                                   isEnabled: isButtonAvailable,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    BlocProvider.of<SignupCubit>(context)
+                                        .createAccount(
+                                      email: emailTextController.text,
+                                      password: passwordTextController.text,
+                                    );
+                                  },
                                   text: 'Sign Up',
                                 ),
                               ],

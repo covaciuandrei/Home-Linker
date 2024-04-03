@@ -10,4 +10,4 @@ class NavigateToIntroductiveState extends BaseState {}
 
 class RightInputState extends BaseState {}
 
-class InputsErrorState extends BaseState {}
+class InputErrorState extends BaseState {}
