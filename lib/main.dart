@@ -15,6 +15,7 @@ import 'package:homelinker/cubit/profile/profile_cubit.dart';
 import 'package:homelinker/cubit/property/property_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
+import 'package:homelinker/cubit/splash/splash_cubit.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<SplashCubit>(create: (context) => getIt<SplashCubit>()),
         BlocProvider<IntroductiveCubit>(
             create: (context) => getIt<IntroductiveCubit>()),
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),

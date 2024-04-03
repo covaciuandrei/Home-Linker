@@ -17,8 +17,9 @@ import '../cubit/login/login_cubit.dart' as _i12;
 import '../cubit/new_property/new_property_cubit.dart' as _i5;
 import '../cubit/profile/profile_cubit.dart' as _i6;
 import '../cubit/property/property_cubit.dart' as _i7;
-import '../cubit/settings/settings_cubit.dart' as _i9;
-import '../cubit/signup/signup_cubit.dart' as _i13;
+import '../cubit/settings/settings_cubit.dart' as _i13;
+import '../cubit/signup/signup_cubit.dart' as _i14;
+import '../cubit/splash/splash_cubit.dart' as _i9;
 import '../data/secure_storage_source.dart' as _i8;
 import '../services/account/account_service.dart' as _i11;
 import '../services/validator_service.dart' as _i10;
@@ -40,7 +41,7 @@ _i1.GetIt $initGetIt(
   gh.factory<_i6.ProfileCubit>(() => _i6.ProfileCubit());
   gh.factory<_i7.PropertyCubit>(() => _i7.PropertyCubit());
   gh.factory<_i8.SecureStorageSource>(() => _i8.SecureStorageSource());
-  gh.factory<_i9.SettingsCubit>(() => _i9.SettingsCubit());
+  gh.factory<_i9.SplashCubit>(() => _i9.SplashCubit());
   gh.factory<_i10.ValidatorService>(() => _i10.ValidatorService());
   gh.factory<_i11.AccountService>(
       () => _i11.AccountService(gh<_i8.SecureStorageSource>()));
@@ -48,7 +49,9 @@ _i1.GetIt $initGetIt(
         gh<_i11.AccountService>(),
         gh<_i10.ValidatorService>(),
       ));
-  gh.factory<_i13.SignupCubit>(() => _i13.SignupCubit(
+  gh.factory<_i13.SettingsCubit>(
+      () => _i13.SettingsCubit(gh<_i11.AccountService>()));
+  gh.factory<_i14.SignupCubit>(() => _i14.SignupCubit(
         gh<_i11.AccountService>(),
         gh<_i10.ValidatorService>(),
       ));
