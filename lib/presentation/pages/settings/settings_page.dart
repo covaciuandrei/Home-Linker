@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -19,7 +18,7 @@ class SettingsPage extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           return Scaffold(
-            appBar: const MainAppBar(),
+            appBar: const MainAppBar(title: 'Settings'),
             body: BlueShadowBackground(
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -63,15 +62,11 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                     MainButton(
-                        width: 240,
-                        text: 'Logout',
-                        onPressed: () {
-                          try {
-                            FirebaseAuth.instance.signOut;
-                          } catch (e) {
-                            print(e);
-                          }
-                        }),
+                      width: 240,
+                      text: 'Logout',
+                      onPressed: () =>
+                          BlocProvider.of<SettingsCubit>(context).logOut(),
+                    ),
                     const Padding(
                       padding: EdgeInsets.only(bottom: 30, top: 50),
                       child: Text(

@@ -44,9 +44,8 @@ class _HomePageState extends State<HomePage> {
             floatingActionButton: FloatingActionButton(
               backgroundColor: Colors.lightBlue,
               foregroundColor: Colors.white,
-              onPressed: () {
-                AutoRouter.of(context).push(const NewPropertyRoute());
-              },
+              onPressed: () =>
+                  AutoRouter.of(context).push(const NewPropertyRoute()),
               child: const Icon(
                 Icons.add,
                 size: 30,

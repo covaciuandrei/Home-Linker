@@ -1,12 +1,15 @@
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/services/account/account_service.dart';
 import 'package:injectable/injectable.dart';
 
 part 'package:homelinker/cubit/settings/settings_states.dart';
 
 @injectable
 class SettingsCubit extends BaseCubit {
-  SettingsCubit() : super(InitialState());
+  SettingsCubit(this._accountService) : super(InitialState());
+
+  final AccountService _accountService;
 
   Future<void> deleteAccount() async {
     safeEmit(PendingState());
@@ -18,4 +21,6 @@ class SettingsCubit extends BaseCubit {
       safeEmit(SomethingWentWrongState());
     }
   }
+
+  Future<void> logOut() async => await _accountService.logout();
 }

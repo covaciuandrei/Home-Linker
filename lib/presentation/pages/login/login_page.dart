@@ -53,14 +53,6 @@ class _LoginPageState extends State<LoginPage> {
         }
         return Scaffold(
           appBar: AppBar(),
-          // appBar: MainAppBar(
-          //   color: Colors.white,
-          //   onBackButtonPressed: () {
-          //     BlocProvider.of<LoginCubit>(context).goBack();
-          //     emailTextController.text = '';
-          //     passwordTextController.text = '';
-          //   },
-          // ),
           body: BlueShadowBackground(
             child: Center(
               child: Column(
@@ -117,6 +109,10 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
+                                MainButton(
+                                    text: 'text',
+                                    onPressed: () => BlocProvider.of<LoginCubit>(context)
+                                          .checkLoggedUser(),),
                                 MainButton(
                                   width: 150,
                                   text: 'Log in',

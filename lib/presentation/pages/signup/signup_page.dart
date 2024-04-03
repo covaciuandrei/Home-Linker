@@ -51,8 +51,6 @@ class _SignupPageState extends State<SignupPage> {
           AutoRouter.of(context).replace(const SignUpSuccessfullyRoute());
         } else if (state is NavigateToLoginState) {
           AutoRouter.of(context).replace(const LoginRoute());
-        } else if (state is NavigateToIntroductiveState) {
-          AutoRouter.of(context).pop();
         }
       },
       builder: (context, state) {
@@ -136,10 +134,9 @@ class _SignupPageState extends State<SignupPage> {
                           padding: const EdgeInsets.only(bottom: 60),
                           child: MainTextButton(
                             text: "Already have an account? Log in",
-                            onPressed: () {
-                              AutoRouter.of(context)
-                                  .replace(const LoginRoute());
-                            },
+                            onPressed: () =>
+                                BlocProvider.of<SignupCubit>(context)
+                                    .goToLogin(),
                           ),
                         ),
                       ],
