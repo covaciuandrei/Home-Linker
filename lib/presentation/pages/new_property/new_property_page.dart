@@ -30,7 +30,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   @override
   Widget build(BuildContext context) {
     final border = OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.white),
+      borderSide: const BorderSide(color: Colors.white),
       borderRadius: BorderRadius.circular(32.0),
     );
     return BlocConsumer<NewPropertyCubit, BaseState>(
@@ -39,7 +39,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
         return Scaffold(
           appBar: const MainAppBar(title: 'Add a new Property'),
           body: BlueShadowBackground(
-            child: Container(
+            child: SizedBox(
               // color: Colors.amber,
               width: MediaQuery.of(context).size.width,
               // height: 500,
@@ -111,7 +111,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                   ),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         // color: Colors.purple,
                         child: Column(

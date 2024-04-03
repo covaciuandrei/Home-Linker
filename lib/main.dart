@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,12 +15,14 @@ import 'package:homelinker/cubit/profile/profile_cubit.dart';
 import 'package:homelinker/cubit/property/property_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
+import 'package:homelinker/cubit/splash/splash_cubit.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configureDependencies();
+  FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
   await getIt.allReady();
   getIt.registerSingleton<AppRouter>(AppRouter());
   runApp(MyApp());
@@ -33,6 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<SplashCubit>(create: (context) => getIt<SplashCubit>()),
         BlocProvider<IntroductiveCubit>(
             create: (context) => getIt<IntroductiveCubit>()),
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),

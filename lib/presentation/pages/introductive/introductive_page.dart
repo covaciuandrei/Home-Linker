@@ -27,7 +27,13 @@ class _IntroductivePageState extends State<IntroductivePage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<IntroductiveCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is NavigateToSignupState) {
+          AutoRouter.of(context).push(const SignupRoute());
+        } else if (state is NavigateToLoginState) {
+          AutoRouter.of(context).push(const LoginRoute());
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           body: IntroductiveBackground(
@@ -85,18 +91,18 @@ class _IntroductivePageState extends State<IntroductivePage> {
                         text: 'Log in',
                         width: 240,
                         height: 44,
-                        onPressed: () {
-                          AutoRouter.of(context).push(const LoginRoute());
-                        },
+                        onPressed: () =>
+                            BlocProvider.of<IntroductiveCubit>(context)
+                                .goToLogin(),
                       ),
                       const SizedBox(height: 16),
                       MainButton(
                         text: 'Sign Up',
                         width: 240,
                         height: 44,
-                        onPressed: () {
-                          AutoRouter.of(context).push(const SignupRoute());
-                        },
+                        onPressed: () =>
+                            BlocProvider.of<IntroductiveCubit>(context)
+                                .goToSignup(),
                       ),
                     ],
                   ),

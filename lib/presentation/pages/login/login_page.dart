@@ -12,16 +12,50 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final emailTextController = TextEditingController();
+  final passwordTextController = TextEditingController();
+  bool isButtonAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<LoginCubit>(context).loadPage();
+    emailTextController.addListener(() => BlocProvider.of<LoginCubit>(context)
+        .checkEmailValidity(emailTextController.text));
+    passwordTextController.addListener(() =>
+        BlocProvider.of<LoginCubit>(context)
+            .checkPasswordValidity(passwordTextController.text));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final emailTextController = TextEditingController();
-    final passwordTextController = TextEditingController();
     return BlocConsumer<LoginCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is NavigateToSignupState) {
+          AutoRouter.of(context).replace(const SignupRoute());
+        } else if (state is NavigateToIntroductiveState) {
+          AutoRouter.of(context).replace(const SignupRoute());
+        } else if (state is LoggedInSuccessfullyState) {
+          AutoRouter.of(context).pushAndPopUntil(
+            const HomeRoute(),
+            predicate: (route) => false,
+          );
+        }
+      },
       builder: (context, state) {
+        if (state is RightInputState) {
+          isButtonAvailable = true;
+        } else if (state is InputsErrorState) {
+          isButtonAvailable = false;
+        }
         return Scaffold(
           appBar: AppBar(),
           body: BlueShadowBackground(
@@ -69,24 +103,35 @@ class LoginPage extends StatelessWidget {
                                 MainTextField(
                                   textController: passwordTextController,
                                   placeholder: 'Password',
+                                  isPassword: true,
                                 ),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: MainTextButton(
                                     text: 'Forgot password?',
-                                    onPressed: () => AutoRouter.of(context)
-                                        .push(const ForgotPasswordRoute()),
+                                    onPressed: () =>
+                                        AutoRouter.of(context).push(
+                                      const ForgotPasswordRoute(),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
+                                  text: 'text',
+                                  onPressed: () =>
+                                      BlocProvider.of<LoginCubit>(context)
+                                          .checkLoggedUser(),
+                                ),
+                                MainButton(
                                   width: 150,
                                   text: 'Log in',
+                                  isEnabled: isButtonAvailable,
                                   onPressed: () =>
-                                      AutoRouter.of(context).pushAndPopUntil(
-                                    const HomeRoute(),
-                                    predicate: (route) => false,
-                                  ),
+                                      BlocProvider.of<LoginCubit>(context)
+                                          .login(
+                                              email: emailTextController.text,
+                                              password:
+                                                  passwordTextController.text),
                                 ),
                               ],
                             ),
@@ -96,10 +141,9 @@ class LoginPage extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 60),
                           child: MainTextButton(
                             text: "Don't have an account? Create one",
-                            onPressed: () {
-                              AutoRouter.of(context)
-                                  .replace(const SignupRoute());
-                            },
+                            onPressed: () =>
+                                BlocProvider.of<LoginCubit>(context)
+                                    .goToSignup(),
                           ),
                         ),
                       ],

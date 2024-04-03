@@ -10,7 +10,6 @@ class SignUpSuccessfullyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.75,
@@ -29,14 +28,17 @@ class SignUpSuccessfullyPage extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                MainButton(
-                    text: 'Gata',
-                    onPressed: () {
-                      AutoRouter.of(context).pushAndPopUntil(
-                        const IntroductiveRoute(),
-                        predicate: (route) => false,
-                      );
-                    })
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 80),
+                  child: MainButton(
+                      text: 'Gata',
+                      onPressed: () {
+                        AutoRouter.of(context).pushAndPopUntil(
+                          const IntroductiveRoute(),
+                          predicate: (route) => false,
+                        );
+                      }),
+                )
               ],
             ),
           ),

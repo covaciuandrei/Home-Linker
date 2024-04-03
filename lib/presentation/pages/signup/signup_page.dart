@@ -12,18 +12,53 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final emailTextController = TextEditingController();
-    final passwordTextController = TextEditingController();
-    final repeatTextController = TextEditingController();
+  State<SignupPage> createState() => _SignupPageState();
+}
 
+class _SignupPageState extends State<SignupPage> {
+  final emailTextController = TextEditingController();
+  final passwordTextController = TextEditingController();
+  final repeatPasswordTextController = TextEditingController();
+  bool isButtonAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<SignupCubit>(context).loadPage();
+    emailTextController.addListener(() => BlocProvider.of<SignupCubit>(context)
+        .checkEmailValidity(emailTextController.text));
+    passwordTextController.addListener(
+        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+              passwordTextController.text,
+              repeatPasswordTextController.text,
+            ));
+    repeatPasswordTextController.addListener(
+        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+              passwordTextController.text,
+              repeatPasswordTextController.text,
+            ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<SignupCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is SignUpSuccessfullyState) {
+          AutoRouter.of(context).replace(const SignUpSuccessfullyRoute());
+        } else if (state is NavigateToLoginState) {
+          AutoRouter.of(context).replace(const LoginRoute());
+        }
+      },
       builder: (context, state) {
+        if (state is RightInputState) {
+          isButtonAvailable = true;
+        } else if (state is InputErrorState) {
+          isButtonAvailable = false;
+        }
         return Scaffold(
           appBar: AppBar(),
           body: BlueShadowBackground(
@@ -71,17 +106,23 @@ class SignupPage extends StatelessWidget {
                                 MainTextField(
                                   textController: passwordTextController,
                                   placeholder: 'Password',
+                                  isPassword: true,
                                 ),
                                 const SizedBox(height: 16),
                                 MainTextField(
-                                  textController: repeatTextController,
+                                  textController: repeatPasswordTextController,
                                   placeholder: 'Repeat Password',
+                                  isPassword: true,
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
+                                  isEnabled: isButtonAvailable,
                                   onPressed: () {
-                                    AutoRouter.of(context)
-                                        .push(const SignUpSuccessfullyRoute());
+                                    BlocProvider.of<SignupCubit>(context)
+                                        .createAccount(
+                                      email: emailTextController.text,
+                                      password: passwordTextController.text,
+                                    );
                                   },
                                   text: 'Sign Up',
                                 ),
@@ -93,10 +134,9 @@ class SignupPage extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 60),
                           child: MainTextButton(
                             text: "Already have an account? Log in",
-                            onPressed: () {
-                              AutoRouter.of(context)
-                                  .replace(const LoginRoute());
-                            },
+                            onPressed: () =>
+                                BlocProvider.of<SignupCubit>(context)
+                                    .goToLogin(),
                           ),
                         ),
                       ],

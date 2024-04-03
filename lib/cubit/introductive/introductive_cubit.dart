@@ -11,7 +11,11 @@ class IntroductiveCubit extends BaseCubit {
   Future<void> load() async {
     safeEmit(PendingState());
 
-    Future.delayed(const Duration(milliseconds: 100),
-        () => safeEmit(LoadingFinishedState()));
+    Future.delayed(
+        const Duration(milliseconds: 100), () => safeEmit(PageLoadedState()));
   }
+
+  void goToSignup() => safeEmit(NavigateToSignupState());
+
+  void goToLogin() => safeEmit(NavigateToLoginState());
 }
