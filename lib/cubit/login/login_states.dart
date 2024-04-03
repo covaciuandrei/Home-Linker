@@ -2,7 +2,7 @@ part of 'package:homelinker/cubit/login/login_cubit.dart';
 
 class PageLoadedState extends BaseState {}
 
-class LoginSuccessfullyState extends BaseState {}
+class LoggedInSuccessfullyState extends BaseState {}
 
 class NavigateToSignupState extends BaseState {}
 

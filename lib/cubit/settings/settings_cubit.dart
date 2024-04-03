@@ -22,5 +22,12 @@ class SettingsCubit extends BaseCubit {
     }
   }
 
-  Future<void> logOut() async => await _accountService.logout();
+  Future<void> logOut() async {
+    try {
+      await _accountService.logout();
+      safeEmit(LoggedOutSuccessfullyState());
+    } catch (e) {
+      safeEmit(SomethingWentWrongState());
+    }
+  }
 }

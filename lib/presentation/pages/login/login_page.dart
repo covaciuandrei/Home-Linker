@@ -43,6 +43,11 @@ class _LoginPageState extends State<LoginPage> {
           AutoRouter.of(context).replace(const SignupRoute());
         } else if (state is NavigateToIntroductiveState) {
           AutoRouter.of(context).replace(const SignupRoute());
+        } else if (state is LoggedInSuccessfullyState) {
+          AutoRouter.of(context).pushAndPopUntil(
+            const HomeRoute(),
+            predicate: (route) => false,
+          );
         }
       },
       builder: (context, state) {
@@ -104,15 +109,19 @@ class _LoginPageState extends State<LoginPage> {
                                   alignment: Alignment.centerRight,
                                   child: MainTextButton(
                                     text: 'Forgot password?',
-                                    onPressed: () => AutoRouter.of(context)
-                                        .push(const ForgotPasswordRoute()),
+                                    onPressed: () =>
+                                        AutoRouter.of(context).push(
+                                      const ForgotPasswordRoute(),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
-                                    text: 'text',
-                                    onPressed: () => BlocProvider.of<LoginCubit>(context)
-                                          .checkLoggedUser(),),
+                                  text: 'text',
+                                  onPressed: () =>
+                                      BlocProvider.of<LoginCubit>(context)
+                                          .checkLoggedUser(),
+                                ),
                                 MainButton(
                                   width: 150,
                                   text: 'Log in',

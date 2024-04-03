@@ -33,7 +33,7 @@ class LoginCubit extends BaseCubit {
     try {
       safeEmit(PendingState());
       await _accountService.login(email: email, password: password);
-      safeEmit(LoginSuccessfullyState());
+      safeEmit(LoggedInSuccessfullyState());
     } catch (e, stackTrace) {
       print('Error during login: $e');
       print('Stack trace: $stackTrace');
