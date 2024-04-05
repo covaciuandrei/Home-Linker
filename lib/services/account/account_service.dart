@@ -1,14 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:homelinker/data/secure_storage_keys.dart';
-import 'package:homelinker/data/secure_storage_source.dart';
+import 'package:homelinker/data/remote/user/user_source.dart';
+import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
+import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
+import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/services/account/auth_exceptions.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
 class AccountService {
-  AccountService(this._secureStorage);
+  AccountService(this._secureStorage, this._userSource);
 
   final SecureStorageSource _secureStorage;
+  final UserSource _userSource;
 
   Future<bool> isUserLoggedIn() async =>
       (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ??
@@ -22,7 +25,7 @@ class AccountService {
       switch (ex.code) {
         case 'invalid-email':
           await logout();
-          throw InvalidEmailException();  
+          throw InvalidEmailException();
         case 'user-not-found':
           await logout();
           throw UserNotFoundException();
@@ -64,14 +67,26 @@ class AccountService {
     }
   }
 
-  Future<void> createAccount(
-      {required String email, required String password}) async {
+  Future<void> createAccount({
+    required String email,
+    required String password,
+    required String name,
+    required String phoneNumber,
+    required AccountType accountType,
+  }) async {
     try {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: email.trim(), password: password);
       await userCredential.user!.sendEmailVerification();
+      await _userSource.createUser(
+        email: email.trim(),
+        accountType: accountType,
+        name: name,
+        phoneNumber: phoneNumber,
+      );
     } on FirebaseAuthException catch (ex) {
+      print(ex);
       switch (ex.code) {
         case 'email-already-in-use':
           throw EmailAlreadyUsedException();
@@ -80,7 +95,8 @@ class AccountService {
         default:
           throw Exception();
       }
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       throw LoginException();
     }
   }
