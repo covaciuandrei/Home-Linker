@@ -16,9 +16,13 @@ class MainTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              width: 1, color: Colors.white, style: BorderStyle.solid)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          width: 1,
+          color: Colors.white,
+          style: BorderStyle.solid,
+        ),
+      ),
       child: TextField(
         controller: textController,
         obscureText: isPassword,
