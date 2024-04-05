@@ -7,6 +7,7 @@ import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/models/filters.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
+import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_drawer.dart';
 import 'package:homelinker/utils/extension_methods.dart';
@@ -40,87 +41,90 @@ class _HomePageState extends State<HomePage> {
         }
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
-          child: Scaffold(
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.lightBlue,
-              foregroundColor: Colors.white,
-              onPressed: () =>
-                  AutoRouter.of(context).push(const NewPropertyRoute()),
-              child: const Icon(
-                Icons.add,
-                size: 30,
+          child: LoadingScreen(
+            loading: state is PendingState,
+            child: Scaffold(
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: Colors.lightBlue,
+                foregroundColor: Colors.white,
+                onPressed: () =>
+                    AutoRouter.of(context).push(const NewPropertyRoute()),
+                child: const Icon(
+                  Icons.add,
+                  size: 30,
+                ),
               ),
-            ),
-            appBar: const MainAppBar(title: 'HomeLinker'),
-            drawer: const MainDrawer(),
-            body: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        FilterItem(
-                          filterType: FilterType.house,
-                          icon: Icons.home,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.house),
-                        ),
-                        FilterItem(
-                          filterType: FilterType.apartment,
-                          icon: Icons.apartment_rounded,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.apartment),
-                        ),
-                        FilterItem(
-                          filterType: FilterType.rent,
-                          icon: Icons.home_work,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.rent),
-                        ),
-                        FilterItem(
-                          filterType: FilterType.sale,
-                          icon: Icons.local_offer,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.sale),
-                        ),
-                        FilterItem(
-                          filterType: FilterType.price,
-                          icon: Icons.attach_money_rounded,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.price),
-                        ),
-                        FilterItem(
-                          filterType: FilterType.location,
-                          icon: Icons.location_on,
-                          onPressed: () => BlocProvider.of<HomeCubit>(context)
-                              .filter(filterType: FilterType.location),
-                        ),
-                      ],
+              appBar: const MainAppBar(title: 'HomeLinker'),
+              drawer: const MainDrawer(),
+              body: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          FilterItem(
+                            filterType: FilterType.house,
+                            icon: Icons.home,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.house),
+                          ),
+                          FilterItem(
+                            filterType: FilterType.apartment,
+                            icon: Icons.apartment_rounded,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.apartment),
+                          ),
+                          FilterItem(
+                            filterType: FilterType.rent,
+                            icon: Icons.home_work,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.rent),
+                          ),
+                          FilterItem(
+                            filterType: FilterType.sale,
+                            icon: Icons.local_offer,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.sale),
+                          ),
+                          FilterItem(
+                            filterType: FilterType.price,
+                            icon: Icons.attach_money_rounded,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.price),
+                          ),
+                          FilterItem(
+                            filterType: FilterType.location,
+                            icon: Icons.location_on,
+                            onPressed: () => BlocProvider.of<HomeCubit>(context)
+                                .filter(filterType: FilterType.location),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 60),
-                    itemCount: properties.length,
-                    itemBuilder: (context, index) {
-                      return PropertyItem(
-                        property: properties[index],
-                        onPressed: () => AutoRouter.of(context)
-                            .push(PropertyRoute(property: properties[index])),
-                        onFavoriteIconPressed: () {
-                          setState(() {
-                            _isSaved = !_isSaved;
-                          });
-                        },
-                        isSaved: _isSaved,
-                      );
-                    },
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 60),
+                      itemCount: properties.length,
+                      itemBuilder: (context, index) {
+                        return PropertyItem(
+                          property: properties[index],
+                          onPressed: () => AutoRouter.of(context)
+                              .push(PropertyRoute(property: properties[index])),
+                          onFavoriteIconPressed: () {
+                            setState(() {
+                              _isSaved = !_isSaved;
+                            });
+                          },
+                          isSaved: _isSaved,
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

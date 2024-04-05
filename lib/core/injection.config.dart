@@ -13,12 +13,14 @@ import 'package:injectable/injectable.dart' as _i2;
 
 import '../cubit/home/home_cubit.dart' as _i3;
 import '../cubit/introductive/introductive_cubit.dart' as _i4;
-import '../cubit/login/login_cubit.dart' as _i12;
+import '../cubit/login/login_cubit.dart' as _i13;
 import '../cubit/new_property/new_property_cubit.dart' as _i5;
 import '../cubit/profile/profile_cubit.dart' as _i6;
 import '../cubit/property/property_cubit.dart' as _i7;
-import '../cubit/settings/settings_cubit.dart' as _i13;
-import '../cubit/signup/signup_cubit.dart' as _i14;
+import '../cubit/reset_password/forgot_password_cubit.dart' as _i12;
+import '../cubit/reset_password/reset_password_cubit.dart' as _i14;
+import '../cubit/settings/settings_cubit.dart' as _i15;
+import '../cubit/signup/signup_cubit.dart' as _i16;
 import '../cubit/splash/splash_cubit.dart' as _i9;
 import '../data/secure_storage_source.dart' as _i8;
 import '../services/account/account_service.dart' as _i11;
@@ -45,13 +47,17 @@ _i1.GetIt $initGetIt(
   gh.factory<_i10.ValidatorService>(() => _i10.ValidatorService());
   gh.factory<_i11.AccountService>(
       () => _i11.AccountService(gh<_i8.SecureStorageSource>()));
-  gh.factory<_i12.LoginCubit>(() => _i12.LoginCubit(
+  gh.factory<_i12.ForgotPasswordCubit>(
+      () => _i12.ForgotPasswordCubit(gh<_i11.AccountService>()));
+  gh.factory<_i13.LoginCubit>(() => _i13.LoginCubit(
         gh<_i11.AccountService>(),
         gh<_i10.ValidatorService>(),
       ));
-  gh.factory<_i13.SettingsCubit>(
-      () => _i13.SettingsCubit(gh<_i11.AccountService>()));
-  gh.factory<_i14.SignupCubit>(() => _i14.SignupCubit(
+  gh.factory<_i14.ResetPasswordCubit>(
+      () => _i14.ResetPasswordCubit(gh<_i11.AccountService>()));
+  gh.factory<_i15.SettingsCubit>(
+      () => _i15.SettingsCubit(gh<_i11.AccountService>()));
+  gh.factory<_i16.SignupCubit>(() => _i16.SignupCubit(
         gh<_i11.AccountService>(),
         gh<_i10.ValidatorService>(),
       ));

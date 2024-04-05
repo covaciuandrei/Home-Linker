@@ -7,10 +7,7 @@ import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
 class PropertyPage extends StatelessWidget {
-  const PropertyPage({
-    Key? key,
-    required this.property,
-  }) : super(key: key);
+  const PropertyPage({super.key, required this.property});
 
   final Property property;
 

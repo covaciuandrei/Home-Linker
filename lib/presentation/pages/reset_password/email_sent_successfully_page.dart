@@ -5,8 +5,8 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 
 @RoutePage()
-class ResetPasswordSuccessfullyPage extends StatelessWidget {
-  const ResetPasswordSuccessfullyPage({super.key});
+class EmailSentSuccessfullyPage extends StatelessWidget {
+  const EmailSentSuccessfullyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ResetPasswordSuccessfullyPage extends StatelessWidget {
               children: [
                 const Flexible(
                   child: Text(
-                    'Parola a fost resetata cu succes.',
+                    'Mail-ul a fost trimis cu succes.',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

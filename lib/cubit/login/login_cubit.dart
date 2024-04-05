@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/services/account/account_service.dart';
@@ -16,17 +15,12 @@ class LoginCubit extends BaseCubit {
   final ValidatorService _validatorService;
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
-  @override
-  void onChange(Change<BaseState> change) {
-    print('State changed: ${change.currentState} -> ${change.nextState}');
-    super.onChange(change);
-  }
 
   Future<void> loadPage() async {
     safeEmit(PendingState());
 
-    await Future.delayed(
-        const Duration(milliseconds: 50), () => safeEmit(PageLoadedState()));
+    await Future.delayed(const Duration(milliseconds: 200),
+        () => safeEmit(LoginPageLoadedState()));
   }
 
   Future<void> login({required String email, required String password}) async {
@@ -35,6 +29,7 @@ class LoginCubit extends BaseCubit {
       await _accountService.login(email: email, password: password);
       safeEmit(LoggedInSuccessfullyState());
     } catch (e, stackTrace) {
+      safeEmit(SomethingWentWrongState());
       print('Error during login: $e');
       print('Stack trace: $stackTrace');
     }
@@ -67,10 +62,14 @@ class LoginCubit extends BaseCubit {
   }
 
   void goToSignup() {
+    safeEmit(PendingState());
+    Future.delayed(const Duration(milliseconds: 300));
     safeEmit(NavigateToSignupState());
   }
 
   void goBack() {
+    safeEmit(PendingState());
+    Future.delayed(const Duration(milliseconds: 300));
     safeEmit(NavigateToIntroductiveState());
   }
 

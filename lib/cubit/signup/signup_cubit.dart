@@ -1,4 +1,3 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/services/account/account_service.dart';
@@ -17,17 +16,11 @@ class SignupCubit extends BaseCubit {
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
 
-  @override
-  void onChange(Change<BaseState> change) {
-    print('State changed: ${change.currentState} -> ${change.nextState}');
-    super.onChange(change);
-  }
-
   Future<void> loadPage() async {
     safeEmit(PendingState());
 
     Future.delayed(
-        const Duration(milliseconds: 50), () => safeEmit(PageLoadedState()));
+        const Duration(milliseconds: 200), () => safeEmit(PageLoadedState()));
   }
 
   Future<void> createAccount(
