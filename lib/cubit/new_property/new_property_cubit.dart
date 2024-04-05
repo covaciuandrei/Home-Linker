@@ -10,6 +10,13 @@ part 'package:homelinker/cubit/new_property/new_property_states.dart';
 class NewPropertyCubit extends BaseCubit {
   NewPropertyCubit() : super(InitialState());
 
+  Future<void> loadPage() async {
+    safeEmit(PendingState());
+
+    Future.delayed(
+        const Duration(seconds: 2), () => safeEmit(PageLoadedState()));
+  }
+
   Future<File?> uploadImage() async {
     safeEmit(PendingState());
 

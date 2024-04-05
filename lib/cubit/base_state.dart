@@ -12,3 +12,5 @@ class InitialState extends BaseState {}
 class PendingState extends BaseState {}
 
 class SomethingWentWrongState extends BaseState {}
+
+class EmailSentSuccessfullyState extends BaseState {}

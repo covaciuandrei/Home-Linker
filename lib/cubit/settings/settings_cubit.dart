@@ -11,6 +11,13 @@ class SettingsCubit extends BaseCubit {
 
   final AccountService _accountService;
 
+  Future<void> loadPage() async {
+    safeEmit(PendingState());
+
+    Future.delayed(
+        const Duration(milliseconds: 400), () => safeEmit(PageLoadedState()));
+  }
+
   Future<void> deleteAccount() async {
     safeEmit(PendingState());
     try {
@@ -23,6 +30,7 @@ class SettingsCubit extends BaseCubit {
   }
 
   Future<void> logOut() async {
+    safeEmit(PendingState());
     try {
       await _accountService.logout();
       safeEmit(LoggedOutSuccessfullyState());

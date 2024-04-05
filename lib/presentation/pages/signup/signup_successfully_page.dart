@@ -31,13 +31,14 @@ class SignUpSuccessfullyPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 80),
                   child: MainButton(
-                      text: 'Gata',
-                      onPressed: () {
-                        AutoRouter.of(context).pushAndPopUntil(
-                          const IntroductiveRoute(),
-                          predicate: (route) => false,
-                        );
-                      }),
+                    text: 'Gata',
+                    onPressed: () {
+                      AutoRouter.of(context).pushAndPopUntil(
+                        const IntroductiveRoute(),
+                        predicate: (route) => false,
+                      );
+                    },
+                  ),
                 )
               ],
             ),

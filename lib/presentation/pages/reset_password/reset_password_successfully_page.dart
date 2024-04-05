@@ -28,13 +28,15 @@ class ResetPasswordSuccessfullyPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 36),
                 MainButton(
-                    text: 'Gata',
-                    onPressed: () {
-                      AutoRouter.of(context).pushAndPopUntil(
-                        const IntroductiveRoute(),
-                        predicate: (route) => false,
-                      );
-                    }),
+                  width: 140,
+                  text: 'Gata',
+                  onPressed: () {
+                    AutoRouter.of(context).pushAndPopUntil(
+                      const IntroductiveRoute(),
+                      predicate: (route) => false,
+                    );
+                  },
+                ),
               ],
             ),
           ),

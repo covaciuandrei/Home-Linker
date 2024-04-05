@@ -11,7 +11,7 @@ class ProfileCubit extends BaseCubit {
   Future<void> load() async {
     safeEmit(PendingState());
 
-    Future.delayed(
-        const Duration(milliseconds: 50), () => safeEmit(ProfileLoadedState()));
+    Future.delayed(const Duration(milliseconds: 400),
+        () => safeEmit(ProfileLoadedState()));
   }
 }
