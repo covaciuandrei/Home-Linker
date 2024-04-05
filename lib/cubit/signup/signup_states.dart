@@ -11,3 +11,5 @@ class NavigateToIntroductiveState extends BaseState {}
 class RightInputState extends BaseState {}
 
 class InputErrorState extends BaseState {}
+
+class SecondSignupState extends BaseState {}

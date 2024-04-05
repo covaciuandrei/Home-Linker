@@ -11,6 +11,7 @@ class AppRouter extends $AppRouter {
     AutoRoute(path: '/introductive', page: IntroductiveRoute.page),
     AutoRoute(path: '/login', page: LoginRoute.page),
     AutoRoute(path: '/signup', page: SignupRoute.page),
+    AutoRoute(path: '/signup_second', page: SignupSecondRoute.page),
     AutoRoute(path: '/signup_successfully', page: SignUpSuccessfullyRoute.page),
     AutoRoute(path: '/forgot_password', page: ForgotPasswordRoute.page),
     AutoRoute(path: '/reset_password', page: ResetPasswordRoute.page),

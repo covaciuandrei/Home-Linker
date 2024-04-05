@@ -1,5 +1,6 @@
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/services/account/account_service.dart';
 import 'package:homelinker/services/validator_service.dart';
 import 'package:injectable/injectable.dart';
@@ -15,6 +16,8 @@ class SignupCubit extends BaseCubit {
   final ValidatorService _validatorService;
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
+  bool _isNameValid = false;
+  bool _isPhoneValid = false;
 
   Future<void> loadPage() async {
     safeEmit(PendingState());
@@ -23,13 +26,26 @@ class SignupCubit extends BaseCubit {
         const Duration(milliseconds: 200), () => safeEmit(PageLoadedState()));
   }
 
-  Future<void> createAccount(
-      {required String email, required String password}) async {
+  Future<void> createAccount({
+    required String email,
+    required String password,
+    required String name,
+    required String phoneNumber,
+    required AccountType accountType,
+  }) async {
     try {
       safeEmit(PendingState());
-      await _accountService.createAccount(email: email, password: password);
+
+      await _accountService.createAccount(
+        email: email,
+        password: password,
+        accountType: accountType,
+        name: name,
+        phoneNumber: phoneNumber,
+      );
       safeEmit(SignUpSuccessfullyState());
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       print('error la create acc');
     }
   }
@@ -74,5 +90,31 @@ class SignupCubit extends BaseCubit {
 
   void goBack() {
     safeEmit(NavigateToIntroductiveState());
+  }
+
+  void checkPhoneValidity(String phoneNumber) {
+    _isPhoneValid = _validatorService.checkPhoneValidity(phoneNumber);
+
+    _checkNameAndPhoneValidity();
+  }
+
+  void checkNameValidity(String text) {
+    _isNameValid = text.isEmpty ? false : true;
+
+    _checkNameAndPhoneValidity();
+  }
+
+  void _checkNameAndPhoneValidity() {
+    if (_isPhoneValid && _isNameValid) {
+      safeEmit(RightInputState());
+    } else {
+      safeEmit(InputErrorState());
+    }
+  }
+
+  void goToSecondSignupPage() {
+    safeEmit(PendingState());
+
+    safeEmit(SecondSignupState());
   }
 }
