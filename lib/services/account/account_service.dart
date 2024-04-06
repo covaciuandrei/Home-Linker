@@ -85,6 +85,11 @@ class AccountService {
         name: name,
         phoneNumber: phoneNumber,
       );
+
+      // TO DO:
+      //bug user is logged in instantly after creating the account
+      await _secureStorage.delete(SecureStorageKeys.loginToken);
+      await FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (ex) {
       print(ex);
       switch (ex.code) {
