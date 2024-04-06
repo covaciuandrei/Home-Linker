@@ -265,25 +265,25 @@ class PropertyItem extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: onFavoriteIconPressed,
-                              child: isSaved
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    )
-                                  : const Icon(
-                                      Icons.favorite_border_outlined,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    ),
-                            )
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     InkWell(
+                        //       onTap: onFavoriteIconPressed,
+                        //       child: isSaved
+                        //           ? const Icon(
+                        //               Icons.favorite,
+                        //               color: Color.fromRGBO(20, 112, 161, 1),
+                        //               size: 30,
+                        //             )
+                        //           : const Icon(
+                        //               Icons.favorite_border_outlined,
+                        //               color: Color.fromRGBO(20, 112, 161, 1),
+                        //               size: 30,
+                        //             ),
+                        //     )
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
