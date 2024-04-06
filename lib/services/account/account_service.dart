@@ -1,17 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:homelinker/data/remote/user/user_source.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/services/account/auth_exceptions.dart';
+import 'package:homelinker/services/user/user_service.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
 class AccountService {
-  AccountService(this._secureStorage, this._userSource);
+  AccountService(this._secureStorage, this._userService);
 
   final SecureStorageSource _secureStorage;
-  final UserSource _userSource;
+  final UserService _userService;
 
   Future<bool> isUserLoggedIn() async =>
       (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ??
@@ -60,6 +60,7 @@ class AccountService {
         throw LoginException();
       }
       await _secureStorage.set(SecureStorageKeys.loginToken, token);
+      await _secureStorage.set(SecureStorageKeys.userEmail, email.trim());
     } else {
       await logout();
 
@@ -79,7 +80,7 @@ class AccountService {
           .createUserWithEmailAndPassword(
               email: email.trim(), password: password);
       await userCredential.user!.sendEmailVerification();
-      await _userSource.createUser(
+      await _userService.createUser(
         email: email.trim(),
         accountType: accountType,
         name: name,
