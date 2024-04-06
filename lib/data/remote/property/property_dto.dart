@@ -9,6 +9,7 @@ class PropertyDto {
     this.bathrooms,
     this.bedrooms,
     this.constructionYear,
+    this.description,
     this.imageLink,
     this.listingType,
     this.location,
@@ -35,6 +36,9 @@ class PropertyDto {
 
   @JsonKey(name: 'construction_year', defaultValue: 0)
   final int constructionYear;
+
+  @JsonKey(name: 'description', defaultValue: '')
+  final String description;
 
   @JsonKey(name: 'image_link', defaultValue: '')
   final String imageLink;

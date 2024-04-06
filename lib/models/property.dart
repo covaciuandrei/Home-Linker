@@ -4,6 +4,7 @@ class Property {
     required this.bathrooms,
     required this.bedrooms,
     required this.constructionYear,
+    required this.description,
     required this.imageLink,
     required this.listingType,
     required this.location,
@@ -17,6 +18,7 @@ class Property {
   final int bathrooms;
   final int bedrooms;
   final int constructionYear;
+  final String description;
   final String imageLink;
   final ListingType listingType;
   final String location;

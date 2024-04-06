@@ -109,13 +109,14 @@ class PropertyPage extends StatelessWidget {
                           ),
                         ),
                         PropertySellingPointLine(
-                            property: property,
-                            isFirstLine: true,
-                            icons: const [
-                              Icons.calendar_month_outlined,
-                              Icons.real_estate_agent_outlined,
-                              Icons.landscape_outlined
-                            ]),
+                          property: property,
+                          icons: const [
+                            Icons.calendar_month_outlined,
+                            Icons.real_estate_agent_outlined,
+                            Icons.landscape_outlined
+                          ],
+                          isFirstLine: true,
+                        ),
                         PropertySellingPointLine(
                           property: property,
                           icons: const [
@@ -125,7 +126,7 @@ class PropertyPage extends StatelessWidget {
                           ],
                           isFirstLine: false,
                         ),
-                        const PropertyDescription(),
+                        PropertyDescription(description: property.description),
                       ],
                     ),
                   ),
@@ -142,7 +143,10 @@ class PropertyPage extends StatelessWidget {
 class PropertyDescription extends StatelessWidget {
   const PropertyDescription({
     super.key,
+    required this.description,
   });
+
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +155,11 @@ class PropertyDescription extends StatelessWidget {
         vertical: 4,
         horizontal: 20,
       ),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Padding(
                 padding: EdgeInsets.only(bottom: 4),
@@ -171,24 +175,8 @@ class PropertyDescription extends StatelessWidget {
             ],
           ),
           Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(20, 112, 161, 1),
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(20, 112, 161, 1),
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
+            description,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Color.fromRGBO(20, 112, 161, 1),
               fontSize: 14,

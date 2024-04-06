@@ -32,7 +32,7 @@ class PropertySource {
     try {
       _collectionRef.add(_propertyMapper.mapPropertyToDto(newProperty));
     } catch (ex) {
-      print('muie');
+      print(ex);
     }
   }
 
@@ -41,6 +41,7 @@ class PropertySource {
     required int bathrooms,
     required int bedrooms,
     required int constructionYear,
+    required String description,
     required String imageLink,
     required ListingType listingType,
     required String location,
@@ -55,6 +56,7 @@ class PropertySource {
       bathrooms,
       bedrooms,
       constructionYear,
+      description,
       imageLink,
       listingType.name,
       location,
