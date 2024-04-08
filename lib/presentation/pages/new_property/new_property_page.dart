@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
@@ -27,6 +28,11 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   int constructionYear = DateTime.now().year;
   int bedrooms = 1;
   int bathrooms = 1;
+  String listingType = 'apartment';
+  String propertyType = 'sale';
+  final priceTextController = TextEditingController();
+  final areaTextController = TextEditingController();
+  final descriptionTextController = TextEditingController();
 
   @override
   void initState() {
@@ -41,7 +47,12 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
       borderRadius: BorderRadius.circular(32.0),
     );
     return BlocConsumer<NewPropertyCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is PropertyAddedSuccessfullyState) {
+          BlocProvider.of<HomeCubit>(context).load();
+          AutoRouter.of(context).pop();
+        }
+      },
       builder: (context, state) {
         return LoadingScreen(
           loading: state is PendingState,
@@ -49,18 +60,12 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
             appBar: const MainAppBar(title: 'Add a new Property'),
             body: BlueShadowBackground(
               child: SizedBox(
-                // color: Colors.amber,
                 width: MediaQuery.of(context).size.width,
-                // height: 500,
                 child: Column(
                   children: [
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.only(top: 30),
-                        // color: Colors.lightBlue,
-                        // height:
-                        //     (MediaQuery.of(context).size.height - kToolbarHeight) /
-                        //         2,
                         child: Column(
                           children: [
                             GestureDetector(
@@ -143,6 +148,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                         const SizedBox(height: 6),
                                         DropdownPicker(
+                                          onValueChanged: (value) {
+                                            propertyType = value;
+                                          },
                                           list: [
                                             PropertyType.apartment.name,
                                             PropertyType.house.name,
@@ -164,6 +172,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                         const SizedBox(height: 6),
                                         DropdownPicker(
+                                          onValueChanged: (value) {
+                                            listingType = value;
+                                          },
                                           list: [
                                             ListingType.sale.name,
                                             ListingType.rent.name,
@@ -206,7 +217,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                             if (selectedValue != null) {
                                               setState(() {
                                                 constructionYear =
-                                                    selectedValue; // Update parkingSpaces with the returned value
+                                                    selectedValue;
                                               });
                                             }
                                           },
@@ -239,8 +250,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                             );
                                             if (selectedValue != null) {
                                               setState(() {
-                                                bedrooms =
-                                                    selectedValue; // Update parkingSpaces with the returned value
+                                                bedrooms = selectedValue;
                                               });
                                             }
                                           },
@@ -281,8 +291,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                             );
                                             if (selectedValue != null) {
                                               setState(() {
-                                                bathrooms =
-                                                    selectedValue; // Update parkingSpaces with the returned value
+                                                bathrooms = selectedValue;
                                               });
                                             }
                                           },
@@ -315,8 +324,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                             );
                                             if (selectedValue != null) {
                                               setState(() {
-                                                parkingSpaces =
-                                                    selectedValue; // Update parkingSpaces with the returned value
+                                                parkingSpaces = selectedValue;
                                               });
                                             }
                                           },
@@ -349,9 +357,10 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                               vertical: 4),
                                           width: 140,
                                           child: TextField(
+                                            controller: priceTextController,
                                             cursorColor: Colors.white,
+                                            keyboardType: TextInputType.number,
                                             decoration: InputDecoration(
-                                              // isDense: true,
                                               constraints: const BoxConstraints(
                                                   maxHeight: 40),
                                               contentPadding:
@@ -392,9 +401,10 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                               vertical: 4),
                                           width: 140,
                                           child: TextField(
+                                            keyboardType: TextInputType.number,
+                                            controller: areaTextController,
                                             cursorColor: Colors.white,
                                             decoration: InputDecoration(
-                                              // isDense: true,
                                               constraints: const BoxConstraints(
                                                   maxHeight: 40),
                                               contentPadding:
@@ -422,10 +432,6 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ),
                               const SizedBox(height: 20),
                               const SizedBox(height: 20),
-                              // TextField(
-                              //   keyboardType: TextInputType.multiline,
-                              //   maxLines: null,
-                              // ),
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
@@ -435,12 +441,32 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 width: MediaQuery.of(context).size.width,
                                 height: 200,
-                                child: const MultiLineInputBox(),
+                                child: MultiLineInputBox(
+                                  descriptionTextController:
+                                      descriptionTextController,
+                                ),
                               ),
                               const SizedBox(height: 20),
                               MainButton(
                                 text: 'Add Property',
-                                onPressed: () {},
+                                onPressed: () {
+                                  BlocProvider.of<NewPropertyCubit>(context)
+                                      .addProperty(
+                                    areaSize:
+                                        int.parse(areaTextController.text),
+                                    bathrooms: bathrooms,
+                                    bedrooms: bedrooms,
+                                    constructionYear: constructionYear,
+                                    description: descriptionTextController.text,
+                                    imageLink: 'imageLink',
+                                    listingType: listingType,
+                                    location: 'location',
+                                    parkingSpaces: parkingSpaces,
+                                    price:
+                                        double.parse(areaTextController.text),
+                                    propertyType: propertyType,
+                                  );
+                                },
                                 width: 200,
                               ),
                               const SizedBox(height: 75),
@@ -460,38 +486,35 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   }
 }
 
-class MultiLineInputBox extends StatelessWidget {
-  const MultiLineInputBox({super.key});
+class MultiLineInputBox extends StatefulWidget {
+  const MultiLineInputBox({super.key, required this.descriptionTextController});
+  final TextEditingController descriptionTextController;
+  @override
+  State<MultiLineInputBox> createState() => _MultiLineInputBoxState();
+}
 
+class _MultiLineInputBoxState extends State<MultiLineInputBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(7.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          // minWidth: _contextWidth(),
-          // maxWidth: _contextWidth(),
-          // minHeight: AppMeasurements.isLandscapePhone(context) ? 25.0 : 25.0,
           maxHeight: 55.0,
         ),
-        child: const SingleChildScrollView(
+        child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           reverse: false,
-
-          // here's the actual text box
           child: TextField(
+            controller: widget.descriptionTextController,
             cursorColor: Colors.white,
-            style: TextStyle(fontSize: 16, color: Colors.white),
+            style: const TextStyle(fontSize: 16, color: Colors.white),
             keyboardType: TextInputType.multiline,
-            maxLines: null, //grow automatically
-            // focusNode: mrFocus,
-            // controller: _textController,
-            // onSubmitted: currentIsComposing ? _handleSubmitted : null,
-            decoration: InputDecoration.collapsed(
+            maxLines: null,
+            decoration: const InputDecoration.collapsed(
                 hintText: 'Please enter the description',
                 hintStyle: TextStyle(color: Colors.white)),
           ),
-          // ends the actual text box
         ),
       ),
     );

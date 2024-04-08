@@ -54,10 +54,8 @@ _i1.GetIt $initGetIt(
   gh.factory<_i10.UserMapper>(() => _i10.UserMapper());
   gh.factory<_i11.UserSource>(() => _i11.UserSource(gh<_i10.UserMapper>()));
   gh.factory<_i12.ValidatorService>(() => _i12.ValidatorService());
-  gh.factory<_i13.PropertyService>(() => _i13.PropertyService(
-        gh<_i7.PropertySource>(),
-        gh<_i8.SecureStorageSource>(),
-      ));
+  gh.factory<_i13.PropertyService>(
+      () => _i13.PropertyService(gh<_i7.PropertySource>()));
   gh.factory<_i14.UserService>(() => _i14.UserService(
         gh<_i11.UserSource>(),
         gh<_i8.SecureStorageSource>(),

@@ -34,7 +34,7 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
   final nameTextController = TextEditingController();
 
   bool isButtonAvailable = false;
-  String selectedValue = '';
+  String accountType = '';
 
   @override
   void initState() {
@@ -114,7 +114,7 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                                   const SizedBox(height: 16),
                                   DropdownPicker(
                                     onValueChanged: (value) {
-                                      selectedValue = value;
+                                      accountType = value;
                                     },
                                     width: MediaQuery.of(context).size.width,
                                     list: [
@@ -129,7 +129,7 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                                       BlocProvider.of<SignupCubit>(context)
                                           .createAccount(
                                         accountType:
-                                            getAccountType(selectedValue),
+                                            getAccountType(accountType),
                                         name: nameTextController.text,
                                         phoneNumber: phoneTextController.text,
                                         email: widget.email,
