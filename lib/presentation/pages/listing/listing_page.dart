@@ -1,15 +1,16 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
-class PropertyPage extends StatelessWidget {
-  const PropertyPage({super.key, required this.property});
+class ListingPage extends StatelessWidget {
+  const ListingPage({super.key, required this.listing});
 
-  final Property property;
+  final Listing listing;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +22,8 @@ class PropertyPage extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.4,
-            child: Image.network(
-              property.imageLink,
+            child: Image.file(
+              listing.image,
               fit: BoxFit.cover,
             ),
           ),
@@ -63,7 +64,8 @@ class PropertyPage extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.only(bottom: 4),
                                       child: Text(
-                                        property.propertyType.name.capitalize(),
+                                        listing.property.propertyType.name
+                                            .capitalize(),
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Color.fromRGBO(28, 83, 119, 1),
@@ -80,7 +82,7 @@ class PropertyPage extends StatelessWidget {
                                               Color.fromRGBO(20, 112, 161, 1),
                                         ),
                                         Text(
-                                          property.location,
+                                          listing.property.location,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color:
@@ -91,7 +93,7 @@ class PropertyPage extends StatelessWidget {
                                       ],
                                     ),
                                     Text(
-                                      'Listed by ${property.ownerName}',
+                                      'Listed by ${listing.property.ownerName}',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Color.fromRGBO(20, 112, 161, 1),
@@ -102,22 +104,23 @@ class PropertyPage extends StatelessWidget {
                                 ),
                               ),
                               ListingPrice(
-                                property: property,
+                                property: listing.property,
                                 textSize: 26,
                               ),
                             ],
                           ),
                         ),
                         PropertySellingPointLine(
-                            property: property,
-                            isFirstLine: true,
-                            icons: const [
-                              Icons.calendar_month_outlined,
-                              Icons.real_estate_agent_outlined,
-                              Icons.landscape_outlined
-                            ]),
+                          property: listing.property,
+                          icons: const [
+                            Icons.calendar_month_outlined,
+                            Icons.real_estate_agent_outlined,
+                            Icons.landscape_outlined
+                          ],
+                          isFirstLine: true,
+                        ),
                         PropertySellingPointLine(
-                          property: property,
+                          property: listing.property,
                           icons: const [
                             Icons.bathroom_outlined,
                             Icons.bed_outlined,
@@ -125,7 +128,8 @@ class PropertyPage extends StatelessWidget {
                           ],
                           isFirstLine: false,
                         ),
-                        const PropertyDescription(),
+                        PropertyDescription(
+                            description: listing.property.description),
                       ],
                     ),
                   ),
@@ -142,7 +146,10 @@ class PropertyPage extends StatelessWidget {
 class PropertyDescription extends StatelessWidget {
   const PropertyDescription({
     super.key,
+    required this.description,
   });
+
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +158,11 @@ class PropertyDescription extends StatelessWidget {
         vertical: 4,
         horizontal: 20,
       ),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Padding(
                 padding: EdgeInsets.only(bottom: 4),
@@ -171,24 +178,8 @@ class PropertyDescription extends StatelessWidget {
             ],
           ),
           Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(20, 112, 161, 1),
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(20, 112, 161, 1),
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            '   Charming apartment nestled in a vibrant neighborhood, offering modern comforts and convenience. This cozy space features a spacious bedroom, a well-equipped kitchen, and a stylish living area with ample natural light. ',
-            style: TextStyle(
+            description,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Color.fromRGBO(20, 112, 161, 1),
               fontSize: 14,

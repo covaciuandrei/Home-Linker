@@ -1,3 +1,4 @@
 class SecureStorageKeys {
   static const String loginToken = 'login_token';
+  static const String userEmail = 'user_email';
 }

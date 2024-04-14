@@ -12,4 +12,11 @@ class ValidatorService {
   bool checkPasswordValidity(String firstPassword, String secondPassword) {
     return firstPassword == secondPassword;
   }
+
+  bool checkPhoneValidity(String phoneNumber) {
+    RegExp regExp = RegExp(r'^\d{10}$');
+
+    bool isPhoneValid = regExp.hasMatch(phoneNumber);
+    return isPhoneValid;
+  }
 }

@@ -5,6 +5,7 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/models/filters.dart';
+import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
@@ -31,13 +32,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Property> properties = [];
+    List<Listing> listings = [];
 
     return BlocConsumer<HomeCubit, BaseState>(
       listener: (context, state) {},
       builder: (context, state) {
         if (state is DataLoadedState) {
-          properties = state.properties;
+          listings = state.listings;
         }
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
@@ -107,12 +108,12 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.only(bottom: 60),
-                      itemCount: properties.length,
+                      itemCount: listings.length,
                       itemBuilder: (context, index) {
                         return PropertyItem(
-                          property: properties[index],
+                          listing: listings[index],
                           onPressed: () => AutoRouter.of(context)
-                              .push(PropertyRoute(property: properties[index])),
+                              .push(ListingRoute(listing: listings[index])),
                           onFavoriteIconPressed: () {
                             setState(() {
                               _isSaved = !_isSaved;
@@ -137,13 +138,13 @@ class PropertyItem extends StatelessWidget {
   const PropertyItem({
     super.key,
     required this.onPressed,
-    required this.property,
+    required this.listing,
     required this.isSaved,
     required this.onFavoriteIconPressed,
   });
 
   final VoidCallback onPressed;
-  final Property property;
+  final Listing listing;
   final VoidCallback onFavoriteIconPressed;
   final bool isSaved;
 
@@ -174,8 +175,8 @@ class PropertyItem extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    child: Image.network(
-                      property.imageLink,
+                    child: Image.file(
+                      listing.image,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,
@@ -197,14 +198,14 @@ class PropertyItem extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.fromLTRB(10, 0, 0, 6),
                                   child: ListingPrice(
-                                    property: property,
+                                    property: listing.property,
                                     textSize: 20,
                                   ),
                                 ),
                               ),
                               Flexible(
                                 child: Text(
-                                  '${property.propertyType.name.capitalize()} ${property.areaSize} m²',
+                                  '${listing.property.propertyType.name.capitalize()} ${listing.property.areaSize} m²',
                                   style: const TextStyle(
                                     color: Color.fromRGBO(20, 112, 161, 1),
                                     fontWeight: FontWeight.bold,
@@ -223,7 +224,7 @@ class PropertyItem extends StatelessWidget {
                                     ),
                                     Flexible(
                                       child: Text(
-                                        property.location,
+                                        listing.property.location,
                                         style: const TextStyle(
                                           color:
                                               Color.fromRGBO(20, 112, 161, 1),
@@ -240,7 +241,7 @@ class PropertyItem extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: property.listingType ==
+                                      color: listing.property.listingType ==
                                               ListingType.sale
                                           ? Colors.lightGreen
                                           : const Color.fromARGB(
@@ -251,7 +252,7 @@ class PropertyItem extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 4, horizontal: 8),
                                       child: Text(
-                                        'For ${property.listingType.name.capitalize()}',
+                                        'For ${listing.property.listingType.name.capitalize()}',
                                         style: const TextStyle(
                                           color:
                                               Color.fromRGBO(20, 112, 161, 1),
@@ -265,25 +266,25 @@ class PropertyItem extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: onFavoriteIconPressed,
-                              child: isSaved
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    )
-                                  : const Icon(
-                                      Icons.favorite_border_outlined,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    ),
-                            )
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     InkWell(
+                        //       onTap: onFavoriteIconPressed,
+                        //       child: isSaved
+                        //           ? const Icon(
+                        //               Icons.favorite,
+                        //               color: Color.fromRGBO(20, 112, 161, 1),
+                        //               size: 30,
+                        //             )
+                        //           : const Icon(
+                        //               Icons.favorite_border_outlined,
+                        //               color: Color.fromRGBO(20, 112, 161, 1),
+                        //               size: 30,
+                        //             ),
+                        //     )
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),

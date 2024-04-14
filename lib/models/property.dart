@@ -1,30 +1,32 @@
 class Property {
   Property({
-    required this.ownerName,
-    required this.propertyType,
     required this.areaSize,
-    required this.location,
-    required this.price,
-    required this.imageLink,
-    required this.listingType,
-    required this.isFavorite,
     required this.bathrooms,
     required this.bedrooms,
     required this.constructionYear,
+    required this.description,
+    required this.imageId,
+    required this.listingType,
+    required this.location,
+    required this.ownerEmail,
+    required this.ownerName,
     required this.parkingSpaces,
+    required this.price,
+    required this.propertyType,
   });
-  final String ownerName;
-  final PropertyType propertyType;
   final int areaSize;
-  final String location;
-  final double price;
-  final String imageLink;
-  final ListingType listingType;
-  final bool isFavorite;
   final int bathrooms;
   final int bedrooms;
   final int constructionYear;
+  final String description;
+  final String imageId;
+  final ListingType listingType;
+  final String location;
+  final String ownerEmail;
+  final String ownerName;
   final int parkingSpaces;
+  final double price;
+  final PropertyType propertyType;
 }
 
 enum PropertyType { apartment, house }

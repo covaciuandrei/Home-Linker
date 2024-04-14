@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 class DropdownPicker extends StatefulWidget {
-  const DropdownPicker({super.key, required this.list});
+  const DropdownPicker({
+    super.key,
+    required this.list,
+    this.width = 140,
+    this.onValueChanged,
+  });
   final List<String> list;
+  final double width;
+  final void Function(String)? onValueChanged;
 
   @override
   State<DropdownPicker> createState() => _DropdownPickerState();
@@ -15,14 +22,13 @@ class _DropdownPickerState extends State<DropdownPicker> {
   @override
   void initState() {
     super.initState();
-    // dropdownValue = widget.list.first;
+    dropdownValue = widget.list.first;
   }
 
   @override
   Widget build(BuildContext context) {
-    dropdownValue = widget.list.first;
     return Container(
-      width: 140,
+      width: widget.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white),
@@ -47,6 +53,7 @@ class _DropdownPickerState extends State<DropdownPicker> {
           onChanged: (String? value) {
             setState(() {
               dropdownValue = value!;
+              widget.onValueChanged!(dropdownValue);
             });
           },
           items: widget.list.map<DropdownMenuItem<String>>((String value) {
