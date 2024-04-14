@@ -5,7 +5,7 @@ class Property {
     required this.bedrooms,
     required this.constructionYear,
     required this.description,
-    required this.imageLink,
+    required this.imageId,
     required this.listingType,
     required this.location,
     required this.ownerEmail,
@@ -19,7 +19,7 @@ class Property {
   final int bedrooms;
   final int constructionYear;
   final String description;
-  final String imageLink;
+  final String imageId;
   final ListingType listingType;
   final String location;
   final String ownerEmail;
