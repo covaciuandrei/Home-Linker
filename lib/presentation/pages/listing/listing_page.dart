@@ -1,9 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/cubit/home/home_cubit.dart';
+import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
+import 'package:homelinker/presentation/widgets/loading_screen.dart';
+import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
@@ -14,75 +20,98 @@ class ListingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.lightBlue,
-      extendBody: true,
-      body: Stack(
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: Image.file(
-              listing.image,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const BackArrowButton(),
-          Column(
+    return BlocConsumer<ListingCubit, BaseState>(listener: (context, state) {
+      if (state is ListingDeletedState) {
+        BlocProvider.of<HomeCubit>(context).load();
+        AutoRouter.of(context).popForced();
+      }
+    }, builder: (context, state) {
+      return LoadingScreen(
+        loading: state is PendingState,
+        child: Scaffold(
+          backgroundColor: Colors.lightBlue,
+          extendBody: true,
+          body: Stack(
             children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.35,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Image.file(
+                  listing.image,
+                  fit: BoxFit.cover,
                 ),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+              ),
+              const BackArrowButton(),
+              Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.35,
                     ),
-                  ),
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 20,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 4),
-                                      child: Text(
-                                        listing.property.propertyType.name
-                                            .capitalize(),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color.fromRGBO(28, 83, 119, 1),
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 20,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        const Icon(
-                                          Icons.location_on_outlined,
-                                          size: 20,
-                                          color:
-                                              Color.fromRGBO(20, 112, 161, 1),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 4),
+                                          child: Text(
+                                            listing.property.propertyType.name
+                                                .capitalize(),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromRGBO(
+                                                  28, 83, 119, 1),
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.location_on_outlined,
+                                              size: 20,
+                                              color: Color.fromRGBO(
+                                                  20, 112, 161, 1),
+                                            ),
+                                            Text(
+                                              listing.property.location,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Color.fromRGBO(
+                                                    20, 112, 161, 1),
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         Text(
-                                          listing.property.location,
+                                          'Listed by ${listing.property.ownerName}',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color:
@@ -92,54 +121,57 @@ class ListingPage extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    Text(
-                                      'Listed by ${listing.property.ownerName}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(20, 112, 161, 1),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  ListingPrice(
+                                    property: listing.property,
+                                    textSize: 26,
+                                  ),
+                                ],
                               ),
-                              ListingPrice(
-                                property: listing.property,
-                                textSize: 26,
-                              ),
-                            ],
-                          ),
-                        ),
-                        PropertySellingPointLine(
-                          property: listing.property,
-                          icons: const [
-                            Icons.calendar_month_outlined,
-                            Icons.real_estate_agent_outlined,
-                            Icons.landscape_outlined
+                            ),
+                            PropertySellingPointLine(
+                              property: listing.property,
+                              icons: const [
+                                Icons.calendar_month_outlined,
+                                Icons.real_estate_agent_outlined,
+                                Icons.landscape_outlined
+                              ],
+                              isFirstLine: true,
+                            ),
+                            PropertySellingPointLine(
+                              property: listing.property,
+                              icons: const [
+                                Icons.bathroom_outlined,
+                                Icons.bed_outlined,
+                                Icons.local_parking_outlined,
+                              ],
+                              isFirstLine: false,
+                            ),
+                            PropertyDescription(
+                              description: listing.property.description,
+                            ),
+                            MainButton(
+                              color: const Color.fromARGB(255, 141, 12, 3),
+                              textColor: Colors.white,
+                              width: 200,
+                              text: 'Delete listing',
+                              onPressed: () {
+                                BlocProvider.of<ListingCubit>(context)
+                                    .deleteListing(property: listing.property);
+                              },
+                            ),
                           ],
-                          isFirstLine: true,
                         ),
-                        PropertySellingPointLine(
-                          property: listing.property,
-                          icons: const [
-                            Icons.bathroom_outlined,
-                            Icons.bed_outlined,
-                            Icons.local_parking_outlined,
-                          ],
-                          isFirstLine: false,
-                        ),
-                        PropertyDescription(
-                            description: listing.property.description),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 }
 

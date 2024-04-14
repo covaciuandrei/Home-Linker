@@ -9,6 +9,7 @@ import 'package:homelinker/core/app_router.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
+import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
             create: (context) => getIt<ForgotPasswordCubit>()),
         BlocProvider<ResetPasswordCubit>(
             create: (context) => getIt<ResetPasswordCubit>()),
+        BlocProvider<ListingCubit>(create: (context) => getIt<ListingCubit>()),
       ],
       child: MaterialApp.router(
         routerConfig: appRouter.config(),

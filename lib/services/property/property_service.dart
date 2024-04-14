@@ -19,4 +19,8 @@ class PropertyService {
     final newProperty = property;
     await _propertySource.insert(newProperty);
   }
+
+  Future<void> delete({required String propertyId}) async {
+    await _propertySource.delete(propertyId: propertyId);
+  }
 }

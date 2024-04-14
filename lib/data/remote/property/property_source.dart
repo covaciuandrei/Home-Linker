@@ -23,7 +23,25 @@ class PropertySource {
 
   Future<List<Property>> getAll() async {
     final querySnapshot = await _collectionRef.get();
-    final propertyDtos = querySnapshot.docs.map((doc) => doc.data()).toList();
+    final propertyDtos = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      return PropertyDto(
+        id: doc.id,
+        data.areaSize,
+        data.bathrooms,
+        data.bedrooms,
+        data.constructionYear,
+        data.description,
+        data.imageId,
+        data.listingType,
+        data.location,
+        data.ownerEmail,
+        data.ownerName,
+        data.parkingSpaces,
+        data.price,
+        data.propertyType,
+      );
+    }).toList();
 
     return _propertyMapper.mapPropertyDtos(propertyDtos);
   }
@@ -31,10 +49,13 @@ class PropertySource {
   Future<void> insert(Property newProperty) async {
     try {
       _collectionRef.add(_propertyMapper.mapPropertyToDto(newProperty));
-    } catch (ex) {
-      print(ex);
+    } on Exception {
+      throw Exception();
     }
   }
 
-  
+  Future<void> delete({required String propertyId}) async {
+    final documentRef = _collectionRef.doc(propertyId);
+    await documentRef.delete();
+  }
 }

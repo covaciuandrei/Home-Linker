@@ -38,10 +38,9 @@ class NewPropertyCubit extends BaseCubit {
 
       safeEmit(FileUploadedState(imageFile: imageFile));
     } on NoFileChosenException {
-      print('no file chosen');
       safeEmit(NoFileChosenState());
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
+      safeEmit(SomethingWentWrongState());
     }
   }
 
@@ -54,8 +53,7 @@ class NewPropertyCubit extends BaseCubit {
 
       safeEmit(ImageUploadedSuccessfullyState());
       return imageId;
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
       safeEmit(SomethingWentWrongState());
     }
     return '';
@@ -101,9 +99,8 @@ class NewPropertyCubit extends BaseCubit {
       await _propertyService.addNewProperty(property: property);
 
       safeEmit(PropertyAddedSuccessfullyState());
-    } catch (e) {
+    } on Exception {
       safeEmit(SomethingWentWrongState());
-      print(e);
     }
   }
 }

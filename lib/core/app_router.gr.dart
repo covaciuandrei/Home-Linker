@@ -14,12 +14,11 @@ import 'package:homelinker/models/listing.dart' as _i18;
 import 'package:homelinker/presentation/pages/home/home_page.dart' as _i3;
 import 'package:homelinker/presentation/pages/introductive/introductive_page.dart'
     as _i4;
+import 'package:homelinker/presentation/pages/listing/listing_page.dart' as _i5;
 import 'package:homelinker/presentation/pages/login/login_page.dart' as _i6;
 import 'package:homelinker/presentation/pages/new_property/new_property_page.dart'
     as _i7;
 import 'package:homelinker/presentation/pages/profile/profile_page.dart' as _i8;
-import 'package:homelinker/presentation/pages/listing/listing_page.dart'
-    as _i5;
 import 'package:homelinker/presentation/pages/reset_password/email_sent_successfully_page.dart'
     as _i1;
 import 'package:homelinker/presentation/pages/reset_password/forgot_password_page.dart'

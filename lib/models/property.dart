@@ -1,5 +1,6 @@
 class Property {
   Property({
+    this.id = '',
     required this.areaSize,
     required this.bathrooms,
     required this.bedrooms,
@@ -14,6 +15,8 @@ class Property {
     required this.price,
     required this.propertyType,
   });
+
+  final String id;
   final int areaSize;
   final int bathrooms;
   final int bedrooms;

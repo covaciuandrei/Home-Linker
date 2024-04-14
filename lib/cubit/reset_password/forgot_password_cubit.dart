@@ -22,9 +22,8 @@ class ForgotPasswordCubit extends BaseCubit {
     try {
       await _accountService.forgotPassword(email: email);
       safeEmit(EmailSentSuccessfullyState());
-    } catch (e) {
+    } on Exception {
       safeEmit(SomethingWentWrongState());
-      print(e);
     }
   }
 }

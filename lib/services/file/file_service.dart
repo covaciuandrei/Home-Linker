@@ -25,10 +25,8 @@ class FileService {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // final bytes = await image.readAsBytes();
       return image.path;
     } else {
-      print('no img chosen');
       throw NoFileChosenException();
     }
   }
@@ -70,4 +68,3 @@ class FileService {
     return imageId;
   }
 }
-

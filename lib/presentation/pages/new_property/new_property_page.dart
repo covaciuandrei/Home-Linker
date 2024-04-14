@@ -58,7 +58,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
       listener: (context, state) {
         if (state is PropertyAddedSuccessfullyState) {
           BlocProvider.of<HomeCubit>(context).load();
-          AutoRouter.of(context).pop();
+          AutoRouter.of(context).popForced();
         } else if (state is NoFileChosenState) {}
       },
       builder: (context, state) {

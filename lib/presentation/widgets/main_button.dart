@@ -10,6 +10,8 @@ class MainButton extends StatelessWidget {
     this.icon,
     this.iconColor,
     this.isEnabled = true,
+    this.color,
+    this.textColor,
   });
 
   final String text;
@@ -19,6 +21,8 @@ class MainButton extends StatelessWidget {
   final IconData? icon;
   final Color? iconColor;
   final bool isEnabled;
+  final Color? color;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +33,12 @@ class MainButton extends StatelessWidget {
         ignoring: !isEnabled,
         child: ElevatedButton(
           style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-            isEnabled ? const Color.fromRGBO(250, 250, 250, 1) : Colors.grey,
-          )),
+            backgroundColor: MaterialStateProperty.all(
+              isEnabled
+                  ? (color ?? const Color.fromRGBO(250, 250, 250, 1))
+                  : Colors.grey,
+            ),
+          ),
           onPressed: isEnabled ? onPressed : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -49,8 +56,8 @@ class MainButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   text,
-                  style: const TextStyle(
-                    color: Colors.lightBlue,
+                  style: TextStyle(
+                    color: textColor ?? Colors.lightBlue,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
