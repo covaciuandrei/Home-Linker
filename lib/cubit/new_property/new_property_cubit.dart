@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/models/property.dart';
+import 'package:homelinker/services/file/file_exceptions.dart';
+import 'package:homelinker/services/file/file_service.dart';
 import 'package:homelinker/services/property/property_service.dart';
 import 'package:homelinker/services/user/user_service.dart';
 import 'package:injectable/injectable.dart';
@@ -14,9 +16,11 @@ class NewPropertyCubit extends BaseCubit {
   NewPropertyCubit(
     this._propertyService,
     this._userService,
+    this._fileService,
   ) : super(InitialState());
   final PropertyService _propertyService;
   final UserService _userService;
+  final FileService _fileService;
 
   Future<void> loadPage() async {
     safeEmit(PendingState());
@@ -25,12 +29,36 @@ class NewPropertyCubit extends BaseCubit {
         const Duration(milliseconds: 300), () => safeEmit(PageLoadedState()));
   }
 
-  Future<File?> uploadImage() async {
+  Future<void> pickPicture() async {
     safeEmit(PendingState());
 
-    Future.delayed(const Duration(milliseconds: 50),
-        () => safeEmit(ImageUploadedSuccessfullyState()));
-    return File('');
+    try {
+      final imagePath = await _fileService.pickImageFromGallery();
+      File imageFile = File(imagePath);
+
+      safeEmit(FileUploadedState(imageFile: imageFile));
+    } on NoFileChosenException {
+      print('no file chosen');
+      safeEmit(NoFileChosenState());
+    } on Exception catch (e) {
+      print(e);
+    }
+  }
+
+  Future<String> uploadImage({required File image}) async {
+    safeEmit(PendingState());
+    try {
+      final imageId = await _fileService.insertNewImage(image: image);
+
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      safeEmit(ImageUploadedSuccessfullyState());
+      return imageId;
+    } on Exception catch (e) {
+      print(e);
+      safeEmit(SomethingWentWrongState());
+    }
+    return '';
   }
 
   Future<void> addProperty({
@@ -39,7 +67,7 @@ class NewPropertyCubit extends BaseCubit {
     required int bedrooms,
     required int constructionYear,
     required String description,
-    required String imageLink,
+    required File selectedImage,
     required String listingType,
     required String location,
     required int parkingSpaces,
@@ -49,13 +77,14 @@ class NewPropertyCubit extends BaseCubit {
     safeEmit(PendingState());
     try {
       final user = await _userService.getLoggedUser();
+      final imageId = await uploadImage(image: selectedImage);
       final property = Property(
         areaSize: areaSize,
         bathrooms: bathrooms,
         bedrooms: bedrooms,
         constructionYear: constructionYear,
         description: description,
-        imageLink: imageLink,
+        imageId: imageId,
         listingType: listingType == ListingType.rent.name
             ? ListingType.rent
             : ListingType.sale,
@@ -69,8 +98,8 @@ class NewPropertyCubit extends BaseCubit {
             : PropertyType.house,
       );
 
-      await Future.delayed(const Duration(seconds: 1));
       await _propertyService.addNewProperty(property: property);
+
       safeEmit(PropertyAddedSuccessfullyState());
     } catch (e) {
       safeEmit(SomethingWentWrongState());

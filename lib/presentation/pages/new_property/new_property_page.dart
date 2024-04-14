@@ -30,6 +30,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   int bathrooms = 1;
   String listingType = 'apartment';
   String propertyType = 'sale';
+  bool _isButtonEnabled = false;
   final priceTextController = TextEditingController();
   final areaTextController = TextEditingController();
   final descriptionTextController = TextEditingController();
@@ -38,6 +39,13 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   void initState() {
     BlocProvider.of<NewPropertyCubit>(context).loadPage();
     super.initState();
+  }
+
+  Image genratePreviowWidget(File file) {
+    return Image.file(
+      file,
+      fit: BoxFit.cover,
+    );
   }
 
   @override
@@ -51,9 +59,13 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
         if (state is PropertyAddedSuccessfullyState) {
           BlocProvider.of<HomeCubit>(context).load();
           AutoRouter.of(context).pop();
-        }
+        } else if (state is NoFileChosenState) {}
       },
       builder: (context, state) {
+        if (state is FileUploadedState) {
+          _selectedImage = state.imageFile;
+          _isButtonEnabled = true;
+        }
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
@@ -70,15 +82,8 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                File? pickedImage =
-                                    await BlocProvider.of<NewPropertyCubit>(
-                                            context)
-                                        .uploadImage();
-                                if (pickedImage != null) {
-                                  setState(() {
-                                    _selectedImage = pickedImage;
-                                  });
-                                }
+                                await BlocProvider.of<NewPropertyCubit>(context)
+                                    .pickPicture();
                               },
                               child: Container(
                                 width: 196,
@@ -88,10 +93,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: _selectedImage != null
-                                    ? Image.file(
-                                        _selectedImage!,
-                                        fit: BoxFit.cover,
-                                      )
+                                    ? genratePreviowWidget(_selectedImage!)
                                     : const Icon(
                                         Icons.add_a_photo,
                                         size: 50,
@@ -105,15 +107,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   const EdgeInsets.symmetric(horizontal: 100),
                               child: MainButton(
                                 onPressed: () async {
-                                  File? pickedImage =
-                                      await BlocProvider.of<NewPropertyCubit>(
-                                              context)
-                                          .uploadImage();
-                                  if (pickedImage != null) {
-                                    setState(() {
-                                      _selectedImage = pickedImage;
-                                    });
-                                  }
+                                  await BlocProvider.of<NewPropertyCubit>(
+                                          context)
+                                      .pickPicture();
                                 },
                                 text: 'Upload a photo',
                                 icon: Icons.add_a_photo_rounded,
@@ -127,7 +123,6 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                       child: SingleChildScrollView(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          // color: Colors.purple,
                           child: Column(
                             children: [
                               Row(
@@ -448,6 +443,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ),
                               const SizedBox(height: 20),
                               MainButton(
+                                isEnabled: _isButtonEnabled,
                                 text: 'Add Property',
                                 onPressed: () {
                                   BlocProvider.of<NewPropertyCubit>(context)
@@ -458,12 +454,12 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                     bedrooms: bedrooms,
                                     constructionYear: constructionYear,
                                     description: descriptionTextController.text,
-                                    imageLink: 'imageLink',
+                                    selectedImage: _selectedImage!,
                                     listingType: listingType,
                                     location: 'location',
                                     parkingSpaces: parkingSpaces,
                                     price:
-                                        double.parse(areaTextController.text),
+                                        double.parse(priceTextController.text),
                                     propertyType: propertyType,
                                   );
                                 },

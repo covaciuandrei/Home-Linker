@@ -1,0 +1,1 @@
+class NoFileChosenException implements Exception {}
