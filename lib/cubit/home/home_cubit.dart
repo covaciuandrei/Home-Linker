@@ -1,7 +1,9 @@
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/models/filters.dart';
+import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
+import 'package:homelinker/services/image/image_service.dart';
 import 'package:homelinker/services/property/property_service.dart';
 import 'package:injectable/injectable.dart';
 
@@ -9,53 +11,66 @@ part 'package:homelinker/cubit/home/home_states.dart';
 
 @injectable
 class HomeCubit extends BaseCubit {
-  HomeCubit(this._propertyService) : super(InitialState());
+  HomeCubit(this._propertyService, this._imageService) : super(InitialState());
   final PropertyService _propertyService;
-
+  final ImageService _imageService;
   List<Property> properties = [];
+  List<Listing> listings = [];
+
   Future<void> load() async {
     safeEmit(PendingState());
     await Future.delayed(const Duration(milliseconds: 200));
     properties = await _propertyService.getAll();
-    safeEmit(DataLoadedState(properties: properties));
+    listings = [];
+
+    for (final property in properties) {
+      final image = await _imageService.getImage(imageId: property.imageId);
+      listings.add(Listing(image: image!, property: property));
+    }
+
+    safeEmit(DataLoadedState(listings: listings));
   }
 
   void resetFilter() {
     safeEmit(PendingState());
     Future.delayed(const Duration(milliseconds: 100));
-    safeEmit(DataLoadedState(properties: properties));
+    safeEmit(DataLoadedState(listings: listings));
   }
 
   void filter({required FilterType filterType}) {
     safeEmit(PendingState());
-    List<Property> filteredProperties = [];
+    List<Listing> filteredListings = [];
 
     switch (filterType) {
       case FilterType.house:
-        filteredProperties = properties
-            .where((element) => element.propertyType == PropertyType.house)
+        filteredListings = listings
+            .where((element) =>
+                element.property.propertyType == PropertyType.house)
             .toList();
       case FilterType.apartment:
-        filteredProperties = properties
-            .where((element) => element.propertyType == PropertyType.apartment)
+        filteredListings = listings
+            .where((element) =>
+                element.property.propertyType == PropertyType.apartment)
             .toList();
       case FilterType.rent:
-        filteredProperties = properties
-            .where((element) => element.listingType == ListingType.rent)
+        filteredListings = listings
+            .where(
+                (element) => element.property.listingType == ListingType.rent)
             .toList();
         break;
       case FilterType.sale:
-        filteredProperties = properties
-            .where((element) => element.listingType == ListingType.sale)
+        filteredListings = listings
+            .where(
+                (element) => element.property.listingType == ListingType.sale)
             .toList();
       case FilterType.price:
-        filteredProperties = properties;
+        filteredListings = listings;
       case FilterType.location:
-        filteredProperties = properties;
+        filteredListings = listings;
     }
 
     Future.delayed(const Duration(milliseconds: 100));
 
-    safeEmit(DataLoadedState(properties: filteredProperties));
+    safeEmit(DataLoadedState(listings: filteredListings));
   }
 }
