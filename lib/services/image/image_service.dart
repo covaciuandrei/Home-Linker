@@ -19,4 +19,14 @@ class ImageService {
     );
     return image;
   }
+
+  Future<void> delete({required String imageId}) async {
+    try {
+      final image = await _imageSource.get(imageId: imageId);
+      await _storageSource.deleteImage(path: image.path);
+      await _imageSource.delete(imageId: imageId);
+    } on Exception {
+      throw Exception();
+    }
+  }
 }

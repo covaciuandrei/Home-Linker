@@ -28,10 +28,8 @@ class LoginCubit extends BaseCubit {
       safeEmit(PendingState());
       await _accountService.login(email: email, password: password);
       safeEmit(LoggedInSuccessfullyState());
-    } catch (e, stackTrace) {
+    } on Exception {
       safeEmit(SomethingWentWrongState());
-      print('Error during login: $e');
-      print('Stack trace: $stackTrace');
     }
   }
 

@@ -1,66 +1,70 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'property_dto.g.dart';
-
-@JsonSerializable()
 class PropertyDto {
   PropertyDto(
-    this.areaSize,
-    this.bathrooms,
-    this.bedrooms,
-    this.constructionYear,
-    this.description,
-    this.imageId,
-    this.listingType,
-    this.location,
-    this.ownerEmail,
-    this.ownerName,
-    this.parkingSpaces,
-    this.price,
-    this.propertyType,
-  );
+      this.areaSize,
+      this.bathrooms,
+      this.bedrooms,
+      this.constructionYear,
+      this.description,
+      this.imageId,
+      this.listingType,
+      this.location,
+      this.ownerEmail,
+      this.ownerName,
+      this.parkingSpaces,
+      this.price,
+      this.propertyType,
+      {this.id = ''});
 
   factory PropertyDto.fromJson(Map<String, dynamic> json) =>
       _$PropertyDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$PropertyDtoToJson(this);
 
-  @JsonKey(name: 'area_size', defaultValue: 0)
   final int areaSize;
-
-  @JsonKey(name: 'bathrooms', defaultValue: 0)
   final int bathrooms;
-
-  @JsonKey(name: 'bedrooms', defaultValue: 0)
   final int bedrooms;
-
-  @JsonKey(name: 'construction_year', defaultValue: 0)
   final int constructionYear;
-
-  @JsonKey(name: 'description', defaultValue: '')
   final String description;
-
-  @JsonKey(name: 'image_id', defaultValue: '')
   final String imageId;
-
-  @JsonKey(name: 'listing_type', defaultValue: '')
   final String listingType;
-
-  @JsonKey(name: 'location', defaultValue: '')
   final String location;
-
-  @JsonKey(name: 'owner_email', defaultValue: '')
   final String ownerEmail;
-
-  @JsonKey(name: 'owner_name', defaultValue: '')
   final String ownerName;
-
-  @JsonKey(name: 'parking_spaces', defaultValue: 0)
   final int parkingSpaces;
-
-  @JsonKey(name: 'price', defaultValue: 0.0)
   final double price;
-
-  @JsonKey(name: 'property_type', defaultValue: '')
   final String propertyType;
+  final String? id;
 }
+
+PropertyDto _$PropertyDtoFromJson(Map<String, dynamic> json) => PropertyDto(
+      json['area_size'] as int,
+      json['bathrooms'] as int,
+      json['bedrooms'] as int,
+      json['construction_year'] as int,
+      json['description'] as String,
+      json['image_id'] as String,
+      json['listing_type'] as String,
+      json['location'] as String,
+      json['owner_email'] as String,
+      json['owner_name'] as String,
+      json['parking_spaces'] as int,
+      (json['price'] as num).toDouble(),
+      json['property_type'] as String,
+    );
+
+Map<String, dynamic> _$PropertyDtoToJson(PropertyDto instance) =>
+    <String, dynamic>{
+      'area_size': instance.areaSize,
+      'bathrooms': instance.bathrooms,
+      'bedrooms': instance.bedrooms,
+      'construction_year': instance.constructionYear,
+      'description': instance.description,
+      'image_id': instance.imageId,
+      'listing_type': instance.listingType,
+      'location': instance.location,
+      'owner_email': instance.ownerEmail,
+      'owner_name': instance.ownerName,
+      'parking_spaces': instance.parkingSpaces,
+      'price': instance.price,
+      'property_type': instance.propertyType,
+    };

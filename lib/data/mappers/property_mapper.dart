@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 @injectable
 class PropertyMapper {
   Property mapDtoToProperty(PropertyDto dto) => Property(
+        id: dto.id ?? '',
         areaSize: dto.areaSize,
         bathrooms: dto.bathrooms,
         bedrooms: dto.bedrooms,

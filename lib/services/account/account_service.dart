@@ -87,12 +87,9 @@ class AccountService {
         phoneNumber: phoneNumber,
       );
 
-      // TO DO:
-      //bug user is logged in instantly after creating the account
       await _secureStorage.delete(SecureStorageKeys.loginToken);
       await FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (ex) {
-      print(ex);
       switch (ex.code) {
         case 'email-already-in-use':
           throw EmailAlreadyUsedException();
@@ -101,8 +98,7 @@ class AccountService {
         default:
           throw Exception();
       }
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
       throw LoginException();
     }
   }

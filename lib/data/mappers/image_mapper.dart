@@ -1,6 +1,5 @@
 import 'package:homelinker/data/remote/image/image_dto.dart';
 import 'package:homelinker/models/image.dart';
-import 'package:homelinker/services/file/file_service.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable

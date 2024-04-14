@@ -42,8 +42,17 @@ class StorageSource {
       await ref.writeToFile(file);
 
       return file;
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
+      throw Exception();
+    }
+  }
+
+  Future<void> deleteImage({required String path}) async {
+    try {
+      final ref = FirebaseStorage.instance.ref(path);
+      await ref.delete();
+    } on Exception {
+      throw Exception();
     }
   }
 }
