@@ -47,4 +47,21 @@ class UserSource {
 
     await _collectionRef.add(userDto);
   }
+
+  Future<User> getUserByUsername(String username) async {
+    final querySnapshot = await _collectionRef
+        .where('email', isEqualTo: username.toLowerCase())
+        .limit(1)
+        .get();
+    final userDto = querySnapshot.docs.map((doc) => doc.data()).single;
+    final userId = querySnapshot.docs.first.id;
+
+    return _userMapper.mapUserDto(userDto, userId);
+  }
+
+  Future<void> deleteAccount(String userId) async {
+    final documentSnapshot = await _collectionRef.doc(userId).get();
+    final documentReference = documentSnapshot.reference;
+    await documentReference.delete();
+  }
 }

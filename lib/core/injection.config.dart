@@ -77,6 +77,7 @@ _i1.GetIt $initGetIt(
   gh.factory<_i20.AccountService>(() => _i20.AccountService(
         gh<_i11.SecureStorageSource>(),
         gh<_i19.UserService>(),
+        gh<_i15.UserSource>(),
       ));
   gh.factory<_i21.FileService>(() => _i21.FileService(
         gh<_i13.StorageSource>(),
@@ -102,8 +103,10 @@ _i1.GetIt $initGetIt(
         gh<_i19.UserService>(),
         gh<_i21.FileService>(),
       ));
-  gh.factory<_i27.SettingsCubit>(
-      () => _i27.SettingsCubit(gh<_i20.AccountService>()));
+  gh.factory<_i27.SettingsCubit>(() => _i27.SettingsCubit(
+        gh<_i20.AccountService>(),
+        gh<_i19.UserService>(),
+      ));
   gh.factory<_i28.SignupCubit>(() => _i28.SignupCubit(
         gh<_i20.AccountService>(),
         gh<_i16.ValidatorService>(),

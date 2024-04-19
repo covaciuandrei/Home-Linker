@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 @injectable
 class UserMapper {
   User mapUserDto(UserDto dto, String id) => User(
+        id: id,
         email: dto.email,
         name: dto.name,
         phone: dto.phone,

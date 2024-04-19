@@ -14,4 +14,6 @@ class SecureStorageSource {
   Future<String?> get(String key) => _flutterSecureStorage.read(key: key);
 
   Future<void> delete(String key) => _flutterSecureStorage.delete(key: key);
+
+  Future<void> deleteAll() => _flutterSecureStorage.deleteAll();
 }

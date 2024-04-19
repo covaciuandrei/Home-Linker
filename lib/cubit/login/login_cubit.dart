@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/services/account/account_service.dart';
@@ -69,10 +68,5 @@ class LoginCubit extends BaseCubit {
     safeEmit(PendingState());
     Future.delayed(const Duration(milliseconds: 300));
     safeEmit(NavigateToIntroductiveState());
-  }
-
-  void checkLoggedUser() {
-    final user = FirebaseAuth.instance.currentUser;
-    print(user);
   }
 }
