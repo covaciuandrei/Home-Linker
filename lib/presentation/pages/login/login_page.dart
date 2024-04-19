@@ -60,100 +60,117 @@ class _LoginPageState extends State<LoginPage> {
         return LoadingScreen<LoginCubit>(
           loading: state is PendingState,
           child: Scaffold(
+            extendBodyBehindAppBar: true,
             appBar: AppBar(),
-            body: BlueShadowBackground(
-              child: Center(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 130),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SvgIcon(
-                              iconName: 'home',
-                              color: Colors.lightBlue,
-                              size: 80,
-                            ),
-                            Text(
-                              AppLocalizations.of(context).appTitle,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 36,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
+            body: Container(
+              child: SingleChildScrollView(
+                child: BlueShadowBackground(
+                  child: Container(
+                    child: Center(
                       child: Column(
                         children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 60),
+                          Container(
+                            margin: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.2,
+                            ),
+                            child: Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).size.height *
+                                      0.225,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SvgIcon(
+                                      iconName: 'home',
+                                      color: Colors.lightBlue,
+                                      size: 80,
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context).appTitle,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 36,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              // height: MediaQuery.of(context).size.height * 0.5,
+                              // color: Colors.red,
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 16),
-                                  MainTextField(
-                                    textController: emailTextController,
-                                    placeholder: 'Email',
-                                  ),
-                                  const SizedBox(height: 16),
-                                  MainTextField(
-                                    textController: passwordTextController,
-                                    placeholder: 'Password',
-                                    isPassword: true,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: MainTextButton(
-                                      text: 'Forgot password?',
-                                      onPressed: () =>
-                                          AutoRouter.of(context).push(
-                                        const ForgotPasswordRoute(),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 60),
+                                      child: Column(
+                                        children: [
+                                          // const SizedBox(height: 16),
+                                          MainTextField(
+                                            textController: emailTextController,
+                                            placeholder: 'Email',
+                                          ),
+                                          const SizedBox(height: 16),
+                                          MainTextField(
+                                            textController:
+                                                passwordTextController,
+                                            placeholder: 'Password',
+                                            isPassword: true,
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: MainTextButton(
+                                              text: 'Forgot password?',
+                                              onPressed: () =>
+                                                  AutoRouter.of(context).push(
+                                                const ForgotPasswordRoute(),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          MainButton(
+                                            width: 150,
+                                            text: 'Log in',
+                                            isEnabled: isButtonAvailable,
+                                            onPressed: () => BlocProvider.of<
+                                                    LoginCubit>(context)
+                                                .login(
+                                                    email: emailTextController
+                                                        .text,
+                                                    password:
+                                                        passwordTextController
+                                                            .text),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
-                                  MainButton(
-                                    text: 'text',
-                                    onPressed: () =>
-                                        BlocProvider.of<LoginCubit>(context)
-                                            .checkLoggedUser(),
-                                  ),
-                                  MainButton(
-                                    width: 150,
-                                    text: 'Log in',
-                                    isEnabled: isButtonAvailable,
-                                    onPressed: () =>
-                                        BlocProvider.of<LoginCubit>(context)
-                                            .login(
-                                                email: emailTextController.text,
-                                                password: passwordTextController
-                                                    .text),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 0),
+                                    child: MainTextButton(
+                                      text: "Don't have an account? Create one",
+                                      onPressed: () =>
+                                          BlocProvider.of<LoginCubit>(context)
+                                              .goToSignup(),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60),
-                            child: MainTextButton(
-                              text: "Don't have an account? Create one",
-                              onPressed: () =>
-                                  BlocProvider.of<LoginCubit>(context)
-                                      .goToSignup(),
-                            ),
-                          ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),

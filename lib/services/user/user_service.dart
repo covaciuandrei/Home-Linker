@@ -34,4 +34,10 @@ class UserService {
       accountType: accountType,
     );
   }
+
+  Future<void> deleteAccount() async {
+    final userId = await _secureStorageSource.get(SecureStorageKeys.userId);
+
+    return _userSource.deleteAccount(userId!);
+  }
 }

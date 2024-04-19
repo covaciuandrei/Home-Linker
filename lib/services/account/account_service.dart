@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:homelinker/data/remote/user/user_source.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:homelinker/models/enums/account_type.dart';
@@ -8,10 +9,11 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class AccountService {
-  AccountService(this._secureStorage, this._userService);
+  AccountService(this._secureStorage, this._userService, this._userSource);
 
   final SecureStorageSource _secureStorage;
   final UserService _userService;
+  final UserSource _userSource;
 
   Future<bool> isUserLoggedIn() async =>
       (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ??
@@ -59,8 +61,10 @@ class AccountService {
         await logout();
         throw LoginException();
       }
+      final user = await _userSource.getUserByUsername(email.toLowerCase());
+
+      await _secureStorage.set(SecureStorageKeys.userId, user.id);
       await _secureStorage.set(SecureStorageKeys.loginToken, token);
-      await _secureStorage.set(SecureStorageKeys.userEmail, email.trim());
     } else {
       await logout();
 
@@ -138,8 +142,7 @@ class AccountService {
   }
 
   Future<void> logout() async {
-    await _secureStorage.delete(SecureStorageKeys.loginToken);
-
     await FirebaseAuth.instance.signOut();
+    await _secureStorage.deleteAll();
   }
 }
