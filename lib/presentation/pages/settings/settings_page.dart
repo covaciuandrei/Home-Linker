@@ -34,6 +34,11 @@ class _SettingsPageState extends State<SettingsPage> {
             const IntroductiveRoute(),
             predicate: (route) => false,
           );
+        } else if (state is AccountDeletedSuccessfullyState) {
+          AutoRouter.of(context).pushAndPopUntil(
+            const IntroductiveRoute(),
+            predicate: (route) => false,
+          );
         }
       },
       builder: (context, state) {
@@ -77,7 +82,9 @@ class _SettingsPageState extends State<SettingsPage> {
                             SettingsOptionRow(
                               icon: Icons.delete_forever_rounded,
                               text: 'Delete Account',
-                              onPressed: () {},
+                              onPressed: () {
+                                _showDeleteBottomSheet(context);
+                              },
                             ),
                           ],
                         ),
@@ -109,6 +116,37 @@ class _SettingsPageState extends State<SettingsPage> {
       },
     );
   }
+}
+
+void _showDeleteBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Delete Account'),
+              onTap: () {
+                BlocProvider.of<SettingsCubit>(context).deleteAccount();
+                AutoRouter.of(context).popForced(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('Cancel'),
+              onTap: () {
+                AutoRouter.of(context).popForced(context);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 class SettingsOptionRow extends StatelessWidget {
