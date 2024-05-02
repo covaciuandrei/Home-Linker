@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/models/filters.dart';
@@ -16,6 +17,7 @@ class HomeCubit extends BaseCubit {
   final ImageService _imageService;
   List<Property> properties = [];
   List<Listing> listings = [];
+  List<String> languages = [];
 
   Future<void> load() async {
     safeEmit(PendingState());
@@ -28,13 +30,15 @@ class HomeCubit extends BaseCubit {
       listings.add(Listing(image: image!, property: property));
     }
 
-    safeEmit(DataLoadedState(listings: listings));
+    languages = AppLocalizations.supportedLocales.map((e) => e.languageCode).toList();
+
+    safeEmit(DataLoadedState(listings: listings, languages: languages));
   }
 
   void resetFilter() {
     safeEmit(PendingState());
     Future.delayed(const Duration(milliseconds: 100));
-    safeEmit(DataLoadedState(listings: listings));
+    safeEmit(DataLoadedState(listings: listings, languages: languages));
   }
 
   void filter({required FilterType filterType}) {
@@ -43,26 +47,15 @@ class HomeCubit extends BaseCubit {
 
     switch (filterType) {
       case FilterType.house:
-        filteredListings = listings
-            .where((element) =>
-                element.property.propertyType == PropertyType.house)
-            .toList();
+        filteredListings = listings.where((element) => element.property.propertyType == PropertyType.house).toList();
       case FilterType.apartment:
-        filteredListings = listings
-            .where((element) =>
-                element.property.propertyType == PropertyType.apartment)
-            .toList();
+        filteredListings =
+            listings.where((element) => element.property.propertyType == PropertyType.apartment).toList();
       case FilterType.rent:
-        filteredListings = listings
-            .where(
-                (element) => element.property.listingType == ListingType.rent)
-            .toList();
+        filteredListings = listings.where((element) => element.property.listingType == ListingType.rent).toList();
         break;
       case FilterType.sale:
-        filteredListings = listings
-            .where(
-                (element) => element.property.listingType == ListingType.sale)
-            .toList();
+        filteredListings = listings.where((element) => element.property.listingType == ListingType.sale).toList();
       case FilterType.price:
         filteredListings = listings;
       case FilterType.location:
@@ -71,6 +64,6 @@ class HomeCubit extends BaseCubit {
 
     Future.delayed(const Duration(milliseconds: 100));
 
-    safeEmit(DataLoadedState(listings: filteredListings));
+    safeEmit(DataLoadedState(listings: filteredListings, languages: languages));
   }
 }

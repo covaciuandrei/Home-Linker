@@ -23,6 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isSaved = false;
+  List<String> languages = [];
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         if (state is DataLoadedState) {
           listings = state.listings;
+          languages = state.languages;
         }
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
@@ -48,15 +50,14 @@ class _HomePageState extends State<HomePage> {
               floatingActionButton: FloatingActionButton(
                 backgroundColor: Colors.lightBlue,
                 foregroundColor: Colors.white,
-                onPressed: () =>
-                    AutoRouter.of(context).push(const NewPropertyRoute()),
+                onPressed: () => AutoRouter.of(context).push(const NewPropertyRoute()),
                 child: const Icon(
                   Icons.add,
                   size: 30,
                 ),
               ),
               appBar: const MainAppBar(title: 'HomeLinker'),
-              drawer: const MainDrawer(),
+              drawer: MainDrawer(languages: languages),
               body: Column(
                 children: [
                   Padding(
@@ -68,38 +69,34 @@ class _HomePageState extends State<HomePage> {
                           FilterItem(
                             filterType: FilterType.house,
                             icon: Icons.home,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.house),
+                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
                           ),
                           FilterItem(
                             filterType: FilterType.apartment,
                             icon: Icons.apartment_rounded,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.apartment),
+                            onPressed: () =>
+                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
                           ),
                           FilterItem(
                             filterType: FilterType.rent,
                             icon: Icons.home_work,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.rent),
+                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
                           ),
                           FilterItem(
                             filterType: FilterType.sale,
                             icon: Icons.local_offer,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.sale),
+                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
                           ),
                           FilterItem(
                             filterType: FilterType.price,
                             icon: Icons.attach_money_rounded,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.price),
+                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.price),
                           ),
                           FilterItem(
                             filterType: FilterType.location,
                             icon: Icons.location_on,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context)
-                                .filter(filterType: FilterType.location),
+                            onPressed: () =>
+                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.location),
                           ),
                         ],
                       ),
@@ -112,8 +109,7 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         return PropertyItem(
                           listing: listings[index],
-                          onPressed: () => AutoRouter.of(context)
-                              .push(ListingRoute(listing: listings[index])),
+                          onPressed: () => AutoRouter.of(context).push(ListingRoute(listing: listings[index])),
                           onFavoriteIconPressed: () {
                             setState(() {
                               _isSaved = !_isSaved;
@@ -195,8 +191,7 @@ class PropertyItem extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(10, 0, 0, 6),
+                                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 6),
                                   child: ListingPrice(
                                     property: listing.property,
                                     textSize: 20,
@@ -226,8 +221,7 @@ class PropertyItem extends StatelessWidget {
                                       child: Text(
                                         listing.property.location,
                                         style: const TextStyle(
-                                          color:
-                                              Color.fromRGBO(20, 112, 161, 1),
+                                          color: Color.fromRGBO(20, 112, 161, 1),
                                         ),
                                       ),
                                     ),
@@ -241,21 +235,17 @@ class PropertyItem extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: listing.property.listingType ==
-                                              ListingType.sale
+                                      color: listing.property.listingType == ListingType.sale
                                           ? Colors.lightGreen
-                                          : const Color.fromARGB(
-                                              255, 132, 101, 216),
+                                          : const Color.fromARGB(255, 132, 101, 216),
                                       size: 12,
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 8),
+                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                                       child: Text(
                                         'For ${listing.property.listingType.name.capitalize()}',
                                         style: const TextStyle(
-                                          color:
-                                              Color.fromRGBO(20, 112, 161, 1),
+                                          color: Color.fromRGBO(20, 112, 161, 1),
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
