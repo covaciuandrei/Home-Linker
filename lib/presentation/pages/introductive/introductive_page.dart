@@ -88,7 +88,7 @@ class _IntroductivePageState extends State<IntroductivePage> {
                   child: Column(
                     children: [
                       MainButton(
-                        text: 'Log in',
+                        text: AppLocalizations.of(context).login,
                         width: 240,
                         height: 44,
                         onPressed: () =>
@@ -97,7 +97,7 @@ class _IntroductivePageState extends State<IntroductivePage> {
                       ),
                       const SizedBox(height: 16),
                       MainButton(
-                        text: 'Sign Up',
+                        text: AppLocalizations.of(context).signup,
                         width: 240,
                         height: 44,
                         onPressed: () =>

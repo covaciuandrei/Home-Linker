@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,8 @@ import 'package:homelinker/cubit/reset_password/reset_password_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/cubit/splash/splash_cubit.dart';
+import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
+import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
@@ -28,39 +29,67 @@ void main() async {
   FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
   await getIt.allReady();
   getIt.registerSingleton<AppRouter>(AppRouter());
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => MyAppState();
+  static MyAppState of(BuildContext context) => context.findAncestorStateOfType<MyAppState>()!;
+}
+
+class MyAppState extends State<MyApp> {
   final appRouter = getIt<AppRouter>();
+
+  Locale? _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeLocale();
+  }
+
+  Future<void> _initializeLocale() async {
+    final language = await getIt<SecureStorageSource>().get(SecureStorageKeys.language);
+
+    if (language != null) {
+      setState(() {
+        _locale = Locale.fromSubtags(languageCode: language);
+      });
+    }
+  }
+
+  Future<void> setLocale(Locale newLanguage) async {
+    await getIt<SecureStorageSource>().set(SecureStorageKeys.language, newLanguage.languageCode);
+
+    setState(() {
+      _locale = newLanguage;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<SplashCubit>(create: (context) => getIt<SplashCubit>()),
-        BlocProvider<IntroductiveCubit>(
-            create: (context) => getIt<IntroductiveCubit>()),
+        BlocProvider<IntroductiveCubit>(create: (context) => getIt<IntroductiveCubit>()),
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
         BlocProvider<SignupCubit>(create: (context) => getIt<SignupCubit>()),
         BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
-        BlocProvider<PropertyCubit>(
-            create: (context) => getIt<PropertyCubit>()),
+        BlocProvider<PropertyCubit>(create: (context) => getIt<PropertyCubit>()),
         BlocProvider<ProfileCubit>(create: (context) => getIt<ProfileCubit>()),
-        BlocProvider<SettingsCubit>(
-            create: (context) => getIt<SettingsCubit>()),
-        BlocProvider<NewPropertyCubit>(
-            create: (context) => getIt<NewPropertyCubit>()),
-        BlocProvider<ForgotPasswordCubit>(
-            create: (context) => getIt<ForgotPasswordCubit>()),
-        BlocProvider<ResetPasswordCubit>(
-            create: (context) => getIt<ResetPasswordCubit>()),
+        BlocProvider<SettingsCubit>(create: (context) => getIt<SettingsCubit>()),
+        BlocProvider<NewPropertyCubit>(create: (context) => getIt<NewPropertyCubit>()),
+        BlocProvider<ForgotPasswordCubit>(create: (context) => getIt<ForgotPasswordCubit>()),
+        BlocProvider<ResetPasswordCubit>(create: (context) => getIt<ResetPasswordCubit>()),
         BlocProvider<ListingCubit>(create: (context) => getIt<ListingCubit>()),
       ],
       child: MaterialApp.router(
         routerConfig: appRouter.config(),
         title: 'HomeLinker',
+        locale: _locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -69,18 +98,18 @@ class MyApp extends StatelessWidget {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         localeResolutionCallback: (locale, supportedLocales) {
-          Locale result;
-          if (locale == null) {
-            result = supportedLocales.first;
-          } else {
-            final Locale? supportedLocale = supportedLocales.firstWhereOrNull(
-                (element) => element.languageCode == locale.languageCode);
-            result = supportedLocale ?? supportedLocales.first;
+          if (_locale != null) {
+            return _locale;
           }
 
-          Intl.defaultLocale = result.languageCode;
+          _locale = supportedLocales.first;
+          final languageCode = _locale!.languageCode;
 
-          return result;
+          Intl.defaultLocale = _locale!.languageCode;
+
+          getIt<SecureStorageSource>().set(SecureStorageKeys.language, languageCode);
+
+          return _locale;
         },
       ),
     );

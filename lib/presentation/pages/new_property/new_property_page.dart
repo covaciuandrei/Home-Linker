@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:homelinker/presentation/widgets/dropdown_picker.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:homelinker/utils/extension_methods.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 @RoutePage()
@@ -69,7 +71,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
-            appBar: const MainAppBar(title: 'Add a new Property'),
+            appBar: MainAppBar(title: AppLocalizations.of(context).addProperty),
             body: BlueShadowBackground(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -82,8 +84,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                           children: [
                             GestureDetector(
                               onTap: () async {
-                                await BlocProvider.of<NewPropertyCubit>(context)
-                                    .pickPicture();
+                                await BlocProvider.of<NewPropertyCubit>(context).pickPicture();
                               },
                               child: Container(
                                 width: 196,
@@ -103,15 +104,12 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                             ),
                             const SizedBox(height: 20),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 100),
+                              padding: const EdgeInsets.symmetric(horizontal: 100),
                               child: MainButton(
                                 onPressed: () async {
-                                  await BlocProvider.of<NewPropertyCubit>(
-                                          context)
-                                      .pickPicture();
+                                  await BlocProvider.of<NewPropertyCubit>(context).pickPicture();
                                 },
-                                text: 'Upload a photo',
+                                text: AppLocalizations.of(context).uploadPhoto,
                                 icon: Icons.add_a_photo_rounded,
                               ),
                             ),
@@ -126,16 +124,15 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Property type',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).propertyType,
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -157,9 +154,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'List Type',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).listType,
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -182,16 +179,15 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ),
                               const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Construction Year',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).constructionYear,
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -202,8 +198,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                           width: 100,
                                           text: '$constructionYear',
                                           onPressed: () async {
-                                            int? selectedValue =
-                                                await _showAlertDialog(
+                                            int? selectedValue = await _showAlertDialog(
                                               context: context,
                                               number: constructionYear,
                                               minValue: 1900,
@@ -211,8 +206,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                             );
                                             if (selectedValue != null) {
                                               setState(() {
-                                                constructionYear =
-                                                    selectedValue;
+                                                constructionYear = selectedValue;
                                               });
                                             }
                                           },
@@ -223,9 +217,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Bedrooms',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).bedrooms.capitalize(),
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -236,8 +230,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                           width: 100,
                                           text: '$bedrooms',
                                           onPressed: () async {
-                                            int? selectedValue =
-                                                await _showAlertDialog(
+                                            int? selectedValue = await _showAlertDialog(
                                               context: context,
                                               number: bedrooms,
                                               minValue: 1,
@@ -257,16 +250,15 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ),
                               const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Bathrooms',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).bathrooms.capitalize(),
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -277,8 +269,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                           width: 100,
                                           text: '$bathrooms',
                                           onPressed: () async {
-                                            int? selectedValue =
-                                                await _showAlertDialog(
+                                            int? selectedValue = await _showAlertDialog(
                                               context: context,
                                               number: bathrooms,
                                               minValue: 1,
@@ -297,9 +288,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Parking Spaces',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).parkingspaces.capitalize(),
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -310,8 +301,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                           width: 100,
                                           text: '$parkingSpaces',
                                           onPressed: () async {
-                                            int? selectedValue =
-                                                await _showAlertDialog(
+                                            int? selectedValue = await _showAlertDialog(
                                               context: context,
                                               number: parkingSpaces,
                                               minValue: 0,
@@ -331,16 +321,15 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                               ),
                               const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Price',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).price,
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -348,23 +337,18 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                         const SizedBox(height: 6),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4),
+                                          padding: const EdgeInsets.symmetric(vertical: 4),
                                           width: 140,
                                           child: TextField(
                                             controller: priceTextController,
                                             cursorColor: Colors.white,
                                             keyboardType: TextInputType.number,
                                             decoration: InputDecoration(
-                                              constraints: const BoxConstraints(
-                                                  maxHeight: 40),
-                                              contentPadding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      20, 8, 8, 8),
-                                              labelText: "Price",
+                                              constraints: const BoxConstraints(maxHeight: 40),
+                                              contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                              labelText: AppLocalizations.of(context).price,
                                               focusColor: Colors.white,
-                                              labelStyle: const TextStyle(
-                                                  color: Colors.white),
+                                              labelStyle: const TextStyle(color: Colors.white),
                                               focusedBorder: border,
                                               enabledBorder: border,
                                               errorBorder: border,
@@ -372,8 +356,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                               disabledBorder: border,
                                               focusedErrorBorder: border,
                                             ),
-                                            style: const TextStyle(
-                                                color: Colors.white),
+                                            style: const TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -382,9 +365,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        const Text(
-                                          'Area Size',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizations.of(context).areaSize,
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -392,23 +375,18 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                         ),
                                         const SizedBox(height: 6),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4),
+                                          padding: const EdgeInsets.symmetric(vertical: 4),
                                           width: 140,
                                           child: TextField(
                                             keyboardType: TextInputType.number,
                                             controller: areaTextController,
                                             cursorColor: Colors.white,
                                             decoration: InputDecoration(
-                                              constraints: const BoxConstraints(
-                                                  maxHeight: 40),
-                                              contentPadding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      20, 8, 8, 8),
-                                              labelText: "Area Size",
+                                              constraints: const BoxConstraints(maxHeight: 40),
+                                              contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                              labelText: AppLocalizations.of(context).areaSize,
                                               focusColor: Colors.white,
-                                              labelStyle: const TextStyle(
-                                                  color: Colors.white),
+                                              labelStyle: const TextStyle(color: Colors.white),
                                               focusedBorder: border,
                                               enabledBorder: border,
                                               errorBorder: border,
@@ -416,8 +394,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                               disabledBorder: border,
                                               focusedErrorBorder: border,
                                             ),
-                                            style: const TextStyle(
-                                                color: Colors.white),
+                                            style: const TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -432,34 +409,29 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(color: Colors.white),
                                 ),
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 20),
+                                margin: const EdgeInsets.symmetric(horizontal: 20),
                                 width: MediaQuery.of(context).size.width,
                                 height: 200,
                                 child: MultiLineInputBox(
-                                  descriptionTextController:
-                                      descriptionTextController,
+                                  descriptionTextController: descriptionTextController,
                                 ),
                               ),
                               const SizedBox(height: 20),
                               MainButton(
                                 isEnabled: _isButtonEnabled,
-                                text: 'Add Property',
+                                text: AppLocalizations.of(context).addProperty,
                                 onPressed: () {
-                                  BlocProvider.of<NewPropertyCubit>(context)
-                                      .addProperty(
-                                    areaSize:
-                                        int.parse(areaTextController.text),
+                                  BlocProvider.of<NewPropertyCubit>(context).addProperty(
+                                    areaSize: int.parse(areaTextController.text),
                                     bathrooms: bathrooms,
                                     bedrooms: bedrooms,
                                     constructionYear: constructionYear,
                                     description: descriptionTextController.text,
                                     selectedImage: _selectedImage!,
                                     listingType: listingType,
-                                    location: 'location',
+                                    location: AppLocalizations.of(context).location,
                                     parkingSpaces: parkingSpaces,
-                                    price:
-                                        double.parse(priceTextController.text),
+                                    price: double.parse(priceTextController.text),
                                     propertyType: propertyType,
                                   );
                                 },
@@ -507,9 +479,10 @@ class _MultiLineInputBoxState extends State<MultiLineInputBox> {
             style: const TextStyle(fontSize: 16, color: Colors.white),
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            decoration: const InputDecoration.collapsed(
-                hintText: 'Please enter the description',
-                hintStyle: TextStyle(color: Colors.white)),
+            decoration: InputDecoration.collapsed(
+              hintText: AppLocalizations.of(context).enterDescription,
+              hintStyle: const TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ),
@@ -527,7 +500,7 @@ Future<int?> _showAlertDialog({
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("Pick a value"),
+        title: Text(AppLocalizations.of(context).pickValue),
         content: StatefulBuilder(
           builder: (context, sBsetState) {
             return NumberPicker(
@@ -537,7 +510,7 @@ Future<int?> _showAlertDialog({
               maxValue: maxValue,
               onChanged: (value) {
                 sBsetState(() {
-                  number = value; // Update number here
+                  number = value;
                 });
               },
             );
@@ -545,7 +518,7 @@ Future<int?> _showAlertDialog({
         ),
         actions: [
           TextButton(
-            child: const Text("OK"),
+            child: Text(AppLocalizations.of(context).ok),
             onPressed: () {
               Navigator.of(context).pop(number);
             },

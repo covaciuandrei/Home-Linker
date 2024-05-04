@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
@@ -45,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
-            appBar: const MainAppBar(title: 'Settings'),
+            appBar: MainAppBar(title: AppLocalizations.of(context).settings),
             body: BlueShadowBackground(
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -63,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           children: [
                             SettingsOptionRow(
                               icon: Icons.privacy_tip_rounded,
-                              text: 'Privacy policy',
+                              text: AppLocalizations.of(context).privacyPolicy,
                               onPressed: () {},
                             ),
                             Container(
@@ -72,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             SettingsOptionRow(
                               icon: Icons.library_books_rounded,
-                              text: 'Termens and conditions',
+                              text: AppLocalizations.of(context).termsAndCons,
                               onPressed: () {},
                             ),
                             Container(
@@ -81,7 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             SettingsOptionRow(
                               icon: Icons.delete_forever_rounded,
-                              text: 'Delete Account',
+                              text: AppLocalizations.of(context).deleteAccount,
                               onPressed: () {
                                 _showDeleteBottomSheet(context);
                               },
@@ -92,9 +93,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     MainButton(
                       width: 240,
-                      text: 'Logout',
-                      onPressed: () =>
-                          BlocProvider.of<SettingsCubit>(context).logOut(),
+                      text: AppLocalizations.of(context).logout,
+                      onPressed: () => BlocProvider.of<SettingsCubit>(context).logOut(),
                     ),
                     const Padding(
                       padding: EdgeInsets.only(bottom: 30, top: 50),
@@ -129,7 +129,7 @@ void _showDeleteBottomSheet(BuildContext context) {
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.delete),
-              title: const Text('Delete Account'),
+              title: Text(AppLocalizations.of(context).deleteAccount),
               onTap: () {
                 BlocProvider.of<SettingsCubit>(context).deleteAccount();
                 AutoRouter.of(context).popForced(context);
