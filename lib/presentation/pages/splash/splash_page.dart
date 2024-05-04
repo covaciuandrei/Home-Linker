@@ -14,8 +14,7 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -95,8 +94,7 @@ class _SplashPageState extends State<SplashPage>
                         },
                         child: const SvgIcon(
                           iconName: 'home',
-                          color: Colors
-                              .white, // This color will be applied to the icon after the gradient
+                          color: Colors.white, // This color will be applied to the icon after the gradient
                           size: 200,
                         ),
                       ),

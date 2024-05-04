@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                   size: 30,
                 ),
               ),
-              appBar: const MainAppBar(title: 'HomeLinker'),
+              appBar: MainAppBar(title: AppLocalizations.of(context).appTitle),
               drawer: MainDrawer(languages: languages),
               body: Column(
                 children: [

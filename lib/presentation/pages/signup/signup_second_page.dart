@@ -40,10 +40,10 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
   void initState() {
     super.initState();
     BlocProvider.of<SignupCubit>(context).loadPage();
-    phoneTextController.addListener(() => BlocProvider.of<SignupCubit>(context)
-        .checkPhoneValidity(phoneTextController.text));
-    nameTextController.addListener(() => BlocProvider.of<SignupCubit>(context)
-        .checkNameValidity(nameTextController.text));
+    phoneTextController
+        .addListener(() => BlocProvider.of<SignupCubit>(context).checkPhoneValidity(phoneTextController.text));
+    nameTextController
+        .addListener(() => BlocProvider.of<SignupCubit>(context).checkNameValidity(nameTextController.text));
   }
 
   @override
@@ -97,19 +97,18 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 60),
+                              padding: const EdgeInsets.symmetric(horizontal: 60),
                               child: Column(
                                 children: [
                                   const SizedBox(height: 16),
                                   MainTextField(
                                     textController: nameTextController,
-                                    placeholder: 'Name',
+                                    placeholder: AppLocalizations.of(context).name,
                                   ),
                                   const SizedBox(height: 16),
                                   MainTextField(
                                     textController: phoneTextController,
-                                    placeholder: 'Phone number',
+                                    placeholder: AppLocalizations.of(context).phoneNumber,
                                   ),
                                   const SizedBox(height: 16),
                                   DropdownPicker(
@@ -126,17 +125,15 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                                   MainButton(
                                     isEnabled: isButtonAvailable,
                                     onPressed: () {
-                                      BlocProvider.of<SignupCubit>(context)
-                                          .createAccount(
-                                        accountType:
-                                            getAccountType(accountType),
+                                      BlocProvider.of<SignupCubit>(context).createAccount(
+                                        accountType: getAccountType(accountType),
                                         name: nameTextController.text,
                                         phoneNumber: phoneTextController.text,
                                         email: widget.email,
                                         password: widget.password,
                                       );
                                     },
-                                    text: 'Sign Up',
+                                    text: AppLocalizations.of(context).signup,
                                   ),
                                 ],
                               ),
@@ -145,10 +142,8 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 60),
                             child: MainTextButton(
-                              text: "Already have an account? Log in",
-                              onPressed: () =>
-                                  BlocProvider.of<SignupCubit>(context)
-                                      .goToLogin(),
+                              text: AppLocalizations.of(context).alreadyHaveAccount,
+                              onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
                             ),
                           ),
                         ],

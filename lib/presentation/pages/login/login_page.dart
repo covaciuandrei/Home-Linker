@@ -112,18 +112,18 @@ class _LoginPageState extends State<LoginPage> {
                                       // const SizedBox(height: 16),
                                       MainTextField(
                                         textController: emailTextController,
-                                        placeholder: 'Email',
+                                        placeholder: AppLocalizations.of(context).email,
                                       ),
                                       const SizedBox(height: 16),
                                       MainTextField(
                                         textController: passwordTextController,
-                                        placeholder: 'Password',
+                                        placeholder: AppLocalizations.of(context).password,
                                         isPassword: true,
                                       ),
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: MainTextButton(
-                                          text: 'Forgot password?',
+                                          text: AppLocalizations.of(context).forgotPassword,
                                           onPressed: () => AutoRouter.of(context).push(
                                             const ForgotPasswordRoute(),
                                           ),
@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                                       const SizedBox(height: 20),
                                       MainButton(
                                         width: 150,
-                                        text: 'Log in',
+                                        text: AppLocalizations.of(context).login,
                                         isEnabled: isButtonAvailable,
                                         onPressed: () => BlocProvider.of<LoginCubit>(context).login(
                                             email: emailTextController.text, password: passwordTextController.text),
@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 0),
                                 child: MainTextButton(
-                                  text: "Don't have an account? Create one",
+                                  text: AppLocalizations.of(context).createNewAccount,
                                   onPressed: () => BlocProvider.of<LoginCubit>(context).goToSignup(),
                                 ),
                               ),

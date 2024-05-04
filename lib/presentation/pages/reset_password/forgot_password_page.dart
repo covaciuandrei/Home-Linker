@@ -8,6 +8,7 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
 class ForgotPasswordPage extends StatefulWidget {
@@ -45,18 +46,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Text(
-                    'Va rugam sa va introduceti mailul asociat contului pentru a va putea trimite pe mail instructiunile necesare resetarii parolei.',
-                    style: TextStyle(color: Colors.white),
+                   Text(
+                    AppLocalizations.of(context).emailNeededForValidatingAccount
+                    ,
+                    style:const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(height: 20),
                   MainTextField(
                     textController: emailTextController,
-                    placeholder: 'Email',
+                    placeholder:AppLocalizations.of(context).email,
                   ),
                   const SizedBox(height: 40),
                   MainButton(
-                    text: 'Trimite',
+                    text:AppLocalizations.of(context).send ,
                     onPressed: () {
                       BlocProvider.of<ForgotPasswordCubit>(context)
                           .resetPassword(email: emailTextController.text);

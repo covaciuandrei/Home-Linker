@@ -29,18 +29,16 @@ class _SignupPageState extends State<SignupPage> {
   void initState() {
     super.initState();
     BlocProvider.of<SignupCubit>(context).loadPage();
-    emailTextController.addListener(() => BlocProvider.of<SignupCubit>(context)
-        .checkEmailValidity(emailTextController.text));
-    passwordTextController.addListener(
-        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
-              passwordTextController.text,
-              repeatPasswordTextController.text,
-            ));
-    repeatPasswordTextController.addListener(
-        () => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
-              passwordTextController.text,
-              repeatPasswordTextController.text,
-            ));
+    emailTextController
+        .addListener(() => BlocProvider.of<SignupCubit>(context).checkEmailValidity(emailTextController.text));
+    passwordTextController.addListener(() => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+          passwordTextController.text,
+          repeatPasswordTextController.text,
+        ));
+    repeatPasswordTextController.addListener(() => BlocProvider.of<SignupCubit>(context).checkPasswordValidity(
+          passwordTextController.text,
+          repeatPasswordTextController.text,
+        ));
   }
 
   @override
@@ -107,28 +105,27 @@ class _SignupPageState extends State<SignupPage> {
                                 const SizedBox(height: 16),
                                 MainTextField(
                                   textController: emailTextController,
-                                  placeholder: 'Email',
+                                  placeholder: AppLocalizations.of(context).email,
                                 ),
                                 const SizedBox(height: 16),
                                 MainTextField(
                                   textController: passwordTextController,
-                                  placeholder: 'Password',
+                                  placeholder: AppLocalizations.of(context).password,
                                   isPassword: true,
                                 ),
                                 const SizedBox(height: 16),
                                 MainTextField(
                                   textController: repeatPasswordTextController,
-                                  placeholder: 'Repeat Password',
+                                  placeholder: AppLocalizations.of(context).repeatPassword,
                                   isPassword: true,
                                 ),
                                 const SizedBox(height: 20),
                                 MainButton(
                                   isEnabled: isButtonAvailable,
                                   onPressed: () {
-                                    BlocProvider.of<SignupCubit>(context)
-                                        .goToSecondSignupPage();
+                                    BlocProvider.of<SignupCubit>(context).goToSecondSignupPage();
                                   },
-                                  text: 'Sign Up',
+                                  text: AppLocalizations.of(context).signup,
                                 ),
                               ],
                             ),
@@ -137,10 +134,8 @@ class _SignupPageState extends State<SignupPage> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 60),
                           child: MainTextButton(
-                            text: "Already have an account? Log in",
-                            onPressed: () =>
-                                BlocProvider.of<SignupCubit>(context)
-                                    .goToLogin(),
+                            text: AppLocalizations.of(context).alreadyHaveAccount,
+                            onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
                           ),
                         ),
                       ],

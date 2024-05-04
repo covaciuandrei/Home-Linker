@@ -7,6 +7,7 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
 class ProfilePage extends StatefulWidget {
@@ -31,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return LoadingScreen(
             loading: state is PendingState,
             child: Scaffold(
-              appBar: const MainAppBar(title: 'Profile'),
+              appBar:  MainAppBar(title:AppLocalizations.of(context).profile ),
               body: BlueShadowBackground(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -50,20 +51,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       Container(
                         margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
                         width: MediaQuery.of(context).size.width,
-                        child: const Column(
+                        child:  Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Name',
-                              style: TextStyle(
+                             AppLocalizations.of(context).name,
+                              style:const  TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
+                           const  SizedBox(height: 4),
+                           const Text(
                               'Covaciu Andrei',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -71,17 +72,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                 color: Color.fromRGBO(7, 42, 108, 1),
                               ),
                             ),
-                            SizedBox(height: 18),
+                            const SizedBox(height: 18),
                             Text(
-                              'Email',
-                              style: TextStyle(
+                              AppLocalizations.of(context).email,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
+                           const SizedBox(height: 4),
+                           const Text(
                               'covaciuandrei21@gmail.com',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -89,17 +90,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                 color: Color.fromRGBO(7, 42, 108, 1),
                               ),
                             ),
-                            SizedBox(height: 18),
+                           const SizedBox(height: 18),
                             Text(
-                              'Phone number',
-                              style: TextStyle(
+                             AppLocalizations.of(context).phoneNumber ,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
+                         const   SizedBox(height: 4),
+                          const  Text(
                               '+40 765 707 000',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,

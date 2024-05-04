@@ -8,6 +8,7 @@ import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
 class ResetPasswordPage extends StatefulWidget {
@@ -47,21 +48,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       children: [
                         MainTextField(
                           textController: oldPasswordTextController,
-                          placeholder: 'Old Password',
+                          placeholder:AppLocalizations.of(context).oldPassword,
                         ),
                         const SizedBox(height: 20),
                         MainTextField(
                           textController: newPasswordTextController,
-                          placeholder: 'New Password',
+                          placeholder:AppLocalizations.of(context).newPassword ,
                         ),
                         const SizedBox(height: 20),
                         MainTextField(
                           textController: repeatNewPasswordTextController,
-                          placeholder: 'Repeat New Password',
+                          placeholder:AppLocalizations.of(context).repeatNewPassword,
                         ),
                         const SizedBox(height: 40),
                         MainButton(
-                          text: 'Reseteaza',
+                          text:AppLocalizations.of(context).reset ,
                           onPressed: () {
                             AutoRouter.of(context).pushAndPopUntil(
                               const ResetPasswordSuccessfullyRoute(),

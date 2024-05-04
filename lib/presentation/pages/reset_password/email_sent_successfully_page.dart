@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
 class EmailSentSuccessfullyPage extends StatelessWidget {
@@ -20,16 +21,17 @@ class EmailSentSuccessfullyPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Flexible(
+                 Flexible(
                   child: Text(
-                    'Mail-ul a fost trimis cu succes.',
-                    style: TextStyle(color: Colors.white),
+                    AppLocalizations.of(context).emailSentSuccessfully,
+                    
+                    style:const TextStyle(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 36),
                 MainButton(
                   width: 140,
-                  text: 'Gata',
+                  text:AppLocalizations.of(context).done ,
                   onPressed: () {
                     AutoRouter.of(context).pushAndPopUntil(
                       const IntroductiveRoute(),

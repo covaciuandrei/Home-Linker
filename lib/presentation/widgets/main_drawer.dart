@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/main.dart';
 
@@ -21,16 +22,16 @@ class MainDrawer extends StatelessWidget {
         padding: const EdgeInsets.only(top: kToolbarHeight),
         children: [
           ListTile(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.settings,
                   color: Colors.lightBlue,
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
-                  'Settngs',
-                  style: TextStyle(
+                  AppLocalizations.of(context).settings,
+                  style: const TextStyle(
                     color: Colors.lightBlue,
                     fontWeight: FontWeight.bold,
                   ),
@@ -43,16 +44,16 @@ class MainDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.person,
                   color: Colors.lightBlue,
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
-                  'Profile',
-                  style: TextStyle(
+                  AppLocalizations.of(context).profile,
+                  style: const TextStyle(
                     color: Colors.lightBlue,
                     fontWeight: FontWeight.bold,
                   ),
@@ -68,7 +69,7 @@ class MainDrawer extends StatelessWidget {
             height: 1,
             color: Colors.lightBlue,
           ),
-          Container(
+          SizedBox(
             // color: Colors.lightGreen,
             height: MediaQuery.of(context).size.width * 0.75,
             width: MediaQuery.of(context).size.width * 0.75,
