@@ -6,7 +6,7 @@ class User {
     required this.email,
     required this.name,
     required this.phone,
-    required this.profilePicturePath,
+    required this.profilePictureId,
     required this.type,
   });
 
@@ -14,6 +14,6 @@ class User {
   final String email;
   final String name;
   final String phone;
-  final String profilePicturePath;
+  final String profilePictureId;
   final AccountType type;
 }

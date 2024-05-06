@@ -10,7 +10,7 @@ class UserMapper {
         email: dto.email,
         name: dto.name,
         phone: dto.phone,
-        profilePicturePath: dto.profilePicturePath,
+        profilePictureId: dto.profilePictureId,
         type: AccountType.values.byName(dto.type),
       );
 }

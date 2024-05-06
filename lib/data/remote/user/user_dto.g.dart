@@ -18,6 +18,6 @@ Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'email': instance.email,
       'name': instance.name,
       'phone': instance.phone,
-      'profile_picture_path': instance.profilePicturePath,
+      'profile_picture_path': instance.profilePictureId,
       'type': instance.type,
     };
