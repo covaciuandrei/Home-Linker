@@ -15,6 +15,8 @@ class ProfilePageLoadedState extends BaseState {
 
 class NoFileChosenState extends BaseState {}
 
+class ImageDeletedSuccessfullyState extends BaseState {}
+
 class ImageUploadedSuccessfullyState extends BaseState {
   ImageUploadedSuccessfullyState({required this.image});
 

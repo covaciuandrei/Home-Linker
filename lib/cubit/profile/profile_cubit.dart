@@ -61,4 +61,19 @@ class ProfileCubit extends BaseCubit {
       safeEmit(SomethingWentWrongState());
     }
   }
+
+  Future<void> deletePicture() async {
+    safeEmit(PendingState());
+    final user = await _userService.getLoggedUser();
+    try {
+      if (user.profilePictureId.isNotEmpty) {
+        await _imageService.delete(imageId: user.profilePictureId);
+        await _userService.updateUser(imageId: '');
+      }
+
+      safeEmit(ImageDeletedSuccessfullyState());
+    } on Exception {
+      safeEmit(SomethingWentWrongState());
+    }
+  }
 }

@@ -43,6 +43,8 @@ class _ProfilePageState extends State<ProfilePage> {
             _fullName = state.fullName;
           } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
+          } else if (state is ImageDeletedSuccessfullyState) {
+            _profilePicture = null;
           }
           return LoadingScreen(
             loading: state is PendingState,
@@ -57,15 +59,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       _profilePicture == null
                           ? const SvgIcon(iconName: 'avatar', size: 200)
                           : CircularImage(imageFile: _profilePicture!),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit_square,
-                          color: Colors.lightBlue,
-                          size: 30,
-                        ),
-                        onPressed: () async {
-                          await BlocProvider.of<ProfileCubit>(context).changePicture();
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit_square,
+                              color: Colors.lightBlue,
+                              size: 30,
+                            ),
+                            onPressed: () async {
+                              await BlocProvider.of<ProfileCubit>(context).changePicture();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.disabled_by_default_rounded,
+                              color: _profilePicture == null
+                                  ? const Color.fromARGB(255, 124, 112, 112)
+                                  : const Color.fromARGB(255, 169, 19, 8),
+                              size: 30,
+                            ),
+                            onPressed: _profilePicture == null
+                                ? null
+                                : () async {
+                                    await BlocProvider.of<ProfileCubit>(context).deletePicture();
+                                  },
+                          ),
+                        ],
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
