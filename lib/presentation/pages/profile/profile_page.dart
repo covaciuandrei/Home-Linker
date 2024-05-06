@@ -33,7 +33,9 @@ class _ProfilePageState extends State<ProfilePage> {
     return BlocConsumer<ProfileCubit, BaseState>(
         listener: (context, state) {},
         builder: (context, state) {
-          if (state is ImageUploadedSuccessfullyState) {
+          if (state is ProfilePageLoadedState) {
+            _profilePicture = state.profilePicture;
+          } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
           }
           return LoadingScreen(

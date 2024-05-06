@@ -105,6 +105,7 @@ _i1.GetIt $initGetIt(
   gh.factory<_i26.ProfileCubit>(() => _i26.ProfileCubit(
         gh<_i20.FileService>(),
         gh<_i18.UserService>(),
+        gh<_i16.ImageService>(),
       ));
   gh.factory<_i27.SettingsCubit>(() => _i27.SettingsCubit(
         gh<_i19.AccountService>(),
