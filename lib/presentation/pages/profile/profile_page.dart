@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
+import 'package:homelinker/models/app_version.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -21,6 +22,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? _profilePicture;
+  String _email = '';
+  String _phoneNumber = '';
+  String _fullName = '';
+  AppVersion? _appVersion;
 
   @override
   void initState() {
@@ -35,8 +40,14 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, state) {
           if (state is ProfilePageLoadedState) {
             _profilePicture = state.profilePicture;
+            _email = state.user.email;
+            _phoneNumber = state.user.phone;
+            _fullName = state.user.name;
+            _appVersion = state.appVersion;
           } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
+          } else if (state is ImageDeletedSuccessfullyState) {
+            _profilePicture = null;
           }
           return LoadingScreen(
             loading: state is PendingState,
@@ -51,15 +62,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       _profilePicture == null
                           ? const SvgIcon(iconName: 'avatar', size: 200)
                           : CircularImage(imageFile: _profilePicture!),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit_square,
-                          color: Colors.lightBlue,
-                          size: 30,
-                        ),
-                        onPressed: () async {
-                          await BlocProvider.of<ProfileCubit>(context).changePicture();
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit_square,
+                              color: Colors.lightBlue,
+                              size: 30,
+                            ),
+                            onPressed: () async {
+                              await BlocProvider.of<ProfileCubit>(context).changePicture();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.disabled_by_default_rounded,
+                              color: _profilePicture == null
+                                  ? const Color.fromARGB(255, 124, 112, 112)
+                                  : const Color.fromARGB(255, 169, 19, 8),
+                              size: 30,
+                            ),
+                            onPressed: _profilePicture == null
+                                ? null
+                                : () async {
+                                    await BlocProvider.of<ProfileCubit>(context).deletePicture();
+                                  },
+                          ),
+                        ],
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
@@ -77,9 +107,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'Covaciu Andrei',
-                              style: TextStyle(
+                            Text(
+                              _fullName,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -95,9 +125,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'covaciuandrei21@gmail.com',
-                              style: TextStyle(
+                            Text(
+                              _email,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -113,9 +143,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              '+40 765 707 000',
-                              style: TextStyle(
+                            Text(
+                              _phoneNumber,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -125,11 +155,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const Spacer(),
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 30),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
                         child: Text(
-                          'Version 1.0 @ 2023',
-                          style: TextStyle(
+                          _appVersion != null
+                              ? '${AppLocalizations.of(context).version} ${_appVersion!.appVersion} @ ${_appVersion!.releaseDate.year}'
+                              : '',
+                          style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             color: Colors.white,
@@ -147,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class CircularImage extends StatelessWidget {
-  final File imageFile; // The image file to be displayed
+  final File imageFile;
 
   const CircularImage({super.key, required this.imageFile});
 
@@ -157,9 +189,9 @@ class CircularImage extends StatelessWidget {
       child: ClipOval(
         child: Image.file(
           imageFile,
-          height: 200, // The height of the circle
-          width: 200, // The width of the circle
-          fit: BoxFit.cover, // This ensures the image fills the circle
+          height: 200,
+          width: 200,
+          fit: BoxFit.cover,
         ),
       ),
     );

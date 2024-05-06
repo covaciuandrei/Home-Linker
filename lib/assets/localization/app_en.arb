@@ -51,6 +51,7 @@
   "deleteAccount": "Delete Account",
   "logout": "Logout",
   "alreadyHaveAccount": "Already have an account? Log in",
-  "accountCreatedSuccessfully": "Your account has been created successfully. Click on the link in the email you recived to finalize your account setup."
+  "accountCreatedSuccessfully": "Your account has been created successfully. Click on the link in the email you recived to finalize your account setup.",
+  "version": "Version"
 }
 

@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
+import 'package:homelinker/models/app_version.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -20,6 +21,8 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  AppVersion? _appVersion;
+
   @override
   void initState() {
     BlocProvider.of<SettingsCubit>(context).loadPage();
@@ -43,6 +46,9 @@ class _SettingsPageState extends State<SettingsPage> {
         }
       },
       builder: (context, state) {
+        if (state is SettingsPageLoadedState) {
+          _appVersion = state.appVersion;
+        }
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
@@ -96,11 +102,13 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: AppLocalizations.of(context).logout,
                       onPressed: () => BlocProvider.of<SettingsCubit>(context).logOut(),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 30, top: 50),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30, top: 50),
                       child: Text(
-                        'Version 1.0 @ 2023',
-                        style: TextStyle(
+                        _appVersion != null
+                            ? '${AppLocalizations.of(context).version} ${_appVersion!.appVersion} @ ${_appVersion!.releaseDate.year}'
+                            : '',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                           color: Colors.white,
