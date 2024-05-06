@@ -21,6 +21,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? _profilePicture;
+  String _email = '';
+  String _phoneNumber = '';
+  String _fullName = '';
 
   @override
   void initState() {
@@ -35,6 +38,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, state) {
           if (state is ProfilePageLoadedState) {
             _profilePicture = state.profilePicture;
+            _email = state.email;
+            _phoneNumber = state.phoneNumber;
+            _fullName = state.fullName;
           } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
           }
@@ -77,9 +83,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'Covaciu Andrei',
-                              style: TextStyle(
+                            Text(
+                              _fullName,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -95,9 +101,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'covaciuandrei21@gmail.com',
-                              style: TextStyle(
+                            Text(
+                              _email,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -113,9 +119,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              '+40 765 707 000',
-                              style: TextStyle(
+                            Text(
+                              _phoneNumber,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                                 color: Color.fromRGBO(7, 42, 108, 1),
@@ -147,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class CircularImage extends StatelessWidget {
-  final File imageFile; // The image file to be displayed
+  final File imageFile;
 
   const CircularImage({super.key, required this.imageFile});
 
@@ -157,9 +163,9 @@ class CircularImage extends StatelessWidget {
       child: ClipOval(
         child: Image.file(
           imageFile,
-          height: 200, // The height of the circle
-          width: 200, // The width of the circle
-          fit: BoxFit.cover, // This ensures the image fills the circle
+          height: 200,
+          width: 200,
+          fit: BoxFit.cover,
         ),
       ),
     );

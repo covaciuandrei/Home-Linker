@@ -30,7 +30,13 @@ class ProfileCubit extends BaseCubit {
     }
 
     Future.delayed(
-        const Duration(milliseconds: 200), () => safeEmit(ProfilePageLoadedState(profilePicture: _profilePicture)));
+        const Duration(milliseconds: 200),
+        () => safeEmit(ProfilePageLoadedState(
+              profilePicture: _profilePicture,
+              email: user.email,
+              fullName: user.name,
+              phoneNumber: user.phone,
+            )));
   }
 
   Future<void> changePicture() async {
