@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
+import 'package:homelinker/models/app_version.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -24,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _email = '';
   String _phoneNumber = '';
   String _fullName = '';
+  AppVersion? _appVersion;
 
   @override
   void initState() {
@@ -41,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _email = state.user.email;
             _phoneNumber = state.user.phone;
             _fullName = state.user.name;
+            _appVersion = state.appVersion;
           } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
           } else if (state is ImageDeletedSuccessfullyState) {
@@ -152,11 +155,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const Spacer(),
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 30),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
                         child: Text(
-                          'Version 1.0 @ 2023',
-                          style: TextStyle(
+                          _appVersion != null
+                              ? '${AppLocalizations.of(context).version} ${_appVersion!.appVersion} @ ${_appVersion!.releaseDate.year}'
+                              : '',
+                          style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             color: Colors.white,

@@ -50,5 +50,6 @@
   "deleteAccount": "Șterge contul",
   "logout": "Deconectare",
   "alreadyHaveAccount": "Ai deja un cont? Conectează-te.",
-  "accountCreatedSuccessfully": "Contul dvs. a fost creat cu succes. Intrați pe linkul din mail-ul primit pentru a putea finaliza creearea contului"
+  "accountCreatedSuccessfully": "Contul dvs. a fost creat cu succes. Intrați pe linkul din mail-ul primit pentru a putea finaliza creearea contului",
+  "version": "Versiunea"
 }

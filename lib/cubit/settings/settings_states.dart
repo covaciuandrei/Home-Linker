@@ -4,4 +4,10 @@ class AccountDeletedSuccessfullyState extends BaseState {}
 
 class LoggedOutSuccessfullyState extends BaseState {}
 
-class PageLoadedState extends BaseState {}
+class SettingsPageLoadedState extends BaseState {
+  SettingsPageLoadedState({
+    required this.appVersion,
+  });
+
+  final AppVersion appVersion;
+}

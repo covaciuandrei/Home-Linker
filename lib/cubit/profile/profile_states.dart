@@ -4,9 +4,11 @@ class ProfilePageLoadedState extends BaseState {
   ProfilePageLoadedState({
     required this.profilePicture,
     required this.user,
+    required this.appVersion,
   });
   final File? profilePicture;
   final User user;
+  final AppVersion appVersion;
 }
 
 class NoFileChosenState extends BaseState {}
