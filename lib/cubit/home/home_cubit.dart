@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -18,6 +19,7 @@ class HomeCubit extends BaseCubit {
   List<Property> properties = [];
   List<Listing> listings = [];
   List<String> languages = [];
+  RangeValues priceRange = const RangeValues(0, 100000);
 
   Future<void> load() async {
     safeEmit(PendingState());
@@ -29,16 +31,18 @@ class HomeCubit extends BaseCubit {
       final image = await _imageService.getImage(imageId: property.imageId);
       listings.add(Listing(image: image!, property: property));
     }
+    final maxPropertyPrice = getPropertyMaxPrice();
+    priceRange = RangeValues(0, maxPropertyPrice);
 
     languages = AppLocalizations.supportedLocales.map((e) => e.languageCode).toList();
 
-    safeEmit(DataLoadedState(listings: listings, languages: languages));
+    safeEmit(DataLoadedState(listings: listings, languages: languages, priceRange: priceRange, isPageFiltered: false));
   }
 
   void resetFilter() {
     safeEmit(PendingState());
     Future.delayed(const Duration(milliseconds: 100));
-    safeEmit(DataLoadedState(listings: listings, languages: languages));
+    safeEmit(DataLoadedState(listings: listings, languages: languages, priceRange: priceRange, isPageFiltered: false));
   }
 
   void filter({
@@ -61,15 +65,36 @@ class HomeCubit extends BaseCubit {
       case FilterType.sale:
         filteredListings = listings.where((element) => element.property.listingType == ListingType.sale).toList();
       case FilterType.price:
-        print(minimPrice);
-        print(maxPrice);
-        filteredListings = listings;
+        filteredListings = listings.where((element) {
+          return element.property.price > minimPrice! && element.property.price < maxPrice!;
+        }).toList();
       case FilterType.location:
+        filteredListings = listings;
+      case FilterType.reset:
         filteredListings = listings;
     }
 
     Future.delayed(const Duration(milliseconds: 100));
 
-    safeEmit(DataLoadedState(listings: filteredListings, languages: languages));
+    safeEmit(DataLoadedState(
+      listings: filteredListings,
+      languages: languages,
+      priceRange: priceRange,
+      isPageFiltered: true,
+    ));
+  }
+
+  double getPropertyMaxPrice() {
+    if (properties.isEmpty) {
+      return 0;
+    }
+    double maxPrice = properties[0].price;
+    for (var property in properties) {
+      if (property.price > maxPrice) {
+        maxPrice = property.price;
+      }
+    }
+
+    return maxPrice;
   }
 }

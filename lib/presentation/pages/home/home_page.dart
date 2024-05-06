@@ -27,22 +27,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isSaved = false;
   List<String> languages = [];
-  RangeValues rangeValues = const RangeValues(0.0, 100.0);
+  bool _isPagePriceFiltered = false;
+  double _minimumPrice = 0;
+  double _maximumPrice = 0;
+  RangeValues priceRange = const RangeValues(0, 100000);
+
   @override
   void initState() {
     BlocProvider.of<HomeCubit>(context).load();
     super.initState();
   }
 
-  double _minimumPrice = 0;
-  double _maximumPrice = 100;
-
   Future<double> _showMinPricePickerDialog() async {
     final selectedPrice = await showDialog<double>(
       context: context,
       builder: (context) => PricePickerDialog(
         initialPrice: _minimumPrice,
-        range: Range(min: 0, max: 100),
+        range: Range(min: priceRange.start, max: priceRange.end),
       ),
     );
 
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => PricePickerDialog(
         initialPrice: _maximumPrice,
-        range: Range(min: 0, max: 100),
+        range: Range(min: priceRange.start, max: priceRange.end),
       ),
     );
 
@@ -81,6 +82,8 @@ class _HomePageState extends State<HomePage> {
         if (state is DataLoadedState) {
           listings = state.listings;
           languages = state.languages;
+          priceRange = state.priceRange;
+          _isPagePriceFiltered = state.isPageFiltered;
         }
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
@@ -135,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                                 context: context,
                                 builder: (context) => StatefulBuilder(builder: (context, setState) {
                                   return Center(
-                                    child: Container(
+                                    child: SizedBox(
                                       height: 300,
                                       width: 300,
                                       child: Card(
@@ -149,10 +152,10 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.lightBlue,
                                               textColor: Colors.white,
                                               onPressed: () async {
-                                                final value = await _showMinPricePickerDialog();
+                                                final minimumPrice = await _showMinPricePickerDialog();
                                                 setState(
                                                   () {
-                                                    _minimumPrice = value;
+                                                    _minimumPrice = minimumPrice;
                                                   },
                                                 );
                                               },
@@ -164,10 +167,10 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.lightBlue,
                                               textColor: Colors.white,
                                               onPressed: () async {
-                                                final value = await _showMaxPricePickerDialog();
+                                                final maximumPrice = await _showMaxPricePickerDialog();
                                                 setState(
                                                   () {
-                                                    _minimumPrice = value;
+                                                    _maximumPrice = maximumPrice;
                                                   },
                                                 );
                                               },
@@ -207,6 +210,16 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  if (_isPagePriceFiltered)
+                    MainButton(
+                      width: 200,
+                      color: Colors.lightBlue,
+                      textColor: Colors.white,
+                      text: 'Reset Filters',
+                      onPressed: () {
+                        BlocProvider.of<HomeCubit>(context).resetFilter();
+                      },
+                    ),
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.only(bottom: 60),
@@ -445,17 +458,16 @@ class FilterItem extends StatelessWidget {
 }
 
 class PricePickerDialog extends StatefulWidget {
+  const PricePickerDialog({
+    super.key,
+    required this.initialPrice,
+    required this.range,
+  });
   final double initialPrice;
   final Range range;
 
-  const PricePickerDialog({
-    Key? key,
-    required this.initialPrice,
-    required this.range,
-  }) : super(key: key);
-
   @override
-  _PricePickerDialogState createState() => _PricePickerDialogState();
+  State<PricePickerDialog> createState() => _PricePickerDialogState();
 }
 
 class _PricePickerDialogState extends State<PricePickerDialog> {
