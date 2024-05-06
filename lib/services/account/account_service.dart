@@ -15,14 +15,11 @@ class AccountService {
   final UserService _userService;
   final UserSource _userSource;
 
-  Future<bool> isUserLoggedIn() async =>
-      (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ??
-      false;
+  Future<bool> isUserLoggedIn() async => (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ?? false;
 
   Future<void> login({required String email, required String password}) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email.trim(), password: password);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.trim(), password: password);
     } on FirebaseAuthException catch (ex) {
       switch (ex.code) {
         case 'invalid-email':
@@ -63,6 +60,7 @@ class AccountService {
       }
       final user = await _userSource.getUserByUsername(email.toLowerCase());
 
+      await _secureStorage.set(SecureStorageKeys.userEmail, email);
       await _secureStorage.set(SecureStorageKeys.userId, user.id);
       await _secureStorage.set(SecureStorageKeys.loginToken, token);
     } else {
@@ -80,9 +78,8 @@ class AccountService {
     required AccountType accountType,
   }) async {
     try {
-      final userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: email.trim(), password: password);
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.trim(), password: password);
       await userCredential.user!.sendEmailVerification();
       await _userService.createUser(
         email: email.trim(),
@@ -128,13 +125,10 @@ class AccountService {
     await FirebaseAuth.instance.currentUser!.updatePassword(password);
   }
 
-  Future<void> refreshLogin(
-      {required String email, required String password}) async {
-    final credential =
-        EmailAuthProvider.credential(email: email, password: password);
+  Future<void> refreshLogin({required String email, required String password}) async {
+    final credential = EmailAuthProvider.credential(email: email, password: password);
 
-    await FirebaseAuth.instance.currentUser
-        ?.reauthenticateWithCredential(credential);
+    await FirebaseAuth.instance.currentUser?.reauthenticateWithCredential(credential);
   }
 
   Future<void> deleteAccount() async {

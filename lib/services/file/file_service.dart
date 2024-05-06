@@ -36,17 +36,14 @@ class FileService {
 
     final String imageName = basename(image.path);
 
-    String imagesRemoteStoragePath =
-        join('images', loggedUser.email, imageName);
-    bool fileExists =
-        await _storageSource.doesFileExist(imagesRemoteStoragePath);
+    String imagesRemoteStoragePath = join('images', loggedUser.email, imageName);
+    bool fileExists = await _storageSource.doesFileExist(imagesRemoteStoragePath);
     String finalFileName = imageName;
     int count = 1;
 
     while (fileExists) {
       final extension = imageName.split('.').last;
-      final fullName =
-          imageName.substring(0, imageName.length - extension.length - 1);
+      final fullName = imageName.substring(0, imageName.length - extension.length - 1);
       finalFileName = '$fullName ($count).$extension';
       imagesRemoteStoragePath = join('images', loggedUser.email, finalFileName);
       fileExists = await _storageSource.doesFileExist(imagesRemoteStoragePath);

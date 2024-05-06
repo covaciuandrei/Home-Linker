@@ -8,12 +8,11 @@ class UserDto {
     this.email,
     this.name,
     this.phone,
-    this.profilePicturePath,
+    this.profilePictureId,
     this.type,
   );
 
-  factory UserDto.fromJson(Map<String, dynamic> json) =>
-      _$UserDtoFromJson(json);
+  factory UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserDtoToJson(this);
 
@@ -26,8 +25,8 @@ class UserDto {
   @JsonKey(name: 'phone', defaultValue: '')
   final String phone;
 
-  @JsonKey(name: 'profile_picture_path', defaultValue: '')
-  final String profilePicturePath;
+  @JsonKey(name: 'profile_picture', defaultValue: '')
+  final String profilePictureId;
 
   @JsonKey(name: 'type', defaultValue: '')
   final String type;

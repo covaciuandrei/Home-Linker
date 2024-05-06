@@ -40,4 +40,9 @@ class UserService {
 
     return _userSource.deleteAccount(userId!);
   }
+
+  Future<void> updateUser({required String imageId}) async {
+    final user = await getLoggedUser();
+    await _userSource.updateUser(userId: user.id, imageId: imageId);
+  }
 }

@@ -83,9 +83,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                         child: Column(
                           children: [
                             GestureDetector(
-                              onTap: () async {
-                                await BlocProvider.of<NewPropertyCubit>(context).pickPicture();
-                              },
+                              onTap: () async => await BlocProvider.of<NewPropertyCubit>(context).pickPicture(),
                               child: Container(
                                 width: 196,
                                 height: 168,

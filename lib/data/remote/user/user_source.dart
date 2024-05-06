@@ -13,18 +13,14 @@ class UserSource {
   );
   final UserMapper _userMapper;
 
-  CollectionReference<UserDto> get _collectionRef => FirebaseFirestore.instance
-      .collection(RemoteSourceNames.users)
-      .withConverter<UserDto>(
-        fromFirestore: (snapshots, _) => UserDto.fromJson(snapshots.data()!),
-        toFirestore: (user, _) => user.toJson(),
-      );
+  CollectionReference<UserDto> get _collectionRef =>
+      FirebaseFirestore.instance.collection(RemoteSourceNames.users).withConverter<UserDto>(
+            fromFirestore: (snapshots, _) => UserDto.fromJson(snapshots.data()!),
+            toFirestore: (user, _) => user.toJson(),
+          );
 
   Future<User> get(String email) async {
-    final querySnapshot = await _collectionRef
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
-        .get();
+    final querySnapshot = await _collectionRef.where('email', isEqualTo: email.toLowerCase()).limit(1).get();
     if (querySnapshot.docs.isEmpty) {}
     final userDto = querySnapshot.docs.map((doc) => doc.data()).single;
     final userId = querySnapshot.docs.first.id;
@@ -49,10 +45,7 @@ class UserSource {
   }
 
   Future<User> getUserByUsername(String username) async {
-    final querySnapshot = await _collectionRef
-        .where('email', isEqualTo: username.toLowerCase())
-        .limit(1)
-        .get();
+    final querySnapshot = await _collectionRef.where('email', isEqualTo: username.toLowerCase()).limit(1).get();
     final userDto = querySnapshot.docs.map((doc) => doc.data()).single;
     final userId = querySnapshot.docs.first.id;
 
@@ -63,5 +56,21 @@ class UserSource {
     final documentSnapshot = await _collectionRef.doc(userId).get();
     final documentReference = documentSnapshot.reference;
     await documentReference.delete();
+  }
+
+  Future<void> updateUser({
+    required String imageId,
+    required String userId,
+  }) async {
+    final collectionRef = FirebaseFirestore.instance.collection(RemoteSourceNames.users);
+    final documentSnapshot = await collectionRef.doc(userId).get();
+    final documentReference = documentSnapshot.reference;
+
+    final Map<String, dynamic> dataToUpdate = {};
+    dataToUpdate['profile_picture'] = imageId;
+
+    if (dataToUpdate.isNotEmpty) {
+      await documentReference.update(dataToUpdate);
+    }
   }
 }
