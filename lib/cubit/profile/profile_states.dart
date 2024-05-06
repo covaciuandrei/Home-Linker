@@ -3,14 +3,10 @@ part of 'package:homelinker/cubit/profile/profile_cubit.dart';
 class ProfilePageLoadedState extends BaseState {
   ProfilePageLoadedState({
     required this.profilePicture,
-    required this.email,
-    required this.phoneNumber,
-    required this.fullName,
+    required this.user,
   });
   final File? profilePicture;
-  final String email;
-  final String phoneNumber;
-  final String fullName;
+  final User user;
 }
 
 class NoFileChosenState extends BaseState {}

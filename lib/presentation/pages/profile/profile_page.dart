@@ -38,9 +38,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, state) {
           if (state is ProfilePageLoadedState) {
             _profilePicture = state.profilePicture;
-            _email = state.email;
-            _phoneNumber = state.phoneNumber;
-            _fullName = state.fullName;
+            _email = state.user.email;
+            _phoneNumber = state.user.phone;
+            _fullName = state.user.name;
           } else if (state is ImageUploadedSuccessfullyState) {
             _profilePicture = state.image;
           } else if (state is ImageDeletedSuccessfullyState) {

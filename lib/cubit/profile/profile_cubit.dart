@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/models/user.dart';
 import 'package:homelinker/services/file/file_exceptions.dart';
 import 'package:homelinker/services/file/file_service.dart';
 import 'package:homelinker/services/image/image_service.dart';
@@ -33,9 +34,7 @@ class ProfileCubit extends BaseCubit {
         const Duration(milliseconds: 200),
         () => safeEmit(ProfilePageLoadedState(
               profilePicture: _profilePicture,
-              email: user.email,
-              fullName: user.name,
-              phoneNumber: user.phone,
+              user: user,
             )));
   }
 
