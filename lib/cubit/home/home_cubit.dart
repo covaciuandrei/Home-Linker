@@ -41,7 +41,11 @@ class HomeCubit extends BaseCubit {
     safeEmit(DataLoadedState(listings: listings, languages: languages));
   }
 
-  void filter({required FilterType filterType}) {
+  void filter({
+    required FilterType filterType,
+    double? minimPrice,
+    double? maxPrice,
+  }) {
     safeEmit(PendingState());
     List<Listing> filteredListings = [];
 
@@ -57,6 +61,8 @@ class HomeCubit extends BaseCubit {
       case FilterType.sale:
         filteredListings = listings.where((element) => element.property.listingType == ListingType.sale).toList();
       case FilterType.price:
+        print(minimPrice);
+        print(maxPrice);
         filteredListings = listings;
       case FilterType.location:
         filteredListings = listings;
