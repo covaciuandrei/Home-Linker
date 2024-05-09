@@ -72,376 +72,378 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
           loading: state is PendingState,
           child: Scaffold(
             appBar: MainAppBar(title: AppLocalizations.of(context).addProperty),
-            body: BlueShadowBackground(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 30),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () async => await BlocProvider.of<NewPropertyCubit>(context).pickPicture(),
-                              child: Container(
-                                width: 196,
-                                height: 168,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: _selectedImage != null
-                                    ? genratePreviowWidget(_selectedImage!)
-                                    : const Icon(
-                                        Icons.add_a_photo,
-                                        size: 50,
-                                        color: Colors.grey,
-                                      ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 100),
-                              child: MainButton(
-                                onPressed: () async {
-                                  await BlocProvider.of<NewPropertyCubit>(context).pickPicture();
-                                },
-                                text: AppLocalizations.of(context).uploadPhoto,
-                                icon: Icons.add_a_photo_rounded,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
+            body: SingleChildScrollView(
+              child: BlueShadowBackground(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 30),
                           child: Column(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).propertyType,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        DropdownPicker(
-                                          onValueChanged: (value) {
-                                            propertyType = value;
-                                          },
-                                          list: [
-                                            PropertyType.apartment.name,
-                                            PropertyType.house.name,
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                              GestureDetector(
+                                onTap: () async => await BlocProvider.of<NewPropertyCubit>(context).pickPicture(),
+                                child: Container(
+                                  width: 196,
+                                  height: 168,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).listType,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  child: _selectedImage != null
+                                      ? genratePreviowWidget(_selectedImage!)
+                                      : const Icon(
+                                          Icons.add_a_photo,
+                                          size: 50,
+                                          color: Colors.grey,
                                         ),
-                                        const SizedBox(height: 6),
-                                        DropdownPicker(
-                                          onValueChanged: (value) {
-                                            listingType = value;
-                                          },
-                                          list: [
-                                            ListingType.sale.name,
-                                            ListingType.rent.name,
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).constructionYear,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        MainButton(
-                                          width: 100,
-                                          text: '$constructionYear',
-                                          onPressed: () async {
-                                            int? selectedValue = await _showAlertDialog(
-                                              context: context,
-                                              number: constructionYear,
-                                              minValue: 1900,
-                                              maxValue: DateTime.now().year,
-                                            );
-                                            if (selectedValue != null) {
-                                              setState(() {
-                                                constructionYear = selectedValue;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).bedrooms.capitalize(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        MainButton(
-                                          width: 100,
-                                          text: '$bedrooms',
-                                          onPressed: () async {
-                                            int? selectedValue = await _showAlertDialog(
-                                              context: context,
-                                              number: bedrooms,
-                                              minValue: 1,
-                                              maxValue: 20,
-                                            );
-                                            if (selectedValue != null) {
-                                              setState(() {
-                                                bedrooms = selectedValue;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).bathrooms.capitalize(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        MainButton(
-                                          width: 100,
-                                          text: '$bathrooms',
-                                          onPressed: () async {
-                                            int? selectedValue = await _showAlertDialog(
-                                              context: context,
-                                              number: bathrooms,
-                                              minValue: 1,
-                                              maxValue: 10,
-                                            );
-                                            if (selectedValue != null) {
-                                              setState(() {
-                                                bathrooms = selectedValue;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).parkingspaces.capitalize(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        MainButton(
-                                          width: 100,
-                                          text: '$parkingSpaces',
-                                          onPressed: () async {
-                                            int? selectedValue = await _showAlertDialog(
-                                              context: context,
-                                              number: parkingSpaces,
-                                              minValue: 0,
-                                              maxValue: 10,
-                                            );
-                                            if (selectedValue != null) {
-                                              setState(() {
-                                                parkingSpaces = selectedValue;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).price,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 4),
-                                          width: 140,
-                                          child: TextField(
-                                            controller: priceTextController,
-                                            cursorColor: Colors.white,
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              constraints: const BoxConstraints(maxHeight: 40),
-                                              contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                              labelText: AppLocalizations.of(context).price,
-                                              focusColor: Colors.white,
-                                              labelStyle: const TextStyle(color: Colors.white),
-                                              focusedBorder: border,
-                                              enabledBorder: border,
-                                              errorBorder: border,
-                                              border: border,
-                                              disabledBorder: border,
-                                              focusedErrorBorder: border,
-                                            ),
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context).areaSize,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 4),
-                                          width: 140,
-                                          child: TextField(
-                                            keyboardType: TextInputType.number,
-                                            controller: areaTextController,
-                                            cursorColor: Colors.white,
-                                            decoration: InputDecoration(
-                                              constraints: const BoxConstraints(maxHeight: 40),
-                                              contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                              labelText: AppLocalizations.of(context).areaSize,
-                                              focusColor: Colors.white,
-                                              labelStyle: const TextStyle(color: Colors.white),
-                                              focusedBorder: border,
-                                              enabledBorder: border,
-                                              errorBorder: border,
-                                              border: border,
-                                              disabledBorder: border,
-                                              focusedErrorBorder: border,
-                                            ),
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              const SizedBox(height: 20),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white),
-                                ),
-                                margin: const EdgeInsets.symmetric(horizontal: 20),
-                                width: MediaQuery.of(context).size.width,
-                                height: 200,
-                                child: MultiLineInputBox(
-                                  descriptionTextController: descriptionTextController,
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              MainButton(
-                                isEnabled: _isButtonEnabled,
-                                text: AppLocalizations.of(context).addProperty,
-                                onPressed: () {
-                                  BlocProvider.of<NewPropertyCubit>(context).addProperty(
-                                    areaSize: int.parse(areaTextController.text),
-                                    bathrooms: bathrooms,
-                                    bedrooms: bedrooms,
-                                    constructionYear: constructionYear,
-                                    description: descriptionTextController.text,
-                                    selectedImage: _selectedImage!,
-                                    listingType: listingType,
-                                    location: AppLocalizations.of(context).location,
-                                    parkingSpaces: parkingSpaces,
-                                    price: double.parse(priceTextController.text),
-                                    propertyType: propertyType,
-                                  );
-                                },
-                                width: 200,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 100),
+                                child: MainButton(
+                                  onPressed: () async {
+                                    await BlocProvider.of<NewPropertyCubit>(context).pickPicture();
+                                  },
+                                  text: AppLocalizations.of(context).uploadPhoto,
+                                  icon: Icons.add_a_photo_rounded,
+                                ),
                               ),
-                              const SizedBox(height: 75),
                             ],
                           ),
                         ),
                       ),
-                    )
-                  ],
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).propertyType,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          DropdownPicker(
+                                            onValueChanged: (value) {
+                                              propertyType = value;
+                                            },
+                                            list: [
+                                              PropertyType.apartment.name,
+                                              PropertyType.house.name,
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).listType,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          DropdownPicker(
+                                            onValueChanged: (value) {
+                                              listingType = value;
+                                            },
+                                            list: [
+                                              ListingType.sale.name,
+                                              ListingType.rent.name,
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).constructionYear,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          MainButton(
+                                            width: 100,
+                                            text: '$constructionYear',
+                                            onPressed: () async {
+                                              int? selectedValue = await _showAlertDialog(
+                                                context: context,
+                                                number: constructionYear,
+                                                minValue: 1900,
+                                                maxValue: DateTime.now().year,
+                                              );
+                                              if (selectedValue != null) {
+                                                setState(() {
+                                                  constructionYear = selectedValue;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).bedrooms.capitalize(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          MainButton(
+                                            width: 100,
+                                            text: '$bedrooms',
+                                            onPressed: () async {
+                                              int? selectedValue = await _showAlertDialog(
+                                                context: context,
+                                                number: bedrooms,
+                                                minValue: 1,
+                                                maxValue: 20,
+                                              );
+                                              if (selectedValue != null) {
+                                                setState(() {
+                                                  bedrooms = selectedValue;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).bathrooms.capitalize(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          MainButton(
+                                            width: 100,
+                                            text: '$bathrooms',
+                                            onPressed: () async {
+                                              int? selectedValue = await _showAlertDialog(
+                                                context: context,
+                                                number: bathrooms,
+                                                minValue: 1,
+                                                maxValue: 10,
+                                              );
+                                              if (selectedValue != null) {
+                                                setState(() {
+                                                  bathrooms = selectedValue;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).parkingspaces.capitalize(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          MainButton(
+                                            width: 100,
+                                            text: '$parkingSpaces',
+                                            onPressed: () async {
+                                              int? selectedValue = await _showAlertDialog(
+                                                context: context,
+                                                number: parkingSpaces,
+                                                minValue: 0,
+                                                maxValue: 10,
+                                              );
+                                              if (selectedValue != null) {
+                                                setState(() {
+                                                  parkingSpaces = selectedValue;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).price,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4),
+                                            width: 140,
+                                            child: TextField(
+                                              controller: priceTextController,
+                                              cursorColor: Colors.white,
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                constraints: const BoxConstraints(maxHeight: 40),
+                                                contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                                labelText: AppLocalizations.of(context).price,
+                                                focusColor: Colors.white,
+                                                labelStyle: const TextStyle(color: Colors.white),
+                                                focusedBorder: border,
+                                                enabledBorder: border,
+                                                errorBorder: border,
+                                                border: border,
+                                                disabledBorder: border,
+                                                focusedErrorBorder: border,
+                                              ),
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context).areaSize,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4),
+                                            width: 140,
+                                            child: TextField(
+                                              keyboardType: TextInputType.number,
+                                              controller: areaTextController,
+                                              cursorColor: Colors.white,
+                                              decoration: InputDecoration(
+                                                constraints: const BoxConstraints(maxHeight: 40),
+                                                contentPadding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                                labelText: AppLocalizations.of(context).areaSize,
+                                                focusColor: Colors.white,
+                                                labelStyle: const TextStyle(color: Colors.white),
+                                                focusedBorder: border,
+                                                enabledBorder: border,
+                                                errorBorder: border,
+                                                border: border,
+                                                disabledBorder: border,
+                                                focusedErrorBorder: border,
+                                              ),
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                const SizedBox(height: 20),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: Colors.white),
+                                  ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 200,
+                                  child: MultiLineInputBox(
+                                    descriptionTextController: descriptionTextController,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                MainButton(
+                                  isEnabled: _isButtonEnabled,
+                                  text: AppLocalizations.of(context).addProperty,
+                                  onPressed: () {
+                                    BlocProvider.of<NewPropertyCubit>(context).addProperty(
+                                      areaSize: int.parse(areaTextController.text),
+                                      bathrooms: bathrooms,
+                                      bedrooms: bedrooms,
+                                      constructionYear: constructionYear,
+                                      description: descriptionTextController.text,
+                                      selectedImage: _selectedImage!,
+                                      listingType: listingType,
+                                      location: AppLocalizations.of(context).location,
+                                      parkingSpaces: parkingSpaces,
+                                      price: double.parse(priceTextController.text),
+                                      propertyType: propertyType,
+                                    );
+                                  },
+                                  width: 200,
+                                ),
+                                const SizedBox(height: 75),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
