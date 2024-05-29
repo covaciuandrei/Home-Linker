@@ -1,12 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
+import 'package:homelinker/models/place_location.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/dropdown_picker.dart';
@@ -36,6 +40,11 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   final priceTextController = TextEditingController();
   final areaTextController = TextEditingController();
   final descriptionTextController = TextEditingController();
+
+  Widget content = const Text('No location chosen.');
+
+  PlaceLocation? _location;
+  LatLng? pickedLocation;
 
   @override
   void initState() {
@@ -67,6 +76,8 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
         if (state is FileUploadedState) {
           _selectedImage = state.imageFile;
           _isButtonEnabled = true;
+        } else if (state is LocationPickedState) {
+          _location = state.location;
         }
         return LoadingScreen(
           loading: state is PendingState,
@@ -111,6 +122,38 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                   text: AppLocalizations.of(context).uploadPhoto,
                                   icon: Icons.add_a_photo_rounded,
                                 ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              _location != null ? Text(_location!.address) : const Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  MainButton(
+                                    width: MediaQuery.of(context).size.width * 0.45,
+                                    onPressed: () => BlocProvider.of<NewPropertyCubit>(context).getCurrentLocation(),
+                                    icon: Icons.location_on,
+                                    text: 'Current location',
+                                  ),
+                                  MainButton(
+                                    width: MediaQuery.of(context).size.width * 0.45,
+                                    onPressed: () async {
+                                      if (_location == null) {
+                                        pickedLocation = await AutoRouter.of(context).push(MapRoute()) as LatLng?;
+                                      } else {
+                                        pickedLocation = await AutoRouter.of(context)
+                                            .push(MapRoute(location: _location!)) as LatLng?;
+                                      }
+
+                                      // ignore: use_build_context_synchronously
+                                      await BlocProvider.of<NewPropertyCubit>(context).getSelectedLocation(
+                                          coordonate: LatLng(pickedLocation!.latitude, pickedLocation!.longitude));
+                                    },
+                                    icon: Icons.map,
+                                    text: 'Select on map',
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -428,7 +471,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                       description: descriptionTextController.text,
                                       selectedImage: _selectedImage!,
                                       listingType: listingType,
-                                      location: AppLocalizations.of(context).location,
+                                      location: jsonEncode(_location!.toJson()),
                                       parkingSpaces: parkingSpaces,
                                       price: double.parse(priceTextController.text),
                                       propertyType: propertyType,

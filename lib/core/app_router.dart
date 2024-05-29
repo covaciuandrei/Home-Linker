@@ -15,13 +15,13 @@ class AppRouter extends $AppRouter {
     AutoRoute(path: '/signup_successfully', page: SignUpSuccessfullyRoute.page),
     AutoRoute(path: '/forgot_password', page: ForgotPasswordRoute.page),
     AutoRoute(path: '/reset_password', page: ResetPasswordRoute.page),
-    AutoRoute(
-        path: '/reset_pass_done', page: ResetPasswordSuccessfullyRoute.page),
+    AutoRoute(path: '/reset_pass_done', page: ResetPasswordSuccessfullyRoute.page),
     AutoRoute(path: '/home_page', page: HomeRoute.page),
     AutoRoute(path: '/listing', page: ListingRoute.page),
     AutoRoute(path: '/profile', page: ProfileRoute.page),
     AutoRoute(path: '/settings', page: SettingsRoute.page),
     AutoRoute(path: '/new_property', page: NewPropertyRoute.page),
     AutoRoute(path: '/mail_sent', page: EmailSentSuccessfullyRoute.page),
+    AutoRoute(path: '/map_page', page: MapRoute.page),
   ];
 }

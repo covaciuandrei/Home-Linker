@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:homelinker/core/app_router.dart';
@@ -23,6 +25,8 @@ import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
+  await dotenv.load(fileName: "lib/.env");
+  await FlutterConfig.loadEnvVariables();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configureDependencies();
