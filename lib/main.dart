@@ -14,7 +14,6 @@ import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
-import 'package:homelinker/cubit/property/property_cubit.dart';
 import 'package:homelinker/cubit/reset_password/forgot_password_cubit.dart';
 import 'package:homelinker/cubit/reset_password/reset_password_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
@@ -82,7 +81,6 @@ class MyAppState extends State<MyApp> {
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
         BlocProvider<SignupCubit>(create: (context) => getIt<SignupCubit>()),
         BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
-        BlocProvider<PropertyCubit>(create: (context) => getIt<PropertyCubit>()),
         BlocProvider<ProfileCubit>(create: (context) => getIt<ProfileCubit>()),
         BlocProvider<SettingsCubit>(create: (context) => getIt<SettingsCubit>()),
         BlocProvider<NewPropertyCubit>(create: (context) => getIt<NewPropertyCubit>()),
