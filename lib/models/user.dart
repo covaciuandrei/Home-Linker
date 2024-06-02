@@ -8,6 +8,7 @@ class User {
     required this.phone,
     required this.profilePictureId,
     required this.type,
+    required this.is2FaActivated,
   });
 
   final String id;
@@ -16,4 +17,5 @@ class User {
   final String phone;
   final String profilePictureId;
   final AccountType type;
+  final bool is2FaActivated;
 }

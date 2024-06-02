@@ -94,6 +94,7 @@ _i1.GetIt $initGetIt(
   gh.factory<_i24.HomeCubit>(() => _i24.HomeCubit(
         gh<_i19.PropertyService>(),
         gh<_i18.ImageService>(),
+        gh<_i20.UserService>(),
       ));
   gh.factory<_i25.ListingCubit>(() => _i25.ListingCubit(
         gh<_i19.PropertyService>(),
@@ -102,6 +103,7 @@ _i1.GetIt $initGetIt(
   gh.factory<_i26.LoginCubit>(() => _i26.LoginCubit(
         gh<_i21.AccountService>(),
         gh<_i16.ValidatorService>(),
+        gh<_i20.UserService>(),
       ));
   gh.factory<_i27.NewPropertyCubit>(() => _i27.NewPropertyCubit(
         gh<_i19.PropertyService>(),

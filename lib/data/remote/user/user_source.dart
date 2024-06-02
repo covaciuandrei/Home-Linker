@@ -35,6 +35,7 @@ class UserSource {
   }) async {
     final userDto = UserDto(
       email,
+      false,
       name,
       phoneNumber,
       '',

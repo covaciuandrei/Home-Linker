@@ -28,7 +28,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<LoginCubit>(context).loadPage();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<LoginCubit>(context).loadPage();
+    });
+
     emailTextController
         .addListener(() => BlocProvider.of<LoginCubit>(context).checkEmailValidity(emailTextController.text));
     passwordTextController
@@ -55,6 +58,8 @@ class _LoginPageState extends State<LoginPage> {
           isButtonAvailable = true;
         } else if (state is InputsErrorState) {
           isButtonAvailable = false;
+        } else if (state is SomethingWentWrongState) {
+          print('plm');
         }
         return LoadingScreen<LoginCubit>(
           loading: state is PendingState,
@@ -129,13 +134,16 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         ),
                                       ),
+
                                       const SizedBox(height: 20),
                                       MainButton(
                                         width: 150,
                                         text: AppLocalizations.of(context).login,
                                         isEnabled: isButtonAvailable,
                                         onPressed: () => BlocProvider.of<LoginCubit>(context).login(
-                                            email: emailTextController.text, password: passwordTextController.text),
+                                            email: emailTextController.text,
+                                            password: passwordTextController.text,
+                                            context: context),
                                       ),
                                     ],
                                   ),

@@ -6,6 +6,7 @@ part 'user_dto.g.dart';
 class UserDto {
   UserDto(
     this.email,
+    this.is2FaActivated,
     this.name,
     this.phone,
     this.profilePictureId,
@@ -18,6 +19,9 @@ class UserDto {
 
   @JsonKey(name: 'email', defaultValue: '')
   final String email;
+
+  @JsonKey(name: 'is_2fa_activated', defaultValue: false)
+  final bool is2FaActivated;
 
   @JsonKey(name: 'name', defaultValue: '')
   final String name;
