@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:homelinker/core/app_router.dart';
@@ -12,7 +14,6 @@ import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
-import 'package:homelinker/cubit/property/property_cubit.dart';
 import 'package:homelinker/cubit/reset_password/forgot_password_cubit.dart';
 import 'package:homelinker/cubit/reset_password/reset_password_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
@@ -23,6 +24,8 @@ import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:intl/intl.dart';
 
 void main() async {
+  await dotenv.load(fileName: "lib/.env");
+  await FlutterConfig.loadEnvVariables();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configureDependencies();
@@ -78,7 +81,6 @@ class MyAppState extends State<MyApp> {
         BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
         BlocProvider<SignupCubit>(create: (context) => getIt<SignupCubit>()),
         BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
-        BlocProvider<PropertyCubit>(create: (context) => getIt<PropertyCubit>()),
         BlocProvider<ProfileCubit>(create: (context) => getIt<ProfileCubit>()),
         BlocProvider<SettingsCubit>(create: (context) => getIt<SettingsCubit>()),
         BlocProvider<NewPropertyCubit>(create: (context) => getIt<NewPropertyCubit>()),

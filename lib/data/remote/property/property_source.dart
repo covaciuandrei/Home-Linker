@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:homelinker/data/mappers/property_mapper.dart';
 import 'package:homelinker/data/remote/property/property_dto.dart';
 import 'package:homelinker/data/remote_source_names.dart';
+import 'package:homelinker/models/place_location.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:injectable/injectable.dart';
 
@@ -13,18 +16,20 @@ class PropertySource {
   final PropertyMapper _propertyMapper;
 
   CollectionReference<PropertyDto> get _collectionRef =>
-      FirebaseFirestore.instance
-          .collection(RemoteSourceNames.properties)
-          .withConverter<PropertyDto>(
-            fromFirestore: (snapshots, _) =>
-                PropertyDto.fromJson(snapshots.data()!),
+      FirebaseFirestore.instance.collection(RemoteSourceNames.properties).withConverter<PropertyDto>(
+            fromFirestore: (snapshots, _) => PropertyDto.fromJson(snapshots.data()!),
             toFirestore: (user, _) => user.toJson(),
           );
 
   Future<List<Property>> getAll() async {
     final querySnapshot = await _collectionRef.get();
+
     final propertyDtos = querySnapshot.docs.map((doc) {
       final data = doc.data();
+      final String locationJsonString = data.location;
+      final Map<String, dynamic> jsonMap = jsonDecode(locationJsonString);
+      final PlaceLocation location = PlaceLocation.fromJson(jsonMap);
+
       return PropertyDto(
         id: doc.id,
         data.areaSize,
@@ -34,7 +39,7 @@ class PropertySource {
         data.description,
         data.imageId,
         data.listingType,
-        data.location,
+        location.address,
         data.ownerEmail,
         data.ownerName,
         data.parkingSpaces,

@@ -9,8 +9,16 @@ class PropertyAddedSuccessfullyState extends BaseState {}
 class NoFileChosenState extends BaseState {}
 
 class FileUploadedState extends BaseState {
-  FileUploadedState({
-    required this.imageFile,
-  });
+  FileUploadedState({required this.imageFile});
+
   final File? imageFile;
+}
+
+class LocationPickedState extends BaseState {
+  LocationPickedState({required this.location});
+
+  final PlaceLocation location;
+
+  @override
+  List<Object?> get props => [location];
 }

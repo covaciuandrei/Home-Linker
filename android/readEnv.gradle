@@ -1,0 +1,8 @@
+import java.util.Properties
+
+Properties properties = new Properties()
+file("../.env").withInputStream { stream ->
+    properties.load(stream)
+}
+
+ext.env = properties
