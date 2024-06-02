@@ -8,6 +8,7 @@ part of 'user_dto.dart';
 
 UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
       json['email'] as String? ?? '',
+      json['is_2fa_activated'] as bool? ?? false,
       json['name'] as String? ?? '',
       json['phone'] as String? ?? '',
       json['profile_picture'] as String? ?? '',
@@ -16,6 +17,7 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
 
 Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'email': instance.email,
+      'is_2fa_activated': instance.is2FaActivated,
       'name': instance.name,
       'phone': instance.phone,
       'profile_picture': instance.profilePictureId,

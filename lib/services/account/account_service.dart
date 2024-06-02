@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:homelinker/data/remote/user/user_source.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
@@ -17,7 +18,7 @@ class AccountService {
 
   Future<bool> isUserLoggedIn() async => (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ?? false;
 
-  Future<void> login({required String email, required String password}) async {
+  Future<void> login({required String email, required String password, required BuildContext context}) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.trim(), password: password);
     } on FirebaseAuthException catch (ex) {

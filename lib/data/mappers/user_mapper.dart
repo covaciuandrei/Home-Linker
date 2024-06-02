@@ -12,5 +12,6 @@ class UserMapper {
         phone: dto.phone,
         profilePictureId: dto.profilePictureId,
         type: AccountType.values.byName(dto.type),
+        is2FaActivated: dto.is2FaActivated,
       );
 }
