@@ -7,7 +7,6 @@ import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/services/image/image_service.dart';
 import 'package:homelinker/services/property/property_service.dart';
-import 'package:homelinker/services/user/user_service.dart';
 import 'package:injectable/injectable.dart';
 
 part 'package:homelinker/cubit/home/home_states.dart';
@@ -17,11 +16,10 @@ class HomeCubit extends BaseCubit {
   HomeCubit(
     this._propertyService,
     this._imageService,
-    this._userService,
   ) : super(InitialState());
+
   final PropertyService _propertyService;
   final ImageService _imageService;
-  final UserService _userService;
 
   List<Property> properties = [];
   List<Listing> listings = [];
