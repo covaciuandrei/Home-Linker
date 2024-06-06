@@ -1,16 +1,29 @@
 import 'package:homelinker/data/remote/property/property_source.dart';
+import 'package:homelinker/data/repository/property_repository.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
 class PropertyService {
-  PropertyService(this._propertySource);
+  PropertyService(
+    this._propertySource,
+    this._propertyRepository,
+  );
 
   final PropertySource _propertySource;
+  final PropertyRepository _propertyRepository;
 
   Future<List<Property>> getAll() async {
-    final properties = await _propertySource.getAll();
-    return properties;
+    if (await _propertyRepository.isExpired(additionalParam: 'documents')) {
+      final properties = await _propertySource.getAll();
+
+      await _propertyRepository.clear();
+      await _propertyRepository.insert(properties: properties);
+      print('cloud');
+      return properties;
+    }
+    print('repo');
+    return _propertyRepository.getAll();
   }
 
   Future<void> addNewProperty({
