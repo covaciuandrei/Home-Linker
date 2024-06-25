@@ -31,11 +31,12 @@ class LoginCubit extends BaseCubit {
       safeEmit(PendingState());
       await _accountService.login(email: email, password: password, context: context);
       final user = await _userService.getLoggedUser();
-      if (user.is2FaActivated) {
-        safeEmit(LoggedInSuccessfullyState());
-      } else {
-        enrollMFA(user.phone, context);
-      }
+      safeEmit(LoggedInSuccessfullyState());
+      // if (user.is2FaActivated) {
+
+      // } else {
+      //   enrollMFA(user.phone, context);
+      // }
     } on Exception {
       safeEmit(SomethingWentWrongState());
     }

@@ -89,6 +89,7 @@ class MyAppState extends State<MyApp> {
         BlocProvider<ListingCubit>(create: (context) => getIt<ListingCubit>()),
       ],
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         routerConfig: appRouter.config(),
         title: 'HomeLinker',
         locale: _locale,

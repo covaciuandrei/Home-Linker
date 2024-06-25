@@ -43,7 +43,7 @@ class PropertyRepository extends BaseRepository {
       );
       await database.into(database.properties).insert(companion);
     }
-
+    //de schimbat la un moment dat
     return setLastUpdateNow(additionalParam: 'documents');
   }
 

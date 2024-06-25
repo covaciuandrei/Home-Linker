@@ -1227,16 +1227,319 @@ class PropertiesCompanion extends UpdateCompanion<Property> {
   }
 }
 
+class $ImagesTable extends Images with TableInfo<$ImagesTable, Image> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ImagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _identifierMeta =
+      const VerificationMeta('identifier');
+  @override
+  late final GeneratedColumn<String> identifier = GeneratedColumn<String>(
+      'identifier', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+      'path', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _uploadDateMeta =
+      const VerificationMeta('uploadDate');
+  @override
+  late final GeneratedColumn<DateTime> uploadDate = GeneratedColumn<DateTime>(
+      'upload_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<Uint8List> data = GeneratedColumn<Uint8List>(
+      'data', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [identifier, name, path, uploadDate, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'images';
+  @override
+  VerificationContext validateIntegrity(Insertable<Image> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('identifier')) {
+      context.handle(
+          _identifierMeta,
+          identifier.isAcceptableOrUnknown(
+              data['identifier']!, _identifierMeta));
+    } else if (isInserting) {
+      context.missing(_identifierMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+          _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    if (data.containsKey('upload_date')) {
+      context.handle(
+          _uploadDateMeta,
+          uploadDate.isAcceptableOrUnknown(
+              data['upload_date']!, _uploadDateMeta));
+    } else if (isInserting) {
+      context.missing(_uploadDateMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+          _dataMeta, this.data.isAcceptableOrUnknown(data['data']!, _dataMeta));
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  Image map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Image(
+      identifier: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}identifier'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      path: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
+      uploadDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}upload_date'])!,
+      data: attachedDatabase.typeMapping
+          .read(DriftSqlType.blob, data['${effectivePrefix}data'])!,
+    );
+  }
+
+  @override
+  $ImagesTable createAlias(String alias) {
+    return $ImagesTable(attachedDatabase, alias);
+  }
+}
+
+class Image extends DataClass implements Insertable<Image> {
+  final String identifier;
+  final String name;
+  final String path;
+  final DateTime uploadDate;
+  final Uint8List data;
+  const Image(
+      {required this.identifier,
+      required this.name,
+      required this.path,
+      required this.uploadDate,
+      required this.data});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['identifier'] = Variable<String>(identifier);
+    map['name'] = Variable<String>(name);
+    map['path'] = Variable<String>(path);
+    map['upload_date'] = Variable<DateTime>(uploadDate);
+    map['data'] = Variable<Uint8List>(data);
+    return map;
+  }
+
+  ImagesCompanion toCompanion(bool nullToAbsent) {
+    return ImagesCompanion(
+      identifier: Value(identifier),
+      name: Value(name),
+      path: Value(path),
+      uploadDate: Value(uploadDate),
+      data: Value(data),
+    );
+  }
+
+  factory Image.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Image(
+      identifier: serializer.fromJson<String>(json['identifier']),
+      name: serializer.fromJson<String>(json['name']),
+      path: serializer.fromJson<String>(json['path']),
+      uploadDate: serializer.fromJson<DateTime>(json['uploadDate']),
+      data: serializer.fromJson<Uint8List>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'identifier': serializer.toJson<String>(identifier),
+      'name': serializer.toJson<String>(name),
+      'path': serializer.toJson<String>(path),
+      'uploadDate': serializer.toJson<DateTime>(uploadDate),
+      'data': serializer.toJson<Uint8List>(data),
+    };
+  }
+
+  Image copyWith(
+          {String? identifier,
+          String? name,
+          String? path,
+          DateTime? uploadDate,
+          Uint8List? data}) =>
+      Image(
+        identifier: identifier ?? this.identifier,
+        name: name ?? this.name,
+        path: path ?? this.path,
+        uploadDate: uploadDate ?? this.uploadDate,
+        data: data ?? this.data,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Image(')
+          ..write('identifier: $identifier, ')
+          ..write('name: $name, ')
+          ..write('path: $path, ')
+          ..write('uploadDate: $uploadDate, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      identifier, name, path, uploadDate, $driftBlobEquality.hash(data));
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Image &&
+          other.identifier == this.identifier &&
+          other.name == this.name &&
+          other.path == this.path &&
+          other.uploadDate == this.uploadDate &&
+          $driftBlobEquality.equals(other.data, this.data));
+}
+
+class ImagesCompanion extends UpdateCompanion<Image> {
+  final Value<String> identifier;
+  final Value<String> name;
+  final Value<String> path;
+  final Value<DateTime> uploadDate;
+  final Value<Uint8List> data;
+  final Value<int> rowid;
+  const ImagesCompanion({
+    this.identifier = const Value.absent(),
+    this.name = const Value.absent(),
+    this.path = const Value.absent(),
+    this.uploadDate = const Value.absent(),
+    this.data = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ImagesCompanion.insert({
+    required String identifier,
+    required String name,
+    required String path,
+    required DateTime uploadDate,
+    required Uint8List data,
+    this.rowid = const Value.absent(),
+  })  : identifier = Value(identifier),
+        name = Value(name),
+        path = Value(path),
+        uploadDate = Value(uploadDate),
+        data = Value(data);
+  static Insertable<Image> custom({
+    Expression<String>? identifier,
+    Expression<String>? name,
+    Expression<String>? path,
+    Expression<DateTime>? uploadDate,
+    Expression<Uint8List>? data,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (identifier != null) 'identifier': identifier,
+      if (name != null) 'name': name,
+      if (path != null) 'path': path,
+      if (uploadDate != null) 'upload_date': uploadDate,
+      if (data != null) 'data': data,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ImagesCompanion copyWith(
+      {Value<String>? identifier,
+      Value<String>? name,
+      Value<String>? path,
+      Value<DateTime>? uploadDate,
+      Value<Uint8List>? data,
+      Value<int>? rowid}) {
+    return ImagesCompanion(
+      identifier: identifier ?? this.identifier,
+      name: name ?? this.name,
+      path: path ?? this.path,
+      uploadDate: uploadDate ?? this.uploadDate,
+      data: data ?? this.data,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (identifier.present) {
+      map['identifier'] = Variable<String>(identifier.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (uploadDate.present) {
+      map['upload_date'] = Variable<DateTime>(uploadDate.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<Uint8List>(data.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ImagesCompanion(')
+          ..write('identifier: $identifier, ')
+          ..write('name: $name, ')
+          ..write('path: $path, ')
+          ..write('uploadDate: $uploadDate, ')
+          ..write('data: $data, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $TablesUpdateTimesTable tablesUpdateTimes =
       $TablesUpdateTimesTable(this);
   late final $UsersTable users = $UsersTable(this);
   late final $PropertiesTable properties = $PropertiesTable(this);
+  late final $ImagesTable images = $ImagesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [tablesUpdateTimes, users, properties];
+      [tablesUpdateTimes, users, properties, images];
 }
