@@ -40,6 +40,7 @@ class UserSource {
       phoneNumber,
       '',
       accountType.name,
+      '',
     );
 
     await _collectionRef.add(userDto);
@@ -63,8 +64,8 @@ class UserSource {
     required String imageId,
     required String userId,
   }) async {
-    final collectionRef = FirebaseFirestore.instance.collection(RemoteSourceNames.users);
-    final documentSnapshot = await collectionRef.doc(userId).get();
+    // final collectionRef = FirebaseFirestore.instance.collection(RemoteSourceNames.users);
+    final documentSnapshot = await _collectionRef.doc(userId).get();
     final documentReference = documentSnapshot.reference;
 
     final Map<String, dynamic> dataToUpdate = {};
@@ -73,5 +74,43 @@ class UserSource {
     if (dataToUpdate.isNotEmpty) {
       await documentReference.update(dataToUpdate);
     }
+  }
+
+  Future<bool> set2FactorAuthCode({required String email, required String code}) async {
+    final querySnapshot = await _collectionRef.where('email', isEqualTo: email.toLowerCase()).limit(1).get();
+    // final userDto = querySnapshot.docs.map((doc) => doc.data()).single;
+    if (querySnapshot.docs.isEmpty) {
+      return false;
+    }
+    final userId = querySnapshot.docs.first.id;
+
+    final documentReference = _collectionRef.doc(userId);
+    final Map<String, dynamic> dataToUpdate = {};
+    dataToUpdate['two_factor_auth_code'] = code;
+    try {
+      if (dataToUpdate.isNotEmpty) {
+        await documentReference.update(dataToUpdate);
+        print('cod setat');
+        return true;
+      }
+    } catch (e) {
+      print(e);
+      print('cod nesetat');
+      return false;
+    }
+    return false;
+  }
+
+  Future<List<Object>> getAuthentificationCode({required String email}) async {
+    final querySnapshot = await _collectionRef.where('email', isEqualTo: email.toLowerCase()).limit(1).get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return ['', false];
+    }
+
+    final user = await getUserByUsername(email);
+    final code = user.twoFactorAuthCode;
+
+    return [code, true];
   }
 }

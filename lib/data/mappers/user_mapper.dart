@@ -14,6 +14,7 @@ class UserMapper {
         profilePictureId: dto.profilePictureId,
         type: AccountType.values.byName(dto.type),
         is2FaActivated: dto.is2FaActivated,
+        twoFactorAuthCode: dto.twoFactorAuthCode,
       );
 
   User mapUserFromDatabase(database.User dto) => User(
@@ -24,5 +25,6 @@ class UserMapper {
         id: dto.id,
         type: AccountType.values.byName(dto.type),
         name: dto.name,
+        twoFactorAuthCode: dto.twoFactorAuthCode,
       );
 }

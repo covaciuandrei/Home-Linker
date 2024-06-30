@@ -13,6 +13,7 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
       json['phone'] as String? ?? '',
       json['profile_picture'] as String? ?? '',
       json['type'] as String? ?? '',
+      json['two_factor_auth_code'] as String? ?? '',
     );
 
 Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'phone': instance.phone,
       'profile_picture': instance.profilePictureId,
       'type': instance.type,
+      'two_factor_auth_code': instance.twoFactorAuthCode,
     };

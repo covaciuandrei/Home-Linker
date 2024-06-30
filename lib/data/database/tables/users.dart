@@ -17,4 +17,6 @@ class Users extends Table {
   TextColumn get type => text()();
 
   BoolColumn get is2FaActivated => boolean()();
+
+  TextColumn get twoFactorAuthCode => text()();
 }

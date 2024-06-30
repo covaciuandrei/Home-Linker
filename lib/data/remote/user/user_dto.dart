@@ -11,6 +11,7 @@ class UserDto {
     this.phone,
     this.profilePictureId,
     this.type,
+    this.twoFactorAuthCode,
   );
 
   factory UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
@@ -34,4 +35,7 @@ class UserDto {
 
   @JsonKey(name: 'type', defaultValue: '')
   final String type;
+
+  @JsonKey(name: 'two_factor_auth_code', defaultValue: '')
+  final String twoFactorAuthCode;
 }

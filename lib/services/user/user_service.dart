@@ -35,6 +35,17 @@ class UserService {
     return _userRepository.get(userId);
   }
 
+  Future<bool> set2FactorAuthCode({
+    required String email,
+    required String code,
+  }) async {
+    final wasCodeSet = await _userSource.set2FactorAuthCode(
+      email: email,
+      code: code,
+    );
+    return wasCodeSet;
+  }
+
   Future<void> createUser({
     required String email,
     required String name,
@@ -58,5 +69,10 @@ class UserService {
   Future<void> updateUser({required String imageId}) async {
     final user = await getLoggedUser();
     await _userSource.updateUser(userId: user.id, imageId: imageId);
+  }
+
+  Future<List<Object>> getAuthentificationCode({required String email}) async {
+    final authentificationCode = await _userSource.getAuthentificationCode(email: email);
+    return authentificationCode;
   }
 }

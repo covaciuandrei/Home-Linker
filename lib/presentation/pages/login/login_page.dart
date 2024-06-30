@@ -51,6 +51,13 @@ class _LoginPageState extends State<LoginPage> {
             const HomeRoute(),
             predicate: (route) => false,
           );
+        } else if (state is SomethingWentWrongState) {
+          AutoRouter.of(context).popForced();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Something went wrong, please try again.'),
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -58,9 +65,8 @@ class _LoginPageState extends State<LoginPage> {
           isButtonAvailable = true;
         } else if (state is InputsErrorState) {
           isButtonAvailable = false;
-        } else if (state is SomethingWentWrongState) {
-          print('plm');
         }
+
         return LoadingScreen<LoginCubit>(
           loading: state is PendingState,
           child: Scaffold(
@@ -140,10 +146,13 @@ class _LoginPageState extends State<LoginPage> {
                                         width: 150,
                                         text: AppLocalizations.of(context).login,
                                         isEnabled: isButtonAvailable,
-                                        onPressed: () => BlocProvider.of<LoginCubit>(context).login(
+                                        onPressed: () {
+                                          showVerificationDialog(
+                                            context: context,
                                             email: emailTextController.text,
                                             password: passwordTextController.text,
-                                            context: context),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
@@ -166,6 +175,83 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void showVerificationDialog({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) {
+    final TextEditingController controller = TextEditingController();
+    String message = '';
+    Color textColor = Colors.grey;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Enter Code received on email"),
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                          color: textColor,
+                        ),
+                      ),
+                    ),
+                    TextField(controller: controller),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("Confirm"),
+                  onPressed: () async {
+                    final wasCodeOk = await BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
+                      context: context,
+                      email: email,
+                      password: password,
+                      code: controller.text,
+                    );
+                    if (!wasCodeOk) {
+                      print('dsaojdjskahkjdhsakjdhsa');
+                      setState(() {
+                        textColor = Colors.red;
+                        message = "Code/email address is wrong, please try again.";
+                      });
+                    }
+                  },
+                ),
+                TextButton(
+                  child: const Text("Send code"),
+                  onPressed: () async {
+                    final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
+                    if (wasEmailSent) {
+                      setState(() {
+                        textColor = Colors.green;
+                        message = "Mail Sent Successfully";
+                      });
+                    } else {
+                      setState(() {
+                        textColor = Colors.red;
+                        message = "Mail not sent, please try again.";
+                      });
+                    }
+                  },
+                )
+              ],
+            );
+          },
         );
       },
     );

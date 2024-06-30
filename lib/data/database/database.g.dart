@@ -236,9 +236,23 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("is2_fa_activated" IN (0, 1))'));
+  static const VerificationMeta _twoFactorAuthCodeMeta =
+      const VerificationMeta('twoFactorAuthCode');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, email, name, phone, profilePictureId, type, is2FaActivated];
+  late final GeneratedColumn<String> twoFactorAuthCode =
+      GeneratedColumn<String>('two_factor_auth_code', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        email,
+        name,
+        phone,
+        profilePictureId,
+        type,
+        is2FaActivated,
+        twoFactorAuthCode
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -294,6 +308,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_is2FaActivatedMeta);
     }
+    if (data.containsKey('two_factor_auth_code')) {
+      context.handle(
+          _twoFactorAuthCodeMeta,
+          twoFactorAuthCode.isAcceptableOrUnknown(
+              data['two_factor_auth_code']!, _twoFactorAuthCodeMeta));
+    } else if (isInserting) {
+      context.missing(_twoFactorAuthCodeMeta);
+    }
     return context;
   }
 
@@ -317,6 +339,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       is2FaActivated: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is2_fa_activated'])!,
+      twoFactorAuthCode: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}two_factor_auth_code'])!,
     );
   }
 
@@ -334,6 +358,7 @@ class User extends DataClass implements Insertable<User> {
   final String profilePictureId;
   final String type;
   final bool is2FaActivated;
+  final String twoFactorAuthCode;
   const User(
       {required this.id,
       required this.email,
@@ -341,7 +366,8 @@ class User extends DataClass implements Insertable<User> {
       required this.phone,
       required this.profilePictureId,
       required this.type,
-      required this.is2FaActivated});
+      required this.is2FaActivated,
+      required this.twoFactorAuthCode});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -352,6 +378,7 @@ class User extends DataClass implements Insertable<User> {
     map['profile_picture_id'] = Variable<String>(profilePictureId);
     map['type'] = Variable<String>(type);
     map['is2_fa_activated'] = Variable<bool>(is2FaActivated);
+    map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode);
     return map;
   }
 
@@ -364,6 +391,7 @@ class User extends DataClass implements Insertable<User> {
       profilePictureId: Value(profilePictureId),
       type: Value(type),
       is2FaActivated: Value(is2FaActivated),
+      twoFactorAuthCode: Value(twoFactorAuthCode),
     );
   }
 
@@ -378,6 +406,7 @@ class User extends DataClass implements Insertable<User> {
       profilePictureId: serializer.fromJson<String>(json['profilePictureId']),
       type: serializer.fromJson<String>(json['type']),
       is2FaActivated: serializer.fromJson<bool>(json['is2FaActivated']),
+      twoFactorAuthCode: serializer.fromJson<String>(json['twoFactorAuthCode']),
     );
   }
   @override
@@ -391,6 +420,7 @@ class User extends DataClass implements Insertable<User> {
       'profilePictureId': serializer.toJson<String>(profilePictureId),
       'type': serializer.toJson<String>(type),
       'is2FaActivated': serializer.toJson<bool>(is2FaActivated),
+      'twoFactorAuthCode': serializer.toJson<String>(twoFactorAuthCode),
     };
   }
 
@@ -401,7 +431,8 @@ class User extends DataClass implements Insertable<User> {
           String? phone,
           String? profilePictureId,
           String? type,
-          bool? is2FaActivated}) =>
+          bool? is2FaActivated,
+          String? twoFactorAuthCode}) =>
       User(
         id: id ?? this.id,
         email: email ?? this.email,
@@ -410,6 +441,7 @@ class User extends DataClass implements Insertable<User> {
         profilePictureId: profilePictureId ?? this.profilePictureId,
         type: type ?? this.type,
         is2FaActivated: is2FaActivated ?? this.is2FaActivated,
+        twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
       );
   @override
   String toString() {
@@ -420,14 +452,15 @@ class User extends DataClass implements Insertable<User> {
           ..write('phone: $phone, ')
           ..write('profilePictureId: $profilePictureId, ')
           ..write('type: $type, ')
-          ..write('is2FaActivated: $is2FaActivated')
+          ..write('is2FaActivated: $is2FaActivated, ')
+          ..write('twoFactorAuthCode: $twoFactorAuthCode')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, email, name, phone, profilePictureId, type, is2FaActivated);
+  int get hashCode => Object.hash(id, email, name, phone, profilePictureId,
+      type, is2FaActivated, twoFactorAuthCode);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -438,7 +471,8 @@ class User extends DataClass implements Insertable<User> {
           other.phone == this.phone &&
           other.profilePictureId == this.profilePictureId &&
           other.type == this.type &&
-          other.is2FaActivated == this.is2FaActivated);
+          other.is2FaActivated == this.is2FaActivated &&
+          other.twoFactorAuthCode == this.twoFactorAuthCode);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -449,6 +483,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> profilePictureId;
   final Value<String> type;
   final Value<bool> is2FaActivated;
+  final Value<String> twoFactorAuthCode;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -458,6 +493,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.profilePictureId = const Value.absent(),
     this.type = const Value.absent(),
     this.is2FaActivated = const Value.absent(),
+    this.twoFactorAuthCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -468,6 +504,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String profilePictureId,
     required String type,
     required bool is2FaActivated,
+    required String twoFactorAuthCode,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         email = Value(email),
@@ -475,7 +512,8 @@ class UsersCompanion extends UpdateCompanion<User> {
         phone = Value(phone),
         profilePictureId = Value(profilePictureId),
         type = Value(type),
-        is2FaActivated = Value(is2FaActivated);
+        is2FaActivated = Value(is2FaActivated),
+        twoFactorAuthCode = Value(twoFactorAuthCode);
   static Insertable<User> custom({
     Expression<String>? id,
     Expression<String>? email,
@@ -484,6 +522,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? profilePictureId,
     Expression<String>? type,
     Expression<bool>? is2FaActivated,
+    Expression<String>? twoFactorAuthCode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -494,6 +533,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (profilePictureId != null) 'profile_picture_id': profilePictureId,
       if (type != null) 'type': type,
       if (is2FaActivated != null) 'is2_fa_activated': is2FaActivated,
+      if (twoFactorAuthCode != null) 'two_factor_auth_code': twoFactorAuthCode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -506,6 +546,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       Value<String>? profilePictureId,
       Value<String>? type,
       Value<bool>? is2FaActivated,
+      Value<String>? twoFactorAuthCode,
       Value<int>? rowid}) {
     return UsersCompanion(
       id: id ?? this.id,
@@ -515,6 +556,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       profilePictureId: profilePictureId ?? this.profilePictureId,
       type: type ?? this.type,
       is2FaActivated: is2FaActivated ?? this.is2FaActivated,
+      twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -543,6 +585,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (is2FaActivated.present) {
       map['is2_fa_activated'] = Variable<bool>(is2FaActivated.value);
     }
+    if (twoFactorAuthCode.present) {
+      map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -559,6 +604,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('profilePictureId: $profilePictureId, ')
           ..write('type: $type, ')
           ..write('is2FaActivated: $is2FaActivated, ')
+          ..write('twoFactorAuthCode: $twoFactorAuthCode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

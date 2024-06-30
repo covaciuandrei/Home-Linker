@@ -32,6 +32,7 @@ class UserRepository extends BaseRepository {
         id: user.id,
         type: user.type.name,
         name: user.name,
+        twoFactorAuthCode: user.twoFactorAuthCode,
       );
       await database.into(database.users).insert(companion);
     }

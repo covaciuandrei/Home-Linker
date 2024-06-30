@@ -1,5 +1,5 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -7,6 +7,8 @@ import 'package:homelinker/services/account/account_service.dart';
 import 'package:homelinker/services/user/user_service.dart';
 import 'package:homelinker/services/validator_service.dart';
 import 'package:injectable/injectable.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 
 part 'package:homelinker/cubit/login/login_states.dart';
 
@@ -26,17 +28,11 @@ class LoginCubit extends BaseCubit {
     await Future.delayed(const Duration(milliseconds: 200), () => safeEmit(LoginPageLoadedState()));
   }
 
-  Future<void> login({required String email, required String password, required BuildContext context}) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       safeEmit(PendingState());
-      await _accountService.login(email: email, password: password, context: context);
-      final user = await _userService.getLoggedUser();
+      await _accountService.login(email: email, password: password);
       safeEmit(LoggedInSuccessfullyState());
-      // if (user.is2FaActivated) {
-
-      // } else {
-      //   enrollMFA(user.phone, context);
-      // }
     } on Exception {
       safeEmit(SomethingWentWrongState());
     }
@@ -80,88 +76,62 @@ class LoginCubit extends BaseCubit {
     safeEmit(NavigateToIntroductiveState());
   }
 
-  void enrollMFA(String phoneNumber, BuildContext context) {
-    FirebaseAuth auth = FirebaseAuth.instance;
+  Future<bool> sendEmail({required String email}) async {
+    String username = 'etticov@gmail.com';
+    String password = 'zcem asev carz rnie';
 
-    auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) {
-        // Automatically called when the SMS code is auto-retrieved or the phone number is instantly verified.
-        auth.currentUser!.updatePhoneNumber(credential).then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Phone number automatically verified and updated")),
-          );
-        });
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Handle errors, such as invalid phone numbers or SMS quota reached.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to verify phone number: ${e.message}")),
-        );
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        final TextEditingController controller = TextEditingController();
-        // This callback is called after the SMS message has been sent.
-        // Prompt the user to enter the SMS code.
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              title: Text("Enter SMS Code"),
-              content: TextField(
-                controller: controller,
-                onChanged: (value) {
-                  // Optionally, store the user-entered code.
-                },
-              ),
-              actions: [
-                TextButton(
-                  child: Text("Confirm"),
-                  onPressed: () {
-                    try {
-                      verifyPhoneNumber(controller.text, verificationId, context);
-                    } catch (e) {
-                      print('plm nu merge');
-                    }
+    final smtpServer = gmail(username, password);
+    final code = generateRandom4DigitCode();
+    final message = Message()
+      ..from = Address(username, 'HomeLinker')
+      ..recipients.add(email)
+      ..subject = 'Code for authentication'
+      ..text = 'Your authentification code is $code';
 
-                    AutoRouter.of(context).popForced();
-                    // You'll typically want to bind this logic to a function.
-                  },
-                )
-              ],
-            );
-          },
-        );
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        // Auto-retrieval timeout.
-      },
-    );
+    try {
+      // final sendReport =
+      await send(message, smtpServer);
+
+      final wasCodeSent = await _userService.set2FactorAuthCode(email: email, code: code);
+      print(code);
+      // print('Message sent: ' + sendReport.toString());
+      print('Message sent.');
+      return wasCodeSent;
+    } on Exception {
+      print('Message not sent.');
+
+      return false;
+    }
   }
 
-  void verifyPhoneNumber(String smsCode, String verificationId, BuildContext context) {
-    PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: smsCode,
-    );
+  String generateRandom4DigitCode() {
+    var random = Random();
+    var code = random.nextInt(9000) + 1000;
+    return code.toString();
+  }
 
-    // Sign in with the credential
-    if (FirebaseAuth.instance.currentUser != null) {
-      FirebaseAuth.instance.currentUser?.linkWithCredential(phoneAuthCredential).then((userCredential) {
-        safeEmit(LoggedInSuccessfullyState());
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Logged in successfully!")),
-        );
-      }).catchError((error) async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to verify code, please try to log in again")),
-        );
-        await _accountService.logout();
-        safeEmit(LoginErrorState());
-      });
+  Future<bool> verifyCodeAndLogin({
+    required String code,
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    final authentificationData = await _userService.getAuthentificationCode(email: email);
+    final cloudCode = authentificationData[0];
+    final existsUser = authentificationData[1] as bool;
+    if (existsUser) {
+      print('cod corect');
+      if (code == cloudCode) {
+        await login(email: email, password: password);
+        return true;
+      } else {
+        print('cod incorect');
+        return false;
+      }
     } else {
-      AutoRouter.of(context).popForced();
+      print('user doesn\'t exist.');
+
+      return false;
     }
   }
 }
