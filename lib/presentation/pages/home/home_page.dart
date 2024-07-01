@@ -124,9 +124,9 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          TextButton(
-                              onPressed: () => BlocProvider.of<HomeCubit>(context).deleteData(),
-                              child: Text('delete all listings')),
+                          // TextButton(
+                          //     onPressed: () => BlocProvider.of<HomeCubit>(context).deleteData(),
+                          //     child: Text('delete all ')),
                           FilterItem(
                             context: context,
                             filterType: FilterType.house,

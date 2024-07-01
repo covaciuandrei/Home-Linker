@@ -41,15 +41,13 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   final areaTextController = TextEditingController();
   final descriptionTextController = TextEditingController();
 
-  Widget content = const Text('No location chosen.');
-
   PlaceLocation? _location;
   LatLng? pickedLocation;
 
   @override
   void initState() {
     BlocProvider.of<NewPropertyCubit>(context).loadPage();
-    content = Text(AppLocalizations.of(context).noLocationChosen);
+
     super.initState();
   }
 
@@ -69,7 +67,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
     return BlocConsumer<NewPropertyCubit, BaseState>(
       listener: (context, state) {
         if (state is PropertyAddedSuccessfullyState) {
-          BlocProvider.of<HomeCubit>(context).load();
+          BlocProvider.of<HomeCubit>(context).load(forceRefresh: true);
           AutoRouter.of(context).popForced();
         } else if (state is NoFileChosenState) {}
       },

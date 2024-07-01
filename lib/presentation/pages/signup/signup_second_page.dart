@@ -61,7 +61,7 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
           isButtonAvailable = false;
         }
         return LoadingScreen(
-          loading: false,
+          loading: state is PendingState,
           child: Scaffold(
             appBar: AppBar(),
             body: SingleChildScrollView(

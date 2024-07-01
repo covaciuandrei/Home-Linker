@@ -43,6 +43,12 @@ class _SettingsPageState extends State<SettingsPage> {
             const IntroductiveRoute(),
             predicate: (route) => false,
           );
+        } else if (state is SomethingWentWrongState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).somethingWrong),
+            ),
+          );
         }
       },
       builder: (context, state) {
