@@ -128,27 +128,32 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => BlocProvider.of<HomeCubit>(context).deleteData(),
                               child: Text('delete all listings')),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.house,
                             icon: Icons.home,
                             onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
                           ),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.apartment,
                             icon: Icons.apartment_rounded,
                             onPressed: () =>
                                 BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
                           ),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.rent,
                             icon: Icons.home_work,
                             onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
                           ),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.sale,
                             icon: Icons.local_offer,
                             onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
                           ),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.price,
                             icon: Icons.attach_money_rounded,
                             onPressed: () async {
@@ -219,6 +224,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           FilterItem(
+                            context: context,
                             filterType: FilterType.location,
                             icon: Icons.location_on,
                             onPressed: () =>
@@ -337,7 +343,7 @@ class PropertyItem extends StatelessWidget {
                               ),
                               Flexible(
                                 child: Text(
-                                  '${listing.property.propertyType.name.capitalize()} ${listing.property.areaSize} m²',
+                                  '${listing.property.propertyType.name.translate(context, listing.property.propertyType.name).capitalize()} ${listing.property.areaSize} m²',
                                   style: const TextStyle(
                                     color: Color.fromRGBO(20, 112, 161, 1),
                                     fontWeight: FontWeight.bold,
@@ -380,7 +386,7 @@ class PropertyItem extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                                       child: Text(
-                                        'For ${listing.property.listingType.name.capitalize()}',
+                                        '${AppLocalizations.of(context).perntru} ${listing.property.listingType.name.translate(context, listing.property.listingType.name).capitalize()}',
                                         style: const TextStyle(
                                           color: Color.fromRGBO(20, 112, 161, 1),
                                           fontWeight: FontWeight.bold,
@@ -431,11 +437,13 @@ class FilterItem extends StatelessWidget {
     required this.icon,
     required this.filterType,
     required this.onPressed,
+    required this.context,
   });
 
   final IconData icon;
   final FilterType filterType;
   final VoidCallback onPressed;
+  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -461,7 +469,7 @@ class FilterItem extends StatelessWidget {
                 color: Colors.white,
               ),
               Text(
-                filterType.name.capitalize(),
+                filterType.name.translate(context, filterType.name).capitalize(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,

@@ -61,95 +61,97 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
           isButtonAvailable = false;
         }
         return LoadingScreen(
-          loading: state is PendingState,
+          loading: false,
           child: Scaffold(
             appBar: AppBar(),
-            body: BlueShadowBackground(
-              child: Center(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 130),
+            body: SingleChildScrollView(
+              child: BlueShadowBackground(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 130),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SvgIcon(
+                                iconName: 'home',
+                                color: Colors.lightBlue,
+                                size: 80,
+                              ),
+                              Text(
+                                AppLocalizations.of(context).appTitle,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 36,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SvgIcon(
-                              iconName: 'home',
-                              color: Colors.lightBlue,
-                              size: 80,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 60),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    MainTextField(
+                                      textController: nameTextController,
+                                      placeholder: AppLocalizations.of(context).name,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    MainTextField(
+                                      textController: phoneTextController,
+                                      placeholder: AppLocalizations.of(context).phoneNumber,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    DropdownPicker(
+                                      onValueChanged: (value) {
+                                        accountType = value;
+                                      },
+                                      width: MediaQuery.of(context).size.width,
+                                      list: [
+                                        AccountType.propertyOwner.name,
+                                        AccountType.client.name,
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    MainButton(
+                                      isEnabled: isButtonAvailable,
+                                      onPressed: () {
+                                        BlocProvider.of<SignupCubit>(context).createAccount(
+                                          accountType: getAccountType(accountType),
+                                          name: nameTextController.text,
+                                          phoneNumber: phoneTextController.text,
+                                          email: widget.email,
+                                          password: widget.password,
+                                        );
+                                      },
+                                      text: AppLocalizations.of(context).signup,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            Text(
-                              AppLocalizations.of(context).appTitle,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 36,
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 60),
+                              child: MainTextButton(
+                                text: AppLocalizations.of(context).alreadyHaveAccount,
+                                onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 60),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 16),
-                                  MainTextField(
-                                    textController: nameTextController,
-                                    placeholder: AppLocalizations.of(context).name,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  MainTextField(
-                                    textController: phoneTextController,
-                                    placeholder: AppLocalizations.of(context).phoneNumber,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  DropdownPicker(
-                                    onValueChanged: (value) {
-                                      accountType = value;
-                                    },
-                                    width: MediaQuery.of(context).size.width,
-                                    list: [
-                                      AccountType.propertyOwner.name,
-                                      AccountType.client.name,
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  MainButton(
-                                    isEnabled: isButtonAvailable,
-                                    onPressed: () {
-                                      BlocProvider.of<SignupCubit>(context).createAccount(
-                                        accountType: getAccountType(accountType),
-                                        name: nameTextController.text,
-                                        phoneNumber: phoneTextController.text,
-                                        email: widget.email,
-                                        password: widget.password,
-                                      );
-                                    },
-                                    text: AppLocalizations.of(context).signup,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60),
-                            child: MainTextButton(
-                              text: AppLocalizations.of(context).alreadyHaveAccount,
-                              onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

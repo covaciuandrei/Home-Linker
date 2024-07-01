@@ -63,5 +63,9 @@
   "sendCodeAgain": "Retrimite codul",
   "mailSent": "Email trimis cu succes",
   "mailNotSent": "Email netrimis",
-  "version":"Versiunea"
+  "version":"Versiunea",
+  "house":"casă",
+  "apartment":"apartament",
+  "rent":"închiriere",
+  "sale":"vânzare"
 }

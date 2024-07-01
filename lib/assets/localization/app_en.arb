@@ -64,6 +64,10 @@
   "sendCodeAgain": "Send code again",
   "mailSent": "Mail Sent Successfully",
   "mailNotSent": "Email not sent",
-  "version":"Version"
+  "version":"Version",
+  "house":"house",
+  "apartment":"apartment",
+  "rent":"rent",
+  "sale":"sale"
 }
 

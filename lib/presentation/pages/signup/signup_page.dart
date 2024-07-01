@@ -6,6 +6,7 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
+import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_button.dart';
 import 'package:homelinker/presentation/widgets/main_text_field.dart';
@@ -64,84 +65,89 @@ class _SignupPageState extends State<SignupPage> {
         } else if (state is InputErrorState) {
           isButtonAvailable = false;
         }
-        return Scaffold(
-          appBar: AppBar(),
-          body: BlueShadowBackground(
-            child: Center(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 130),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SvgIcon(
-                            iconName: 'home',
-                            color: Colors.lightBlue,
-                            size: 80,
+        return LoadingScreen<SignupCubit>(
+          loading: state is PendingState,
+          child: Scaffold(
+            appBar: AppBar(),
+            body: SingleChildScrollView(
+              child: BlueShadowBackground(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 130),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SvgIcon(
+                                iconName: 'home',
+                                color: Colors.lightBlue,
+                                size: 80,
+                              ),
+                              Text(
+                                AppLocalizations.of(context).appTitle,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 36,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            AppLocalizations.of(context).appTitle,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 36,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 60),
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 16),
-                                MainTextField(
-                                  textController: emailTextController,
-                                  placeholder: AppLocalizations.of(context).email,
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 60),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    MainTextField(
+                                      textController: emailTextController,
+                                      placeholder: AppLocalizations.of(context).email,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    MainTextField(
+                                      textController: passwordTextController,
+                                      placeholder: AppLocalizations.of(context).password,
+                                      isPassword: true,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    MainTextField(
+                                      textController: repeatPasswordTextController,
+                                      placeholder: AppLocalizations.of(context).repeatPassword,
+                                      isPassword: true,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    MainButton(
+                                      isEnabled: isButtonAvailable,
+                                      onPressed: () {
+                                        BlocProvider.of<SignupCubit>(context).goToSecondSignupPage();
+                                      },
+                                      text: AppLocalizations.of(context).signup,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 16),
-                                MainTextField(
-                                  textController: passwordTextController,
-                                  placeholder: AppLocalizations.of(context).password,
-                                  isPassword: true,
-                                ),
-                                const SizedBox(height: 16),
-                                MainTextField(
-                                  textController: repeatPasswordTextController,
-                                  placeholder: AppLocalizations.of(context).repeatPassword,
-                                  isPassword: true,
-                                ),
-                                const SizedBox(height: 20),
-                                MainButton(
-                                  isEnabled: isButtonAvailable,
-                                  onPressed: () {
-                                    BlocProvider.of<SignupCubit>(context).goToSecondSignupPage();
-                                  },
-                                  text: AppLocalizations.of(context).signup,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: MainTextButton(
+                                text: AppLocalizations.of(context).alreadyHaveAccount,
+                                onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
+                              ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 60),
-                          child: MainTextButton(
-                            text: AppLocalizations.of(context).alreadyHaveAccount,
-                            onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

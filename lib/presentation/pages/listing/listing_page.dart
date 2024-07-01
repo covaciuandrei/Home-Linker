@@ -87,7 +87,9 @@ class ListingPage extends StatelessWidget {
                                           Padding(
                                             padding: const EdgeInsets.only(bottom: 4),
                                             child: Text(
-                                              listing.property.propertyType.name.capitalize(),
+                                              listing.property.propertyType.name
+                                                  .translate(context, listing.property.propertyType.name)
+                                                  .capitalize(),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Color.fromRGBO(28, 83, 119, 1),
