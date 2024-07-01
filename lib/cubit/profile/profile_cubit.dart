@@ -40,13 +40,8 @@ class ProfileCubit extends BaseCubit {
       _profilePicture = await _imageService.getImage(imageId: user.profilePictureId);
     }
 
-    Future.delayed(
-        const Duration(milliseconds: 200),
-        () => safeEmit(ProfilePageLoadedState(
-              profilePicture: _profilePicture,
-              user: user,
-              appVersion:appVersion
-            )));
+    Future.delayed(const Duration(milliseconds: 200),
+        () => safeEmit(ProfilePageLoadedState(profilePicture: _profilePicture, user: user, appVersion: appVersion)));
   }
 
   Future<void> changePicture() async {

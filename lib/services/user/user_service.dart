@@ -1,4 +1,5 @@
 import 'package:homelinker/data/remote/user/user_source.dart';
+import 'package:homelinker/data/repository/user_repository.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
 import 'package:homelinker/models/enums/account_type.dart';
@@ -10,15 +11,40 @@ class UserService {
   UserService(
     this._userSource,
     this._secureStorageSource,
+    this._userRepository,
   );
 
   final UserSource _userSource;
   final SecureStorageSource _secureStorageSource;
+  final UserRepository _userRepository;
 
   Future<User> getLoggedUser() async {
     final email = await _secureStorageSource.get(SecureStorageKeys.userEmail);
-    final user = await _userSource.get(email!);
-    return user;
+    final userId = await _secureStorageSource.get(SecureStorageKeys.userId);
+
+    
+    if (await _userRepository.isExpired(additionalParam: userId!)) {
+      final user = await _userSource.get(email!);
+      await _userRepository.clear(userId: userId);
+      await _userRepository.insert(
+        users: [user],
+      );
+      print('users cloud');
+      return user;
+    }
+    print('users repo');
+    return _userRepository.get(userId);
+  }
+
+  Future<bool> set2FactorAuthCode({
+    required String email,
+    required String code,
+  }) async {
+    final wasCodeSet = await _userSource.set2FactorAuthCode(
+      email: email,
+      code: code,
+    );
+    return wasCodeSet;
   }
 
   Future<void> createUser({
@@ -44,5 +70,10 @@ class UserService {
   Future<void> updateUser({required String imageId}) async {
     final user = await getLoggedUser();
     await _userSource.updateUser(userId: user.id, imageId: imageId);
+  }
+
+  Future<List<Object>> getAuthentificationCode({required String email}) async {
+    final authentificationCode = await _userSource.getAuthentificationCode(email: email);
+    return authentificationCode;
   }
 }

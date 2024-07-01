@@ -48,7 +48,10 @@ dependencies:
   injectable: ^2.1.0
   numberpicker: ^2.0.1
   path: ^1.8.0
-
+  lottie: ^2.2.0
+  drift_dev: ^2.11.0
+  sqlite3_flutter_libs: ^0.5.15
+  drift: ^2.11.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -64,7 +67,10 @@ dependencies:
   google_maps_flutter: ^2.5.3
   flutter_dotenv: ^5.1.0
   flutter_config: ^2.0.2
-  flutter_2fa: ^1.0.1
+  flutter_email_sender: ^6.0.3
+  mailer: ^6.1.0
+
+
 
 dev_dependencies:
   flutter_test:

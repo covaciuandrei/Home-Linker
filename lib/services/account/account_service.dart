@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:homelinker/data/database/database_provider.dart';
 import 'package:homelinker/data/remote/user/user_source.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
@@ -10,15 +10,21 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class AccountService {
-  AccountService(this._secureStorage, this._userService, this._userSource);
+  AccountService(
+    this._secureStorage,
+    this._userService,
+    this._userSource,
+    this._databaseProvider,
+  );
 
   final SecureStorageSource _secureStorage;
   final UserService _userService;
   final UserSource _userSource;
+  final DatabaseProvider _databaseProvider;
 
   Future<bool> isUserLoggedIn() async => (await _secureStorage.get(SecureStorageKeys.loginToken))?.isNotEmpty ?? false;
 
-  Future<void> login({required String email, required String password, required BuildContext context}) async {
+  Future<void> login({required String email, required String password}) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.trim(), password: password);
     } on FirebaseAuthException catch (ex) {
@@ -139,5 +145,6 @@ class AccountService {
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     await _secureStorage.deleteAll();
+    await _databaseProvider.get.clear();
   }
 }
