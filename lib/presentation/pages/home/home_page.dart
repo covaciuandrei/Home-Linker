@@ -5,10 +5,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
+import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/models/filters.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/range.dart';
+import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -31,6 +33,16 @@ class _HomePageState extends State<HomePage> {
   double _minimumPrice = 0;
   double _maximumPrice = 0;
   RangeValues priceRange = const RangeValues(0, 100000);
+  User user = User(
+    email: '',
+    id: '',
+    name: '',
+    phone: '',
+    profilePictureId: '',
+    type: AccountType.client,
+    twoFactorAuthCode: '',
+    is2FaActivated: false,
+  );
 
   @override
   void initState() {
@@ -84,21 +96,24 @@ class _HomePageState extends State<HomePage> {
           languages = state.languages;
           priceRange = state.priceRange;
           _isPagePriceFiltered = state.isPageFiltered;
+          user = state.user;
         }
         return GestureDetector(
           onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
           child: LoadingScreen(
             loading: state is PendingState,
             child: Scaffold(
-              floatingActionButton: FloatingActionButton(
-                backgroundColor: Colors.lightBlue,
-                foregroundColor: Colors.white,
-                onPressed: () => AutoRouter.of(context).push(const NewPropertyRoute()),
-                child: const Icon(
-                  Icons.add,
-                  size: 30,
-                ),
-              ),
+              floatingActionButton: user.type == AccountType.propertyOwner
+                  ? FloatingActionButton(
+                      backgroundColor: Colors.lightBlue,
+                      foregroundColor: Colors.white,
+                      onPressed: () => AutoRouter.of(context).push(const NewPropertyRoute()),
+                      child: const Icon(
+                        Icons.add,
+                        size: 30,
+                      ),
+                    )
+                  : null,
               appBar: MainAppBar(title: AppLocalizations.of(context).appTitle),
               drawer: MainDrawer(languages: languages),
               body: Column(
@@ -109,6 +124,9 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
+                          TextButton(
+                              onPressed: () => BlocProvider.of<HomeCubit>(context).deleteData(),
+                              child: Text('delete all listings')),
                           FilterItem(
                             filterType: FilterType.house,
                             icon: Icons.home,
@@ -227,7 +245,9 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         return PropertyItem(
                           listing: listings[index],
-                          onPressed: () => AutoRouter.of(context).push(ListingRoute(listing: listings[index])),
+                          onPressed: () =>
+                              AutoRouter.of(context).push(ListingRoute(listing: listings[index], user: user)),
+                          // .then((value) => BlocProvider.of<HomeCubit>(context).load(forceRefresh: true)),
                           onFavoriteIconPressed: () {
                             setState(() {
                               _isSaved = !_isSaved;

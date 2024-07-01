@@ -22,16 +22,17 @@ class UserService {
     final email = await _secureStorageSource.get(SecureStorageKeys.userEmail);
     final userId = await _secureStorageSource.get(SecureStorageKeys.userId);
 
+    
     if (await _userRepository.isExpired(additionalParam: userId!)) {
       final user = await _userSource.get(email!);
       await _userRepository.clear(userId: userId);
       await _userRepository.insert(
         users: [user],
       );
-      print('cloud');
+      print('users cloud');
       return user;
     }
-    print('repo');
+    print('users repo');
     return _userRepository.get(userId);
   }
 

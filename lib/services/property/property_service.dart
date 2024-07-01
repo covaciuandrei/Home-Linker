@@ -13,8 +13,8 @@ class PropertyService {
   final PropertySource _propertySource;
   final PropertyRepository _propertyRepository;
 
-  Future<List<Property>> getAll() async {
-    if (await _propertyRepository.isExpired(additionalParam: 'documents')) {
+  Future<List<Property>> getAll({bool? forceRefresh}) async {
+    if (await _propertyRepository.isExpired(additionalParam: 'documents') || (forceRefresh != null && forceRefresh)) {
       final properties = await _propertySource.getAll();
 
       await _propertyRepository.clear();
@@ -35,5 +35,6 @@ class PropertyService {
 
   Future<void> delete({required String propertyId}) async {
     await _propertySource.delete(propertyId: propertyId);
+    await _propertyRepository.invalidateCache(additionalParam: 'documents');
   }
 }

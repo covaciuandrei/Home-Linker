@@ -56,10 +56,12 @@ _i1.GetIt $initGetIt(
     environmentFilter,
   );
   gh.factory<_i3.AppVersionMapper>(() => _i3.AppVersionMapper());
-  gh.factory<_i4.AppVersionSource>(() => _i4.AppVersionSource(gh<_i3.AppVersionMapper>()));
+  gh.factory<_i4.AppVersionSource>(
+      () => _i4.AppVersionSource(gh<_i3.AppVersionMapper>()));
   gh.singleton<_i5.DatabaseProvider>(() => _i5.DatabaseProvider());
   gh.factory<_i6.ImageMapper>(() => _i6.ImageMapper());
-  gh.factory<_i7.ImageRepository>(() => _i7.ImageRepository(gh<_i5.DatabaseProvider>()));
+  gh.factory<_i7.ImageRepository>(
+      () => _i7.ImageRepository(gh<_i5.DatabaseProvider>()));
   gh.factory<_i8.ImagesSource>(() => _i8.ImagesSource(gh<_i6.ImageMapper>()));
   gh.factory<_i9.IntroductiveCubit>(() => _i9.IntroductiveCubit());
   gh.factory<_i10.PropertyMapper>(() => _i10.PropertyMapper());
@@ -67,7 +69,8 @@ _i1.GetIt $initGetIt(
         gh<_i10.PropertyMapper>(),
         gh<_i5.DatabaseProvider>(),
       ));
-  gh.factory<_i12.PropertySource>(() => _i12.PropertySource(gh<_i10.PropertyMapper>()));
+  gh.factory<_i12.PropertySource>(
+      () => _i12.PropertySource(gh<_i10.PropertyMapper>()));
   gh.factory<_i13.ResetPasswordCubit>(() => _i13.ResetPasswordCubit());
   gh.factory<_i14.SecureStorageSource>(() => _i14.SecureStorageSource());
   gh.factory<_i15.SplashCubit>(() => _i15.SplashCubit());
@@ -79,7 +82,8 @@ _i1.GetIt $initGetIt(
       ));
   gh.factory<_i19.UserSource>(() => _i19.UserSource(gh<_i17.UserMapper>()));
   gh.factory<_i20.ValidatorService>(() => _i20.ValidatorService());
-  gh.factory<_i21.AppVersionService>(() => _i21.AppVersionService(gh<_i4.AppVersionSource>()));
+  gh.factory<_i21.AppVersionService>(
+      () => _i21.AppVersionService(gh<_i4.AppVersionSource>()));
   gh.factory<_i22.ImageService>(() => _i22.ImageService(
         gh<_i8.ImagesSource>(),
         gh<_i16.StorageSource>(),
@@ -105,10 +109,13 @@ _i1.GetIt $initGetIt(
         gh<_i24.UserService>(),
         gh<_i8.ImagesSource>(),
       ));
-  gh.factory<_i27.ForgotPasswordCubit>(() => _i27.ForgotPasswordCubit(gh<_i25.AccountService>()));
+  gh.factory<_i27.ForgotPasswordCubit>(
+      () => _i27.ForgotPasswordCubit(gh<_i25.AccountService>()));
   gh.factory<_i28.HomeCubit>(() => _i28.HomeCubit(
         gh<_i23.PropertyService>(),
         gh<_i22.ImageService>(),
+        gh<_i24.UserService>(),
+        gh<_i5.DatabaseProvider>(),
       ));
   gh.factory<_i29.ListingCubit>(() => _i29.ListingCubit(
         gh<_i23.PropertyService>(),
@@ -118,6 +125,7 @@ _i1.GetIt $initGetIt(
         gh<_i25.AccountService>(),
         gh<_i20.ValidatorService>(),
         gh<_i24.UserService>(),
+        gh<_i5.DatabaseProvider>(),
       ));
   gh.factory<_i31.NewPropertyCubit>(() => _i31.NewPropertyCubit(
         gh<_i23.PropertyService>(),

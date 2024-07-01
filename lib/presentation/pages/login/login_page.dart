@@ -233,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 TextButton(
-                  child: const Text("Send code"),
+                  child: const Text("Send code again"),
                   onPressed: () async {
                     final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
                     if (wasEmailSent) {

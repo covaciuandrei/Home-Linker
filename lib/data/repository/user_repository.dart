@@ -12,7 +12,7 @@ class UserRepository extends BaseRepository {
   final UserMapper _userMapper;
 
   @override
-  int get cachePeriod => ExpirationTimesConstants.mediumTermTable;
+  int get cachePeriod => ExpirationTimesConstants.longTermTable;
 
   @override
   String get tableName => database.users.tableName!;

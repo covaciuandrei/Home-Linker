@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/data/database/database_provider.dart';
 import 'package:homelinker/services/account/account_service.dart';
 import 'package:homelinker/services/user/user_service.dart';
 import 'package:homelinker/services/validator_service.dart';
@@ -14,10 +15,17 @@ part 'package:homelinker/cubit/login/login_states.dart';
 
 @injectable
 class LoginCubit extends BaseCubit {
-  LoginCubit(this._accountService, this._validatorService, this._userService) : super(InitialState());
+  LoginCubit(
+    this._accountService,
+    this._validatorService,
+    this._userService,
+    this._databaseProvider,
+  ) : super(InitialState());
+
   final AccountService _accountService;
   final ValidatorService _validatorService;
   final UserService _userService;
+  final DatabaseProvider _databaseProvider;
 
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
@@ -31,6 +39,7 @@ class LoginCubit extends BaseCubit {
   Future<void> login({required String email, required String password}) async {
     try {
       safeEmit(PendingState());
+      await _databaseProvider.get.clear();
       await _accountService.login(email: email, password: password);
       safeEmit(LoggedInSuccessfullyState());
     } on Exception {

@@ -13,6 +13,7 @@ import 'package:flutter/material.dart' as _i19;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:homelinker/models/listing.dart' as _i20;
 import 'package:homelinker/models/place_location.dart' as _i8;
+import 'package:homelinker/models/user.dart' as _i21;
 import 'package:homelinker/presentation/pages/home/home_page.dart' as _i3;
 import 'package:homelinker/presentation/pages/introductive/introductive_page.dart' as _i4;
 import 'package:homelinker/presentation/pages/listing/listing_page.dart' as _i5;
@@ -66,6 +67,7 @@ abstract class $AppRouter extends _i18.RootStackRouter {
         child: _i5.ListingPage(
           key: args.key,
           listing: args.listing,
+          user: args.user,
         ),
       );
     },
@@ -210,12 +212,14 @@ class ListingRoute extends _i18.PageRouteInfo<ListingRouteArgs> {
   ListingRoute({
     _i19.Key? key,
     required _i20.Listing listing,
+    required _i21.User user,
     List<_i18.PageRouteInfo>? children,
   }) : super(
           ListingRoute.name,
           args: ListingRouteArgs(
             key: key,
             listing: listing,
+            user: user,
           ),
           initialChildren: children,
         );
@@ -229,15 +233,18 @@ class ListingRouteArgs {
   const ListingRouteArgs({
     this.key,
     required this.listing,
+    required this.user,
   });
 
   final _i19.Key? key;
 
   final _i20.Listing listing;
 
+  final _i21.User user;
+
   @override
   String toString() {
-    return 'ListingRouteArgs{key: $key, listing: $listing}';
+    return 'ListingRouteArgs{key: $key, listing: $listing, user: $user}';
   }
 }
 
