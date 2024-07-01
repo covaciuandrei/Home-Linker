@@ -51,5 +51,17 @@
   "logout": "Deconectare",
   "alreadyHaveAccount": "Ai deja un cont? Conectează-te.",
   "accountCreatedSuccessfully": "Contul dvs. a fost creat cu succes. Intrați pe linkul din mail-ul primit pentru a putea finaliza creearea contului",
-  "version": "Versiunea"
+  "pickLocation": "Alege locația",
+  "yourLocation": "Locația dvs",
+  "noLocationChosen": "Nicio locație selectată",
+  "currentLocation": "Locația curentă",
+  "selectOnMap": "Selectează pe hartă",
+  "somethingWrong": "Ceva nu a mers bine, te rugăm încearca iar.",
+  "enterCodeRecived": "Introduceți codul primit pe adresa de email",
+  "confirm": "Confirm",
+  "wrongCode": "Codul/adresa de email nu sunt corecte, te rugăm încearca iar.",
+  "sendCodeAgain": "Retrimite codul",
+  "mailSent": "Email trimis cu succes",
+  "mailNotSent": "Email netrimis",
+  "version":"Versiunea"
 }

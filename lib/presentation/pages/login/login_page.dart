@@ -54,8 +54,8 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state is SomethingWentWrongState) {
           AutoRouter.of(context).popForced();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Something went wrong, please try again.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).somethingWrong),
             ),
           );
         }
@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Enter Code received on email"),
+              title: Text(AppLocalizations.of(context).enterCodeRecived),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Column(
@@ -215,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               actions: [
                 TextButton(
-                  child: const Text("Confirm"),
+                  child: Text(AppLocalizations.of(context).confirm),
                   onPressed: () async {
                     final wasCodeOk = await BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
                       context: context,
@@ -224,27 +224,26 @@ class _LoginPageState extends State<LoginPage> {
                       code: controller.text,
                     );
                     if (!wasCodeOk) {
-                      print('dsaojdjskahkjdhsakjdhsa');
                       setState(() {
                         textColor = Colors.red;
-                        message = "Code/email address is wrong, please try again.";
+                        message = AppLocalizations.of(context).wrongCode;
                       });
                     }
                   },
                 ),
                 TextButton(
-                  child: const Text("Send code again"),
+                  child:  Text(AppLocalizations.of(context).sendCodeAgain),
                   onPressed: () async {
                     final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
                     if (wasEmailSent) {
                       setState(() {
                         textColor = Colors.green;
-                        message = "Mail Sent Successfully";
+                        message = AppLocalizations.of(context).mailSent;
                       });
                     } else {
                       setState(() {
                         textColor = Colors.red;
-                        message = "Mail not sent, please try again.";
+                        message = AppLocalizations.of(context).mailNotSent;
                       });
                     }
                   },

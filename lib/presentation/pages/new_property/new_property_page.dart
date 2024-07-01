@@ -49,6 +49,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   @override
   void initState() {
     BlocProvider.of<NewPropertyCubit>(context).loadPage();
+    content = Text(AppLocalizations.of(context).noLocationChosen);
     super.initState();
   }
 
@@ -134,7 +135,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                     width: MediaQuery.of(context).size.width * 0.45,
                                     onPressed: () => BlocProvider.of<NewPropertyCubit>(context).getCurrentLocation(),
                                     icon: Icons.location_on,
-                                    text: 'Current location',
+                                    text: AppLocalizations.of(context).currentLocation,
                                   ),
                                   MainButton(
                                     width: MediaQuery.of(context).size.width * 0.45,
@@ -151,7 +152,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                           coordonate: LatLng(pickedLocation!.latitude, pickedLocation!.longitude));
                                     },
                                     icon: Icons.map,
-                                    text: 'Select on map',
+                                    text: AppLocalizations.of(context).selectOnMap,
                                   ),
                                 ],
                               ),

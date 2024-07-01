@@ -247,7 +247,6 @@ class _HomePageState extends State<HomePage> {
                           listing: listings[index],
                           onPressed: () =>
                               AutoRouter.of(context).push(ListingRoute(listing: listings[index], user: user)),
-                          // .then((value) => BlocProvider.of<HomeCubit>(context).load(forceRefresh: true)),
                           onFavoriteIconPressed: () {
                             setState(() {
                               _isSaved = !_isSaved;

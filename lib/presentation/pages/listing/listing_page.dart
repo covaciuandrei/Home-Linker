@@ -35,9 +35,6 @@ class ListingPage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        print(user.email);
-        print(user.id);
-        print(user.name);
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(

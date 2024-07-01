@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:homelinker/models/place_location.dart';
 
@@ -27,7 +28,8 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isSelecting ? 'Pick your location' : 'Your location'),
+        title: Text(
+            widget.isSelecting ? AppLocalizations.of(context).pickLocation : AppLocalizations.of(context).yourLocation),
         actions: [
           if (widget.isSelecting)
             IconButton(

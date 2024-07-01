@@ -52,6 +52,18 @@
   "logout": "Logout",
   "alreadyHaveAccount": "Already have an account? Log in",
   "accountCreatedSuccessfully": "Your account has been created successfully. Click on the link in the email you recived to finalize your account setup.",
-  "version": "Version"
+  "pickLocation": "Pick your location",
+  "yourLocation": "Your location",
+  "noLocationChosen": "No location chosen.",
+  "currentLocation": "Current location",
+  "selectOnMap": "Select on map",
+  "somethingWrong": "Something went wrong, please try again.",
+  "enterCodeRecived": "Enter Code received on email",
+  "confirm": "Confirm",
+  "wrongCode": "Code/email address is wrong, please try again.",
+  "sendCodeAgain": "Send code again",
+  "mailSent": "Mail Sent Successfully",
+  "mailNotSent": "Email not sent",
+  "version":"Version"
 }
 
