@@ -110,6 +110,14 @@ class TablesUpdateTime extends DataClass
         name: name ?? this.name,
         lastUpdate: lastUpdate ?? this.lastUpdate,
       );
+  TablesUpdateTime copyWithCompanion(TablesUpdateTimesCompanion data) {
+    return TablesUpdateTime(
+      name: data.name.present ? data.name.value : this.name,
+      lastUpdate:
+          data.lastUpdate.present ? data.lastUpdate.value : this.lastUpdate,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('TablesUpdateTime(')
@@ -443,6 +451,25 @@ class User extends DataClass implements Insertable<User> {
         is2FaActivated: is2FaActivated ?? this.is2FaActivated,
         twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
       );
+  User copyWithCompanion(UsersCompanion data) {
+    return User(
+      id: data.id.present ? data.id.value : this.id,
+      email: data.email.present ? data.email.value : this.email,
+      name: data.name.present ? data.name.value : this.name,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      profilePictureId: data.profilePictureId.present
+          ? data.profilePictureId.value
+          : this.profilePictureId,
+      type: data.type.present ? data.type.value : this.type,
+      is2FaActivated: data.is2FaActivated.present
+          ? data.is2FaActivated.value
+          : this.is2FaActivated,
+      twoFactorAuthCode: data.twoFactorAuthCode.present
+          ? data.twoFactorAuthCode.value
+          : this.twoFactorAuthCode,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('User(')
@@ -1008,6 +1035,34 @@ class Property extends DataClass implements Insertable<Property> {
         price: price ?? this.price,
         propertyType: propertyType ?? this.propertyType,
       );
+  Property copyWithCompanion(PropertiesCompanion data) {
+    return Property(
+      id: data.id.present ? data.id.value : this.id,
+      areaSize: data.areaSize.present ? data.areaSize.value : this.areaSize,
+      bathrooms: data.bathrooms.present ? data.bathrooms.value : this.bathrooms,
+      bedrooms: data.bedrooms.present ? data.bedrooms.value : this.bedrooms,
+      constructionYear: data.constructionYear.present
+          ? data.constructionYear.value
+          : this.constructionYear,
+      description:
+          data.description.present ? data.description.value : this.description,
+      imageId: data.imageId.present ? data.imageId.value : this.imageId,
+      listingType:
+          data.listingType.present ? data.listingType.value : this.listingType,
+      location: data.location.present ? data.location.value : this.location,
+      ownerEmail:
+          data.ownerEmail.present ? data.ownerEmail.value : this.ownerEmail,
+      ownerName: data.ownerName.present ? data.ownerName.value : this.ownerName,
+      parkingSpaces: data.parkingSpaces.present
+          ? data.parkingSpaces.value
+          : this.parkingSpaces,
+      price: data.price.present ? data.price.value : this.price,
+      propertyType: data.propertyType.present
+          ? data.propertyType.value
+          : this.propertyType,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Property(')
@@ -1449,6 +1504,18 @@ class Image extends DataClass implements Insertable<Image> {
         uploadDate: uploadDate ?? this.uploadDate,
         data: data ?? this.data,
       );
+  Image copyWithCompanion(ImagesCompanion data) {
+    return Image(
+      identifier:
+          data.identifier.present ? data.identifier.value : this.identifier,
+      name: data.name.present ? data.name.value : this.name,
+      path: data.path.present ? data.path.value : this.path,
+      uploadDate:
+          data.uploadDate.present ? data.uploadDate.value : this.uploadDate,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Image(')
@@ -1577,6 +1644,7 @@ class ImagesCompanion extends UpdateCompanion<Image> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $TablesUpdateTimesTable tablesUpdateTimes =
       $TablesUpdateTimesTable(this);
   late final $UsersTable users = $UsersTable(this);
@@ -1588,4 +1656,668 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [tablesUpdateTimes, users, properties, images];
+}
+
+typedef $$TablesUpdateTimesTableCreateCompanionBuilder
+    = TablesUpdateTimesCompanion Function({
+  required String name,
+  required DateTime lastUpdate,
+  Value<int> rowid,
+});
+typedef $$TablesUpdateTimesTableUpdateCompanionBuilder
+    = TablesUpdateTimesCompanion Function({
+  Value<String> name,
+  Value<DateTime> lastUpdate,
+  Value<int> rowid,
+});
+
+class $$TablesUpdateTimesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $TablesUpdateTimesTable,
+    TablesUpdateTime,
+    $$TablesUpdateTimesTableFilterComposer,
+    $$TablesUpdateTimesTableOrderingComposer,
+    $$TablesUpdateTimesTableCreateCompanionBuilder,
+    $$TablesUpdateTimesTableUpdateCompanionBuilder> {
+  $$TablesUpdateTimesTableTableManager(
+      _$AppDatabase db, $TablesUpdateTimesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$TablesUpdateTimesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$TablesUpdateTimesTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> name = const Value.absent(),
+            Value<DateTime> lastUpdate = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TablesUpdateTimesCompanion(
+            name: name,
+            lastUpdate: lastUpdate,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String name,
+            required DateTime lastUpdate,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TablesUpdateTimesCompanion.insert(
+            name: name,
+            lastUpdate: lastUpdate,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$TablesUpdateTimesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TablesUpdateTimesTable> {
+  $$TablesUpdateTimesTableFilterComposer(super.$state);
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get lastUpdate => $state.composableBuilder(
+      column: $state.table.lastUpdate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TablesUpdateTimesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TablesUpdateTimesTable> {
+  $$TablesUpdateTimesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get lastUpdate => $state.composableBuilder(
+      column: $state.table.lastUpdate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
+  required String id,
+  required String email,
+  required String name,
+  required String phone,
+  required String profilePictureId,
+  required String type,
+  required bool is2FaActivated,
+  required String twoFactorAuthCode,
+  Value<int> rowid,
+});
+typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
+  Value<String> id,
+  Value<String> email,
+  Value<String> name,
+  Value<String> phone,
+  Value<String> profilePictureId,
+  Value<String> type,
+  Value<bool> is2FaActivated,
+  Value<String> twoFactorAuthCode,
+  Value<int> rowid,
+});
+
+class $$UsersTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder> {
+  $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$UsersTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$UsersTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> email = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> phone = const Value.absent(),
+            Value<String> profilePictureId = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<bool> is2FaActivated = const Value.absent(),
+            Value<String> twoFactorAuthCode = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              UsersCompanion(
+            id: id,
+            email: email,
+            name: name,
+            phone: phone,
+            profilePictureId: profilePictureId,
+            type: type,
+            is2FaActivated: is2FaActivated,
+            twoFactorAuthCode: twoFactorAuthCode,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String email,
+            required String name,
+            required String phone,
+            required String profilePictureId,
+            required String type,
+            required bool is2FaActivated,
+            required String twoFactorAuthCode,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              UsersCompanion.insert(
+            id: id,
+            email: email,
+            name: name,
+            phone: phone,
+            profilePictureId: profilePictureId,
+            type: type,
+            is2FaActivated: is2FaActivated,
+            twoFactorAuthCode: twoFactorAuthCode,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$UsersTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $UsersTable> {
+  $$UsersTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get email => $state.composableBuilder(
+      column: $state.table.email,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get phone => $state.composableBuilder(
+      column: $state.table.phone,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get profilePictureId => $state.composableBuilder(
+      column: $state.table.profilePictureId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get is2FaActivated => $state.composableBuilder(
+      column: $state.table.is2FaActivated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get twoFactorAuthCode => $state.composableBuilder(
+      column: $state.table.twoFactorAuthCode,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$UsersTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $UsersTable> {
+  $$UsersTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get email => $state.composableBuilder(
+      column: $state.table.email,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get phone => $state.composableBuilder(
+      column: $state.table.phone,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get profilePictureId => $state.composableBuilder(
+      column: $state.table.profilePictureId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get is2FaActivated => $state.composableBuilder(
+      column: $state.table.is2FaActivated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get twoFactorAuthCode => $state.composableBuilder(
+      column: $state.table.twoFactorAuthCode,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$PropertiesTableCreateCompanionBuilder = PropertiesCompanion Function({
+  required String id,
+  required int areaSize,
+  required int bathrooms,
+  required int bedrooms,
+  required int constructionYear,
+  required String description,
+  required String imageId,
+  required String listingType,
+  required String location,
+  required String ownerEmail,
+  required String ownerName,
+  required int parkingSpaces,
+  required double price,
+  required String propertyType,
+  Value<int> rowid,
+});
+typedef $$PropertiesTableUpdateCompanionBuilder = PropertiesCompanion Function({
+  Value<String> id,
+  Value<int> areaSize,
+  Value<int> bathrooms,
+  Value<int> bedrooms,
+  Value<int> constructionYear,
+  Value<String> description,
+  Value<String> imageId,
+  Value<String> listingType,
+  Value<String> location,
+  Value<String> ownerEmail,
+  Value<String> ownerName,
+  Value<int> parkingSpaces,
+  Value<double> price,
+  Value<String> propertyType,
+  Value<int> rowid,
+});
+
+class $$PropertiesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PropertiesTable,
+    Property,
+    $$PropertiesTableFilterComposer,
+    $$PropertiesTableOrderingComposer,
+    $$PropertiesTableCreateCompanionBuilder,
+    $$PropertiesTableUpdateCompanionBuilder> {
+  $$PropertiesTableTableManager(_$AppDatabase db, $PropertiesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PropertiesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$PropertiesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<int> areaSize = const Value.absent(),
+            Value<int> bathrooms = const Value.absent(),
+            Value<int> bedrooms = const Value.absent(),
+            Value<int> constructionYear = const Value.absent(),
+            Value<String> description = const Value.absent(),
+            Value<String> imageId = const Value.absent(),
+            Value<String> listingType = const Value.absent(),
+            Value<String> location = const Value.absent(),
+            Value<String> ownerEmail = const Value.absent(),
+            Value<String> ownerName = const Value.absent(),
+            Value<int> parkingSpaces = const Value.absent(),
+            Value<double> price = const Value.absent(),
+            Value<String> propertyType = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PropertiesCompanion(
+            id: id,
+            areaSize: areaSize,
+            bathrooms: bathrooms,
+            bedrooms: bedrooms,
+            constructionYear: constructionYear,
+            description: description,
+            imageId: imageId,
+            listingType: listingType,
+            location: location,
+            ownerEmail: ownerEmail,
+            ownerName: ownerName,
+            parkingSpaces: parkingSpaces,
+            price: price,
+            propertyType: propertyType,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required int areaSize,
+            required int bathrooms,
+            required int bedrooms,
+            required int constructionYear,
+            required String description,
+            required String imageId,
+            required String listingType,
+            required String location,
+            required String ownerEmail,
+            required String ownerName,
+            required int parkingSpaces,
+            required double price,
+            required String propertyType,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PropertiesCompanion.insert(
+            id: id,
+            areaSize: areaSize,
+            bathrooms: bathrooms,
+            bedrooms: bedrooms,
+            constructionYear: constructionYear,
+            description: description,
+            imageId: imageId,
+            listingType: listingType,
+            location: location,
+            ownerEmail: ownerEmail,
+            ownerName: ownerName,
+            parkingSpaces: parkingSpaces,
+            price: price,
+            propertyType: propertyType,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$PropertiesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $PropertiesTable> {
+  $$PropertiesTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get areaSize => $state.composableBuilder(
+      column: $state.table.areaSize,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get bathrooms => $state.composableBuilder(
+      column: $state.table.bathrooms,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get bedrooms => $state.composableBuilder(
+      column: $state.table.bedrooms,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get constructionYear => $state.composableBuilder(
+      column: $state.table.constructionYear,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get imageId => $state.composableBuilder(
+      column: $state.table.imageId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get listingType => $state.composableBuilder(
+      column: $state.table.listingType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get location => $state.composableBuilder(
+      column: $state.table.location,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get ownerEmail => $state.composableBuilder(
+      column: $state.table.ownerEmail,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get ownerName => $state.composableBuilder(
+      column: $state.table.ownerName,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get parkingSpaces => $state.composableBuilder(
+      column: $state.table.parkingSpaces,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get price => $state.composableBuilder(
+      column: $state.table.price,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get propertyType => $state.composableBuilder(
+      column: $state.table.propertyType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$PropertiesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $PropertiesTable> {
+  $$PropertiesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get areaSize => $state.composableBuilder(
+      column: $state.table.areaSize,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get bathrooms => $state.composableBuilder(
+      column: $state.table.bathrooms,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get bedrooms => $state.composableBuilder(
+      column: $state.table.bedrooms,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get constructionYear => $state.composableBuilder(
+      column: $state.table.constructionYear,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get imageId => $state.composableBuilder(
+      column: $state.table.imageId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get listingType => $state.composableBuilder(
+      column: $state.table.listingType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get location => $state.composableBuilder(
+      column: $state.table.location,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get ownerEmail => $state.composableBuilder(
+      column: $state.table.ownerEmail,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get ownerName => $state.composableBuilder(
+      column: $state.table.ownerName,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get parkingSpaces => $state.composableBuilder(
+      column: $state.table.parkingSpaces,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get price => $state.composableBuilder(
+      column: $state.table.price,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get propertyType => $state.composableBuilder(
+      column: $state.table.propertyType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$ImagesTableCreateCompanionBuilder = ImagesCompanion Function({
+  required String identifier,
+  required String name,
+  required String path,
+  required DateTime uploadDate,
+  required Uint8List data,
+  Value<int> rowid,
+});
+typedef $$ImagesTableUpdateCompanionBuilder = ImagesCompanion Function({
+  Value<String> identifier,
+  Value<String> name,
+  Value<String> path,
+  Value<DateTime> uploadDate,
+  Value<Uint8List> data,
+  Value<int> rowid,
+});
+
+class $$ImagesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ImagesTable,
+    Image,
+    $$ImagesTableFilterComposer,
+    $$ImagesTableOrderingComposer,
+    $$ImagesTableCreateCompanionBuilder,
+    $$ImagesTableUpdateCompanionBuilder> {
+  $$ImagesTableTableManager(_$AppDatabase db, $ImagesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ImagesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$ImagesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> identifier = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> path = const Value.absent(),
+            Value<DateTime> uploadDate = const Value.absent(),
+            Value<Uint8List> data = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ImagesCompanion(
+            identifier: identifier,
+            name: name,
+            path: path,
+            uploadDate: uploadDate,
+            data: data,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String identifier,
+            required String name,
+            required String path,
+            required DateTime uploadDate,
+            required Uint8List data,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ImagesCompanion.insert(
+            identifier: identifier,
+            name: name,
+            path: path,
+            uploadDate: uploadDate,
+            data: data,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ImagesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ImagesTable> {
+  $$ImagesTableFilterComposer(super.$state);
+  ColumnFilters<String> get identifier => $state.composableBuilder(
+      column: $state.table.identifier,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get uploadDate => $state.composableBuilder(
+      column: $state.table.uploadDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<Uint8List> get data => $state.composableBuilder(
+      column: $state.table.data,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$ImagesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ImagesTable> {
+  $$ImagesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get identifier => $state.composableBuilder(
+      column: $state.table.identifier,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get uploadDate => $state.composableBuilder(
+      column: $state.table.uploadDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<Uint8List> get data => $state.composableBuilder(
+      column: $state.table.data,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$TablesUpdateTimesTableTableManager get tablesUpdateTimes =>
+      $$TablesUpdateTimesTableTableManager(_db, _db.tablesUpdateTimes);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
+  $$PropertiesTableTableManager get properties =>
+      $$PropertiesTableTableManager(_db, _db.properties);
+  $$ImagesTableTableManager get images =>
+      $$ImagesTableTableManager(_db, _db.images);
 }
