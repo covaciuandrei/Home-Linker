@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
@@ -13,11 +14,19 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatefulWidget implements AutoRouteWrapper {
   const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<LoginCubit>(
+      create: (context) => getIt<LoginCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -147,10 +156,16 @@ class _LoginPageState extends State<LoginPage> {
                                         text: AppLocalizations.of(context).login,
                                         isEnabled: isButtonAvailable,
                                         onPressed: () {
-                                          showVerificationDialog(
+                                          // showVerificationDialog(
+                                          //   context: context,
+                                          //   email: emailTextController.text,
+                                          //   password: passwordTextController.text,
+                                          // );
+                                          BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
                                             context: context,
                                             email: emailTextController.text,
                                             password: passwordTextController.text,
+                                            code: '4292',
                                           );
                                         },
                                       ),
@@ -232,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 TextButton(
-                  child:  Text(AppLocalizations.of(context).sendCodeAgain),
+                  child: Text(AppLocalizations.of(context).sendCodeAgain),
                   onPressed: () async {
                     final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
                     if (wasEmailSent) {

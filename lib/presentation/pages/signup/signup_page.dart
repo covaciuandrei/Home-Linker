@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
@@ -13,11 +14,19 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SignupPage extends StatefulWidget {
+class SignupPage extends StatefulWidget implements AutoRouteWrapper {
   const SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<SignupCubit>(
+      create: (context) => getIt<SignupCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _SignupPageState extends State<SignupPage> {

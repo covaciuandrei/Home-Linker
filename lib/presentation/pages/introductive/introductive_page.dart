@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
 import 'package:homelinker/presentation/widgets/introductive_background.dart';
@@ -10,11 +11,19 @@ import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class IntroductivePage extends StatefulWidget {
+class IntroductivePage extends StatefulWidget implements AutoRouteWrapper {
   const IntroductivePage({super.key});
 
   @override
   State<IntroductivePage> createState() => _IntroductivePageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<IntroductiveCubit>(
+      create: (context) => getIt<IntroductiveCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _IntroductivePageState extends State<IntroductivePage> {
@@ -91,18 +100,14 @@ class _IntroductivePageState extends State<IntroductivePage> {
                         text: AppLocalizations.of(context).login,
                         width: 240,
                         height: 44,
-                        onPressed: () =>
-                            BlocProvider.of<IntroductiveCubit>(context)
-                                .goToLogin(),
+                        onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToLogin(),
                       ),
                       const SizedBox(height: 16),
                       MainButton(
                         text: AppLocalizations.of(context).signup,
                         width: 240,
                         height: 44,
-                        onPressed: () =>
-                            BlocProvider.of<IntroductiveCubit>(context)
-                                .goToSignup(),
+                        onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToSignup(),
                       ),
                     ],
                   ),

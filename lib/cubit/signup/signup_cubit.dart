@@ -9,8 +9,7 @@ part 'package:homelinker/cubit/signup/signup_states.dart';
 
 @injectable
 class SignupCubit extends BaseCubit {
-  SignupCubit(this._accountService, this._validatorService)
-      : super(InitialState());
+  SignupCubit(this._accountService, this._validatorService) : super(InitialState());
 
   final AccountService _accountService;
   final ValidatorService _validatorService;
@@ -22,8 +21,7 @@ class SignupCubit extends BaseCubit {
   Future<void> loadPage() async {
     safeEmit(PendingState());
 
-    Future.delayed(
-        const Duration(milliseconds: 200), () => safeEmit(PageLoadedState()));
+    Future.delayed(const Duration(milliseconds: 200), () => safeEmit(PageLoadedState()));
   }
 
   Future<void> createAccount({
@@ -44,7 +42,8 @@ class SignupCubit extends BaseCubit {
         phoneNumber: phoneNumber,
       );
       safeEmit(SignUpSuccessfullyState());
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       throw Exception();
     }
   }
@@ -62,8 +61,7 @@ class SignupCubit extends BaseCubit {
   }
 
   void checkPasswordValidity(String firstPassword, String secondPassword) {
-    bool isPasswordValid =
-        _validatorService.checkPasswordValidity(firstPassword, secondPassword);
+    bool isPasswordValid = _validatorService.checkPasswordValidity(firstPassword, secondPassword);
 
     if (firstPassword.isEmpty || secondPassword.isEmpty) {
       _isPasswordValid = false;

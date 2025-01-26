@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/profile/profile_cubit.dart';
 import 'package:homelinker/models/app_version.dart';
@@ -13,11 +14,19 @@ import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget implements AutoRouteWrapper {
   const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<ProfileCubit>(
+      create: (context) => getIt<ProfileCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _ProfilePageState extends State<ProfilePage> {

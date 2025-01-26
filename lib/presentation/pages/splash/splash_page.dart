@@ -2,16 +2,25 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/splash/splash_cubit.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatefulWidget implements AutoRouteWrapper {
   const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<SplashCubit>(
+      create: (context) => getIt<SplashCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {

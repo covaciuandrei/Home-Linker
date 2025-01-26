@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/listing/listing_cubit.dart';
@@ -15,7 +16,7 @@ import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
-class ListingPage extends StatelessWidget {
+class ListingPage extends StatelessWidget implements AutoRouteWrapper {
   const ListingPage({
     super.key,
     required this.listing,
@@ -24,6 +25,14 @@ class ListingPage extends StatelessWidget {
 
   final Listing listing;
   final User user;
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<ListingCubit>(
+      create: (_) => getIt<ListingCubit>(),
+      child: this,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

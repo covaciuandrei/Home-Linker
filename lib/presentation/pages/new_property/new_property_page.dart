@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
@@ -21,11 +22,19 @@ import 'package:homelinker/utils/extension_methods.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 @RoutePage()
-class NewPropertyPage extends StatefulWidget {
-  const NewPropertyPage({Key? key}) : super(key: key);
+class NewPropertyPage extends StatefulWidget implements AutoRouteWrapper {
+  const NewPropertyPage({super.key});
 
   @override
   State<NewPropertyPage> createState() => _NewPropertyPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<NewPropertyCubit>(
+      create: (context) => getIt<NewPropertyCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _NewPropertyPageState extends State<NewPropertyPage> {

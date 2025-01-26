@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
 import 'package:homelinker/models/app_version.dart';
@@ -13,11 +14,19 @@ import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatefulWidget implements AutoRouteWrapper {
   const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<SettingsCubit>(
+      create: (context) => getIt<SettingsCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _SettingsPageState extends State<SettingsPage> {

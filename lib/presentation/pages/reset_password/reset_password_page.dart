@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/reset_password/reset_password_cubit.dart';
 import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
@@ -11,11 +12,19 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
-class ResetPasswordPage extends StatefulWidget {
+class ResetPasswordPage extends StatefulWidget implements AutoRouteWrapper{
   const ResetPasswordPage({super.key});
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<ResetPasswordCubit>(
+      create: (context) => getIt<ResetPasswordCubit>(),
+      child: this,
+    );
+  }
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
