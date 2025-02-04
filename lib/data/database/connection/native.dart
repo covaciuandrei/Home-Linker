@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-const String databaseName = 'accountancy.db'; //todo: change this
+const String databaseName = 'homeLinker.db';
 
 DatabaseConnection connect() {
   return DatabaseConnection.delayed(Future(() async {

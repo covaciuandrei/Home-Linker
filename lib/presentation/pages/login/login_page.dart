@@ -120,8 +120,6 @@ class _LoginPageState extends State<LoginPage> {
                       Flexible(
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
-                          // height: MediaQuery.of(context).size.height * 0.5,
-                          // color: Colors.red,
                           child: Column(
                             children: [
                               Expanded(
@@ -129,7 +127,6 @@ class _LoginPageState extends State<LoginPage> {
                                   padding: const EdgeInsets.symmetric(horizontal: 60),
                                   child: Column(
                                     children: [
-                                      // const SizedBox(height: 16),
                                       MainTextField(
                                         textController: emailTextController,
                                         placeholder: AppLocalizations.of(context).email,
@@ -149,25 +146,15 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         ),
                                       ),
-
                                       const SizedBox(height: 20),
                                       MainButton(
                                         width: 150,
                                         text: AppLocalizations.of(context).login,
                                         isEnabled: isButtonAvailable,
-                                        onPressed: () {
-                                          // showVerificationDialog(
-                                          //   context: context,
-                                          //   email: emailTextController.text,
-                                          //   password: passwordTextController.text,
-                                          // );
-                                          BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
-                                            context: context,
-                                            email: emailTextController.text,
-                                            password: passwordTextController.text,
-                                            code: '4292',
-                                          );
-                                        },
+                                        onPressed: () => BlocProvider.of<LoginCubit>(context).login(
+                                          email: emailTextController.text,
+                                          password: passwordTextController.text,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -195,79 +182,79 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void showVerificationDialog({
-    required BuildContext context,
-    required String email,
-    required String password,
-  }) {
-    final TextEditingController controller = TextEditingController();
-    String message = '';
-    Color textColor = Colors.grey;
+  // void showVerificationDialog({
+  //   required BuildContext context,
+  //   required String email,
+  //   required String password,
+  // }) {
+  //   final TextEditingController controller = TextEditingController();
+  //   String message = '';
+  //   Color textColor = Colors.grey;
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(AppLocalizations.of(context).enterCodeRecived),
-              content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.2,
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        message,
-                        style: TextStyle(
-                          color: textColor,
-                        ),
-                      ),
-                    ),
-                    TextField(controller: controller),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context).confirm),
-                  onPressed: () async {
-                    final wasCodeOk = await BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
-                      context: context,
-                      email: email,
-                      password: password,
-                      code: controller.text,
-                    );
-                    if (!wasCodeOk) {
-                      setState(() {
-                        textColor = Colors.red;
-                        message = AppLocalizations.of(context).wrongCode;
-                      });
-                    }
-                  },
-                ),
-                TextButton(
-                  child: Text(AppLocalizations.of(context).sendCodeAgain),
-                  onPressed: () async {
-                    final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
-                    if (wasEmailSent) {
-                      setState(() {
-                        textColor = Colors.green;
-                        message = AppLocalizations.of(context).mailSent;
-                      });
-                    } else {
-                      setState(() {
-                        textColor = Colors.red;
-                        message = AppLocalizations.of(context).mailNotSent;
-                      });
-                    }
-                  },
-                )
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setState) {
+  //           return AlertDialog(
+  //             title: Text(AppLocalizations.of(context).enterCodeRecived),
+  //             content: SizedBox(
+  //               height: MediaQuery.of(context).size.height * 0.2,
+  //               child: Column(
+  //                 children: [
+  //                   Align(
+  //                     alignment: Alignment.center,
+  //                     child: Text(
+  //                       message,
+  //                       style: TextStyle(
+  //                         color: textColor,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   TextField(controller: controller),
+  //                 ],
+  //               ),
+  //             ),
+  //             actions: [
+  //               TextButton(
+  //                 child: Text(AppLocalizations.of(context).confirm),
+  //                 onPressed: () async {
+  //                   final wasCodeOk = await BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
+  //                     context: context,
+  //                     email: email,
+  //                     password: password,
+  //                     code: controller.text,
+  //                   );
+  //                   if (!wasCodeOk) {
+  //                     setState(() {
+  //                       textColor = Colors.red;
+  //                       message = AppLocalizations.of(context).wrongCode;
+  //                     });
+  //                   }
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: Text(AppLocalizations.of(context).sendCodeAgain),
+  //                 onPressed: () async {
+  //                   final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
+  //                   if (wasEmailSent) {
+  //                     setState(() {
+  //                       textColor = Colors.green;
+  //                       message = AppLocalizations.of(context).mailSent;
+  //                     });
+  //                   } else {
+  //                     setState(() {
+  //                       textColor = Colors.red;
+  //                       message = AppLocalizations.of(context).mailNotSent;
+  //                     });
+  //                   }
+  //                 },
+  //               )
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }

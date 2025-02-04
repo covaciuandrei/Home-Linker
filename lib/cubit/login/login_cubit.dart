@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/data/database/database_provider.dart';
@@ -119,28 +118,28 @@ class LoginCubit extends BaseCubit {
     return code.toString();
   }
 
-  Future<bool> verifyCodeAndLogin({
-    required String code,
-    required String email,
-    required String password,
-    required BuildContext context,
-  }) async {
-    final authentificationData = await _userService.getAuthentificationCode(email: email);
-    final cloudCode = authentificationData[0];
-    final existsUser = authentificationData[1] as bool;
-    if (existsUser) {
-      print('cod corect');
-      if (code == cloudCode) {
-        await login(email: email, password: password);
-        return true;
-      } else {
-        print('cod incorect');
-        return false;
-      }
-    } else {
-      print('user doesn\'t exist.');
+  // Future<bool> verifyCodeAndLogin({
+  //   required String code,
+  //   required String email,
+  //   required String password,
+  //   required BuildContext context,
+  // }) async {
+  //   final authentificationData = await _userService.getAuthentificationCode(email: email);
+  //   final cloudCode = authentificationData[0];
+  //   final existsUser = authentificationData[1] as bool;
+  //   if (existsUser) {
+  //     print('cod corect');
+  //     if (code == cloudCode) {
+  //       await login(email: email, password: password);
+  //       return true;
+  //     } else {
+  //       print('cod incorect');
+  //       return false;
+  //     }
+  //   } else {
+  //     print('user doesn\'t exist.');
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 }
