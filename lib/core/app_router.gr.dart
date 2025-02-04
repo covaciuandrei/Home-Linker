@@ -45,36 +45,37 @@ abstract class $AppRouter extends _i18.RootStackRouter {
     ForgotPasswordRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i2.ForgotPasswordPage(),
+        child: _i18.WrappedRoute(child: const _i2.ForgotPasswordPage()),
       );
     },
     HomeRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i3.HomePage(),
+        child: _i18.WrappedRoute(child: const _i3.HomePage()),
       );
     },
     IntroductiveRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i4.IntroductivePage(),
+        child: _i18.WrappedRoute(child: const _i4.IntroductivePage()),
       );
     },
     ListingRoute.name: (routeData) {
       final args = routeData.argsAs<ListingRouteArgs>();
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: _i5.ListingPage(
+        child: _i18.WrappedRoute(
+            child: _i5.ListingPage(
           key: args.key,
           listing: args.listing,
           user: args.user,
-        ),
+        )),
       );
     },
     LoginRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i6.LoginPage(),
+        child: _i18.WrappedRoute(child: const _i6.LoginPage()),
       );
     },
     MapRoute.name: (routeData) {
@@ -91,19 +92,19 @@ abstract class $AppRouter extends _i18.RootStackRouter {
     NewPropertyRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i9.NewPropertyPage(),
+        child: _i18.WrappedRoute(child: const _i9.NewPropertyPage()),
       );
     },
     ProfileRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i10.ProfilePage(),
+        child: _i18.WrappedRoute(child: const _i10.ProfilePage()),
       );
     },
     ResetPasswordRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i11.ResetPasswordPage(),
+        child: _i18.WrappedRoute(child: const _i11.ResetPasswordPage()),
       );
     },
     ResetPasswordSuccessfullyRoute.name: (routeData) {
@@ -115,7 +116,7 @@ abstract class $AppRouter extends _i18.RootStackRouter {
     SettingsRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i13.SettingsPage(),
+        child: _i18.WrappedRoute(child: const _i13.SettingsPage()),
       );
     },
     SignUpSuccessfullyRoute.name: (routeData) {
@@ -127,24 +128,25 @@ abstract class $AppRouter extends _i18.RootStackRouter {
     SignupRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i15.SignupPage(),
+        child: _i18.WrappedRoute(child: const _i15.SignupPage()),
       );
     },
     SignupSecondRoute.name: (routeData) {
       final args = routeData.argsAs<SignupSecondRouteArgs>();
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: _i16.SignupSecondPage(
+        child: _i18.WrappedRoute(
+            child: _i16.SignupSecondPage(
           key: args.key,
           email: args.email,
           password: args.password,
-        ),
+        )),
       );
     },
     SplashRoute.name: (routeData) {
       return _i18.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i17.SplashPage(),
+        child: _i18.WrappedRoute(child: const _i17.SplashPage()),
       );
     },
   };
