@@ -22,3 +22,5 @@ This main features this app will have are:
 <img src="screenshots/profile_page.png" alt="Profile Page" width="200">
 <img src="screenshots/drawer.png" alt="Drawer" width="200">
 <img src="screenshots/reset_password.png" alt="Reset Password Page" width="200">
+
+To run the project .env and google-services.json need to be added //TO DO
