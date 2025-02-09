@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
-                                            Text('Minimum price: $_minimumPrice'),
+                                            Text('${AppLocalizations.of(context).minimumPrice}: $_minimumPrice'),
                                             MainButton(
                                               width: 200,
                                               color: Colors.lightBlue,
@@ -188,9 +188,9 @@ class _HomePageState extends State<HomePage> {
                                                   },
                                                 );
                                               },
-                                              text: 'Select Min price',
+                                              text: AppLocalizations.of(context).selectMinimumPrice,
                                             ),
-                                            Text('Maximum price: $_maximumPrice'),
+                                            Text('${AppLocalizations.of(context).maximumPrice}: $_maximumPrice'),
                                             MainButton(
                                               width: 200,
                                               color: Colors.lightBlue,
@@ -203,14 +203,14 @@ class _HomePageState extends State<HomePage> {
                                                   },
                                                 );
                                               },
-                                              text: 'Select Max price',
+                                              text: AppLocalizations.of(context).selectMaximumPrice,
                                             ),
                                             const SizedBox(height: 30),
                                             MainButton(
                                               color: Colors.lightBlue,
                                               textColor: Colors.white,
                                               width: 120,
-                                              text: 'Filter',
+                                              text: AppLocalizations.of(context).filter,
                                               onPressed: () {
                                                 BlocProvider.of<HomeCubit>(context).filter(
                                                   filterType: FilterType.price,
@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                       width: 200,
                       color: Colors.lightBlue,
                       textColor: Colors.white,
-                      text: 'Reset Filters',
+                      text: AppLocalizations.of(context).removeFilter,
                       onPressed: () {
                         BlocProvider.of<HomeCubit>(context).resetFilter();
                       },
@@ -509,18 +509,18 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
   @override
   void initState() {
     super.initState();
-    _selectedPrice = widget.initialPrice; // Initialize with the provided initial price
+    _selectedPrice = widget.initialPrice;
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Select Price"),
+      title: Text(AppLocalizations.of(context).selectPrice),
       content: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Selected Price: ${_selectedPrice.round()}"), // Display the selected price
+            Text("${AppLocalizations.of(context).selectedPrice}: ${_selectedPrice.round()}"),
             Slider(
               value: _selectedPrice,
               min: widget.range.min,
@@ -540,11 +540,11 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
           onPressed: () {
             Navigator.of(context).pop(_selectedPrice);
           },
-          child: const Text("Done"),
+          child: Text(AppLocalizations.of(context).done),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(null),
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
       ],
     );

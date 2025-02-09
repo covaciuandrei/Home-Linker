@@ -272,7 +272,7 @@ class PropertySellingPointLine extends StatelessWidget {
           PropertySellingPoint(
             icon: icons[2],
             text: isFirstLine
-                ? '${AppLocalizations.of(context).size} ${property.areaSize} m²'
+                ? '${AppLocalizations.of(context).size} ${property.areaSize} ${AppLocalizations.of(context).squareMeters}'
                 : '${property.parkingSpaces} ${property.parkingSpaces == 1 ? AppLocalizations.of(context).parkingSpace : AppLocalizations.of(context).parkingSpace}',
           ),
         ],

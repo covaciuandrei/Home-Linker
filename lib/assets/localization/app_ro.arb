@@ -67,5 +67,15 @@
   "house":"casă",
   "apartment":"apartament",
   "rent":"închiriere",
-  "sale":"vânzare"
+  "sale":"vânzare",
+  "cancel":"Anulează",
+  "squareMeters":"m²",
+  "selectPrice":"Selectează prețul",
+  "selectedPrice":"Preț selectat",
+  "removeFilter":"Elimină filtrul",
+  "filter":"Filtrează",
+  "minimumPrice":"Preț minim",
+  "selectMinimumPrice":"Selectează preț minim",
+  "maximumPrice":"Preț maxim",
+  "selectMaximumPrice":"Selectează preț maxim"
 }

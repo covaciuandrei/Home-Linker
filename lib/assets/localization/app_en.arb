@@ -68,6 +68,16 @@
   "house":"house",
   "apartment":"apartment",
   "rent":"rent",
-  "sale":"sale"
+  "sale":"sale",
+  "cancel":"Cancel",
+  "squareMeters":"m²",
+  "selectPrice":"Select Price",
+  "selectedPrice":"Selected Price",
+  "removeFilter":"Remove Filters",
+  "filter":"Filter",
+  "minimumPrice":"Minimum price",
+  "selectMinimumPrice":"Select Min Price",
+  "maximumPrice":"Maximum price",
+  "selectMaximumPrice":"Select Max Price"
 }
 

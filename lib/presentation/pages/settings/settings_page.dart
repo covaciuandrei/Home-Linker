@@ -160,7 +160,7 @@ void _showDeleteBottomSheet(BuildContext context) {
             ),
             ListTile(
               leading: const Icon(Icons.cancel),
-              title: const Text('Cancel'),
+              title: Text(AppLocalizations.of(context).cancel),
               onTap: () {
                 AutoRouter.of(context).popForced(context);
               },

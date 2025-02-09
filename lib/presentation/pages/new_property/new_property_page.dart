@@ -43,8 +43,10 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   int constructionYear = DateTime.now().year;
   int bedrooms = 1;
   int bathrooms = 1;
-  String listingType = 'apartment';
-  String propertyType = 'sale';
+
+  String propertyType = PropertyType.apartment.name;
+  String listingType = ListingType.sale.name;
+
   bool _isButtonEnabled = false;
   final priceTextController = TextEditingController();
   final areaTextController = TextEditingController();
@@ -478,11 +480,11 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                                       constructionYear: constructionYear,
                                       description: descriptionTextController.text,
                                       selectedImage: _selectedImage!,
-                                      listingType: listingType,
+                                      propertyType: propertyType,
                                       location: jsonEncode(_location!.toJson()),
                                       parkingSpaces: parkingSpaces,
                                       price: double.parse(priceTextController.text),
-                                      propertyType: propertyType,
+                                      listingType: listingType,
                                     );
                                   },
                                   width: 200,

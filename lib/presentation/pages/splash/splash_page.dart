@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -103,7 +104,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                         },
                         child: const SvgIcon(
                           iconName: 'home',
-                          color: Colors.white, // This color will be applied to the icon after the gradient
+                          color: Colors.white,
                           size: 200,
                         ),
                       ),
@@ -120,9 +121,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                             ],
                           ).createShader(bounds);
                         },
-                        child: const Text(
-                          'Home Linker',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context).appTitle,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 36.0,
                             fontWeight: FontWeight.bold,
