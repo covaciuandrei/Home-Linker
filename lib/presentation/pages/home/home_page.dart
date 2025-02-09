@@ -133,9 +133,6 @@ class _HomePageState extends State<HomePage> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          // TextButton(
-                          //     onPressed: () => BlocProvider.of<HomeCubit>(context).deleteData(),
-                          //     child: Text('delete all ')),
                           FilterItem(
                             context: context,
                             filterType: FilterType.house,
@@ -541,14 +538,12 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(_selectedPrice); // Return the selected price
+            Navigator.of(context).pop(_selectedPrice);
           },
           child: const Text("Done"),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(null); // Dismiss without any selection
-          },
+          onPressed: () => Navigator.of(context).pop(null),
           child: const Text("Cancel"),
         ),
       ],

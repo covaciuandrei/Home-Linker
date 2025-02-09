@@ -97,12 +97,11 @@ class LoginCubit extends BaseCubit {
       ..text = 'Your authentification code is $code';
 
     try {
-      // final sendReport =
       await send(message, smtpServer);
 
       final wasCodeSent = await _userService.set2FactorAuthCode(email: email, code: code);
       print(code);
-      // print('Message sent: ' + sendReport.toString());
+
       print('Message sent.');
       return wasCodeSent;
     } on Exception {
