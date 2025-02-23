@@ -56,14 +56,14 @@ _i174.GetIt $initGetIt(
     environmentFilter,
   );
   gh.factory<_i75.IntroductiveCubit>(() => _i75.IntroductiveCubit());
-  gh.factory<_i980.ResetPasswordCubit>(() => _i980.ResetPasswordCubit());
   gh.factory<_i963.SplashCubit>(() => _i963.SplashCubit());
-  gh.factory<_i7.AppVersionMapper>(() => _i7.AppVersionMapper());
-  gh.factory<_i1051.ImageMapper>(() => _i1051.ImageMapper());
-  gh.factory<_i347.PropertyMapper>(() => _i347.PropertyMapper());
-  gh.factory<_i455.UserMapper>(() => _i455.UserMapper());
-  gh.factory<_i893.StorageSource>(() => _i893.StorageSource());
+  gh.factory<_i980.ResetPasswordCubit>(() => _i980.ResetPasswordCubit());
   gh.factory<_i863.SecureStorageSource>(() => _i863.SecureStorageSource());
+  gh.factory<_i1051.ImageMapper>(() => _i1051.ImageMapper());
+  gh.factory<_i455.UserMapper>(() => _i455.UserMapper());
+  gh.factory<_i7.AppVersionMapper>(() => _i7.AppVersionMapper());
+  gh.factory<_i347.PropertyMapper>(() => _i347.PropertyMapper());
+  gh.factory<_i893.StorageSource>(() => _i893.StorageSource());
   gh.factory<_i488.ValidatorService>(() => _i488.ValidatorService());
   gh.singleton<_i1014.DatabaseProvider>(() => _i1014.DatabaseProvider());
   gh.factory<_i20.ImageRepository>(

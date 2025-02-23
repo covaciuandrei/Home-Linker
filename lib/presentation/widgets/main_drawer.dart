@@ -25,6 +25,28 @@ class MainDrawer extends StatelessWidget {
             title: Row(
               children: [
                 const Icon(
+                  Icons.favorite_rounded,
+                  color: Colors.lightBlue,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Favorites',
+                  style: const TextStyle(
+                    color: Colors.lightBlue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              AutoRouter.of(context).push(const SettingsRoute());
+              AutoRouter.of(context).popForced();
+            },
+          ),
+          ListTile(
+            title: Row(
+              children: [
+                const Icon(
                   Icons.settings,
                   color: Colors.lightBlue,
                 ),
