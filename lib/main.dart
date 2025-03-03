@@ -94,3 +94,9 @@ class MyAppState extends State<MyApp> {
     );
   }
 }
+
+// @override
+// void onChange(Change<BaseState> change) {
+//   super.onChange(change);
+//   print('State changed: ${change.currentState} -> ${change.nextState}');
+// }

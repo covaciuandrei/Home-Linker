@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/data/database/database_provider.dart';
-import 'package:homelinker/models/filters.dart';
+import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';

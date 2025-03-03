@@ -7,7 +7,7 @@ import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/models/enums/account_type.dart';
-import 'package:homelinker/models/filters.dart';
+import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/range.dart';
