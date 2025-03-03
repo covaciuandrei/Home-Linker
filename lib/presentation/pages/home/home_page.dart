@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   double _minimumPrice = 0;
   double _maximumPrice = 0;
   RangeValues priceRange = const RangeValues(0, 100000);
-  User user = User(
+  User user = const User(
     email: '',
     id: '',
     name: '',
@@ -51,46 +51,13 @@ class _HomePageState extends State<HomePage> {
     type: AccountType.client,
     twoFactorAuthCode: '',
     is2FaActivated: false,
+    favoriteListingsIds: [],
   );
 
   @override
   void initState() {
     BlocProvider.of<HomeCubit>(context).load();
     super.initState();
-  }
-
-  Future<double> _showMinPricePickerDialog() async {
-    final selectedPrice = await showDialog<double>(
-      context: context,
-      builder: (context) => PricePickerDialog(
-        initialPrice: _minimumPrice,
-        range: Range(min: priceRange.start, max: priceRange.end),
-      ),
-    );
-
-    if (selectedPrice != null) {
-      setState(() {
-        _minimumPrice = selectedPrice;
-      });
-    }
-    return selectedPrice ?? _minimumPrice;
-  }
-
-  Future<double> _showMaxPricePickerDialog() async {
-    final selectedPrice = await showDialog<double>(
-      context: context,
-      builder: (context) => PricePickerDialog(
-        initialPrice: _maximumPrice,
-        range: Range(min: priceRange.start, max: priceRange.end),
-      ),
-    );
-
-    if (selectedPrice != null) {
-      setState(() {
-        _maximumPrice = selectedPrice;
-      });
-    }
-    return selectedPrice ?? _maximumPrice;
   }
 
   @override
@@ -276,6 +243,40 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Future<double> _showMinPricePickerDialog() async {
+    final selectedPrice = await showDialog<double>(
+      context: context,
+      builder: (context) => PricePickerDialog(
+        initialPrice: _minimumPrice,
+        range: Range(min: priceRange.start, max: priceRange.end),
+      ),
+    );
+
+    if (selectedPrice != null) {
+      setState(() {
+        _minimumPrice = selectedPrice;
+      });
+    }
+    return selectedPrice ?? _minimumPrice;
+  }
+
+  Future<double> _showMaxPricePickerDialog() async {
+    final selectedPrice = await showDialog<double>(
+      context: context,
+      builder: (context) => PricePickerDialog(
+        initialPrice: _maximumPrice,
+        range: Range(min: priceRange.start, max: priceRange.end),
+      ),
+    );
+
+    if (selectedPrice != null) {
+      setState(() {
+        _maximumPrice = selectedPrice;
+      });
+    }
+    return selectedPrice ?? _maximumPrice;
   }
 }
 
@@ -516,25 +517,27 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(AppLocalizations.of(context).selectPrice),
-      content: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("${AppLocalizations.of(context).selectedPrice}: ${_selectedPrice.round()}"),
-            Slider(
-              value: _selectedPrice,
-              min: widget.range.min,
-              max: widget.range.max,
-              divisions: 100,
-              onChanged: (value) {
-                setState(() {
-                  _selectedPrice = value;
-                });
-              },
-            ),
-          ],
-        );
-      }),
+      content: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("${AppLocalizations.of(context).selectedPrice}: ${_selectedPrice.round()}"),
+              Slider(
+                value: _selectedPrice,
+                min: widget.range.min,
+                max: widget.range.max,
+                divisions: 100,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedPrice = value;
+                  });
+                },
+              ),
+            ],
+          );
+        },
+      ),
       actions: [
         TextButton(
           onPressed: () {

@@ -11,6 +11,7 @@ class User extends Equatable {
     required this.type,
     required this.is2FaActivated,
     required this.twoFactorAuthCode,
+    required this.favoriteListingsIds,
   });
 
   final String id;
@@ -21,6 +22,7 @@ class User extends Equatable {
   final AccountType type;
   final bool is2FaActivated;
   final String twoFactorAuthCode;
+  final List<String> favoriteListingsIds;
 
   @override
   List<Object?> get props => [
@@ -32,5 +34,6 @@ class User extends Equatable {
         type,
         is2FaActivated,
         twoFactorAuthCode,
+        ...favoriteListingsIds,
       ];
 }

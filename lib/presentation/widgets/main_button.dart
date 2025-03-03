@@ -33,10 +33,8 @@ class MainButton extends StatelessWidget {
         ignoring: !isEnabled,
         child: ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
-              isEnabled
-                  ? (color ?? const Color.fromRGBO(250, 250, 250, 1))
-                  : Colors.grey,
+            backgroundColor: WidgetStateProperty.all(
+              isEnabled ? (color ?? const Color.fromRGBO(250, 250, 250, 1)) : Colors.grey,
             ),
           ),
           onPressed: isEnabled ? onPressed : null,

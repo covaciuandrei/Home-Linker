@@ -22,16 +22,16 @@ class MainDrawer extends StatelessWidget {
         padding: const EdgeInsets.only(top: kToolbarHeight),
         children: [
           ListTile(
-            title: Row(
+            title: const Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.favorite_rounded,
                   color: Colors.lightBlue,
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Text(
                   'Favorites',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.lightBlue,
                     fontWeight: FontWeight.bold,
                   ),

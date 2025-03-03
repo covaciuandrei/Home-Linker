@@ -41,6 +41,7 @@ class UserSource {
       '',
       accountType.name,
       '',
+      [],
     );
 
     await _collectionRef.add(userDto);

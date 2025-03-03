@@ -250,6 +250,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   late final GeneratedColumn<String> twoFactorAuthCode =
       GeneratedColumn<String>('two_factor_auth_code', aliasedName, false,
           type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _favoriteListingsIdsMeta =
+      const VerificationMeta('favoriteListingsIds');
+  @override
+  late final GeneratedColumn<String> favoriteListingsIds =
+      GeneratedColumn<String>('favorite_listings_ids', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -259,7 +265,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         profilePictureId,
         type,
         is2FaActivated,
-        twoFactorAuthCode
+        twoFactorAuthCode,
+        favoriteListingsIds
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -324,6 +331,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_twoFactorAuthCodeMeta);
     }
+    if (data.containsKey('favorite_listings_ids')) {
+      context.handle(
+          _favoriteListingsIdsMeta,
+          favoriteListingsIds.isAcceptableOrUnknown(
+              data['favorite_listings_ids']!, _favoriteListingsIdsMeta));
+    } else if (isInserting) {
+      context.missing(_favoriteListingsIdsMeta);
+    }
     return context;
   }
 
@@ -349,6 +364,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           .read(DriftSqlType.bool, data['${effectivePrefix}is2_fa_activated'])!,
       twoFactorAuthCode: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}two_factor_auth_code'])!,
+      favoriteListingsIds: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}favorite_listings_ids'])!,
     );
   }
 
@@ -367,6 +385,7 @@ class User extends DataClass implements Insertable<User> {
   final String type;
   final bool is2FaActivated;
   final String twoFactorAuthCode;
+  final String favoriteListingsIds;
   const User(
       {required this.id,
       required this.email,
@@ -375,7 +394,8 @@ class User extends DataClass implements Insertable<User> {
       required this.profilePictureId,
       required this.type,
       required this.is2FaActivated,
-      required this.twoFactorAuthCode});
+      required this.twoFactorAuthCode,
+      required this.favoriteListingsIds});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -387,6 +407,7 @@ class User extends DataClass implements Insertable<User> {
     map['type'] = Variable<String>(type);
     map['is2_fa_activated'] = Variable<bool>(is2FaActivated);
     map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode);
+    map['favorite_listings_ids'] = Variable<String>(favoriteListingsIds);
     return map;
   }
 
@@ -400,6 +421,7 @@ class User extends DataClass implements Insertable<User> {
       type: Value(type),
       is2FaActivated: Value(is2FaActivated),
       twoFactorAuthCode: Value(twoFactorAuthCode),
+      favoriteListingsIds: Value(favoriteListingsIds),
     );
   }
 
@@ -415,6 +437,8 @@ class User extends DataClass implements Insertable<User> {
       type: serializer.fromJson<String>(json['type']),
       is2FaActivated: serializer.fromJson<bool>(json['is2FaActivated']),
       twoFactorAuthCode: serializer.fromJson<String>(json['twoFactorAuthCode']),
+      favoriteListingsIds:
+          serializer.fromJson<String>(json['favoriteListingsIds']),
     );
   }
   @override
@@ -429,6 +453,7 @@ class User extends DataClass implements Insertable<User> {
       'type': serializer.toJson<String>(type),
       'is2FaActivated': serializer.toJson<bool>(is2FaActivated),
       'twoFactorAuthCode': serializer.toJson<String>(twoFactorAuthCode),
+      'favoriteListingsIds': serializer.toJson<String>(favoriteListingsIds),
     };
   }
 
@@ -440,7 +465,8 @@ class User extends DataClass implements Insertable<User> {
           String? profilePictureId,
           String? type,
           bool? is2FaActivated,
-          String? twoFactorAuthCode}) =>
+          String? twoFactorAuthCode,
+          String? favoriteListingsIds}) =>
       User(
         id: id ?? this.id,
         email: email ?? this.email,
@@ -450,6 +476,7 @@ class User extends DataClass implements Insertable<User> {
         type: type ?? this.type,
         is2FaActivated: is2FaActivated ?? this.is2FaActivated,
         twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
+        favoriteListingsIds: favoriteListingsIds ?? this.favoriteListingsIds,
       );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -467,6 +494,9 @@ class User extends DataClass implements Insertable<User> {
       twoFactorAuthCode: data.twoFactorAuthCode.present
           ? data.twoFactorAuthCode.value
           : this.twoFactorAuthCode,
+      favoriteListingsIds: data.favoriteListingsIds.present
+          ? data.favoriteListingsIds.value
+          : this.favoriteListingsIds,
     );
   }
 
@@ -480,14 +510,15 @@ class User extends DataClass implements Insertable<User> {
           ..write('profilePictureId: $profilePictureId, ')
           ..write('type: $type, ')
           ..write('is2FaActivated: $is2FaActivated, ')
-          ..write('twoFactorAuthCode: $twoFactorAuthCode')
+          ..write('twoFactorAuthCode: $twoFactorAuthCode, ')
+          ..write('favoriteListingsIds: $favoriteListingsIds')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, email, name, phone, profilePictureId,
-      type, is2FaActivated, twoFactorAuthCode);
+      type, is2FaActivated, twoFactorAuthCode, favoriteListingsIds);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -499,7 +530,8 @@ class User extends DataClass implements Insertable<User> {
           other.profilePictureId == this.profilePictureId &&
           other.type == this.type &&
           other.is2FaActivated == this.is2FaActivated &&
-          other.twoFactorAuthCode == this.twoFactorAuthCode);
+          other.twoFactorAuthCode == this.twoFactorAuthCode &&
+          other.favoriteListingsIds == this.favoriteListingsIds);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -511,6 +543,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> type;
   final Value<bool> is2FaActivated;
   final Value<String> twoFactorAuthCode;
+  final Value<String> favoriteListingsIds;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -521,6 +554,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.type = const Value.absent(),
     this.is2FaActivated = const Value.absent(),
     this.twoFactorAuthCode = const Value.absent(),
+    this.favoriteListingsIds = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -532,6 +566,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String type,
     required bool is2FaActivated,
     required String twoFactorAuthCode,
+    required String favoriteListingsIds,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         email = Value(email),
@@ -540,7 +575,8 @@ class UsersCompanion extends UpdateCompanion<User> {
         profilePictureId = Value(profilePictureId),
         type = Value(type),
         is2FaActivated = Value(is2FaActivated),
-        twoFactorAuthCode = Value(twoFactorAuthCode);
+        twoFactorAuthCode = Value(twoFactorAuthCode),
+        favoriteListingsIds = Value(favoriteListingsIds);
   static Insertable<User> custom({
     Expression<String>? id,
     Expression<String>? email,
@@ -550,6 +586,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? type,
     Expression<bool>? is2FaActivated,
     Expression<String>? twoFactorAuthCode,
+    Expression<String>? favoriteListingsIds,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -561,6 +598,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (type != null) 'type': type,
       if (is2FaActivated != null) 'is2_fa_activated': is2FaActivated,
       if (twoFactorAuthCode != null) 'two_factor_auth_code': twoFactorAuthCode,
+      if (favoriteListingsIds != null)
+        'favorite_listings_ids': favoriteListingsIds,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -574,6 +613,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       Value<String>? type,
       Value<bool>? is2FaActivated,
       Value<String>? twoFactorAuthCode,
+      Value<String>? favoriteListingsIds,
       Value<int>? rowid}) {
     return UsersCompanion(
       id: id ?? this.id,
@@ -584,6 +624,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       type: type ?? this.type,
       is2FaActivated: is2FaActivated ?? this.is2FaActivated,
       twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
+      favoriteListingsIds: favoriteListingsIds ?? this.favoriteListingsIds,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -615,6 +656,10 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (twoFactorAuthCode.present) {
       map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode.value);
     }
+    if (favoriteListingsIds.present) {
+      map['favorite_listings_ids'] =
+          Variable<String>(favoriteListingsIds.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -632,6 +677,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('type: $type, ')
           ..write('is2FaActivated: $is2FaActivated, ')
           ..write('twoFactorAuthCode: $twoFactorAuthCode, ')
+          ..write('favoriteListingsIds: $favoriteListingsIds, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1748,6 +1794,7 @@ typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   required String type,
   required bool is2FaActivated,
   required String twoFactorAuthCode,
+  required String favoriteListingsIds,
   Value<int> rowid,
 });
 typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
@@ -1759,6 +1806,7 @@ typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<String> type,
   Value<bool> is2FaActivated,
   Value<String> twoFactorAuthCode,
+  Value<String> favoriteListingsIds,
   Value<int> rowid,
 });
 
@@ -1787,6 +1835,7 @@ class $$UsersTableTableManager extends RootTableManager<
             Value<String> type = const Value.absent(),
             Value<bool> is2FaActivated = const Value.absent(),
             Value<String> twoFactorAuthCode = const Value.absent(),
+            Value<String> favoriteListingsIds = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               UsersCompanion(
@@ -1798,6 +1847,7 @@ class $$UsersTableTableManager extends RootTableManager<
             type: type,
             is2FaActivated: is2FaActivated,
             twoFactorAuthCode: twoFactorAuthCode,
+            favoriteListingsIds: favoriteListingsIds,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -1809,6 +1859,7 @@ class $$UsersTableTableManager extends RootTableManager<
             required String type,
             required bool is2FaActivated,
             required String twoFactorAuthCode,
+            required String favoriteListingsIds,
             Value<int> rowid = const Value.absent(),
           }) =>
               UsersCompanion.insert(
@@ -1820,6 +1871,7 @@ class $$UsersTableTableManager extends RootTableManager<
             type: type,
             is2FaActivated: is2FaActivated,
             twoFactorAuthCode: twoFactorAuthCode,
+            favoriteListingsIds: favoriteListingsIds,
             rowid: rowid,
           ),
         ));
@@ -1867,6 +1919,11 @@ class $$UsersTableFilterComposer
       column: $state.table.twoFactorAuthCode,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get favoriteListingsIds => $state.composableBuilder(
+      column: $state.table.favoriteListingsIds,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
 }
 
 class $$UsersTableOrderingComposer
@@ -1909,6 +1966,11 @@ class $$UsersTableOrderingComposer
 
   ColumnOrderings<String> get twoFactorAuthCode => $state.composableBuilder(
       column: $state.table.twoFactorAuthCode,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get favoriteListingsIds => $state.composableBuilder(
+      column: $state.table.favoriteListingsIds,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
