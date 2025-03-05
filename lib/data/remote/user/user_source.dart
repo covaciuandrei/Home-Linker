@@ -62,15 +62,21 @@ class UserSource {
   }
 
   Future<void> updateUser({
-    required String imageId,
     required String userId,
+    String? imageId,
+    List<String>? favoriteListingsIds,
   }) async {
-    // final collectionRef = FirebaseFirestore.instance.collection(RemoteSourceNames.users);
     final documentSnapshot = await _collectionRef.doc(userId).get();
     final documentReference = documentSnapshot.reference;
 
     final Map<String, dynamic> dataToUpdate = {};
-    dataToUpdate['profile_picture'] = imageId;
+    if (imageId != null) {
+      dataToUpdate['profile_picture'] = imageId;
+    }
+
+    if (favoriteListingsIds != null) {
+      dataToUpdate['favorite_listings_ids'] = favoriteListingsIds;
+    }
 
     if (dataToUpdate.isNotEmpty) {
       await documentReference.update(dataToUpdate);

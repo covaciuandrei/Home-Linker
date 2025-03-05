@@ -78,7 +78,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
     return BlocConsumer<NewPropertyCubit, BaseState>(
       listener: (context, state) {
         if (state is PropertyAddedSuccessfullyState) {
-          BlocProvider.of<HomeCubit>(context).load(forceRefresh: true);
+          BlocProvider.of<HomeCubit>(context).refresh();
           AutoRouter.of(context).popForced();
         } else if (state is NoFileChosenState) {}
       },

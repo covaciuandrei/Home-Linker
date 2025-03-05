@@ -39,7 +39,7 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
     return BlocConsumer<ListingCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingDeletedState) {
-          BlocProvider.of<HomeCubit>(context).load(forceRefresh: true);
+          BlocProvider.of<HomeCubit>(context).refresh();
           AutoRouter.of(context).popForced();
         }
       },

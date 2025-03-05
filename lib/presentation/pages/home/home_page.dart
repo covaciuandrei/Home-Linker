@@ -36,7 +36,7 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isSaved = false;
+  List<ListingData> listings = [];
   List<String> languages = [];
   bool _isPagePriceFiltered = false;
   double _minimumPrice = 0;
@@ -62,10 +62,49 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Listing> listings = [];
-
     return BlocConsumer<HomeCubit, BaseState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is ListingAddedToFavoritesState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).listingAddedToFavorites),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else if (state is ListingRemovedToFavoritesState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).listingRemovedFromFavorites),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else if (state is ListingAlreadyInFavoritesState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).listingAlreadyInFavorites),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else if (state is ListingAlreadyRemovedFromFavoritesState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).listingAlreadyRemovedFromFavorites),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else if (state is SomethingWentWrongState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                AppLocalizations.of(context).somethingWrong,
+                style: const TextStyle(color: Colors.white),
+              ),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
         if (state is DataLoadedState) {
           listings = state.listings;
@@ -92,151 +131,166 @@ class _HomePageState extends State<HomePage> {
                   : null,
               appBar: MainAppBar(title: AppLocalizations.of(context).appTitle),
               drawer: MainDrawer(languages: languages),
-              body: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.house,
-                            icon: Icons.home,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.apartment,
-                            icon: Icons.apartment_rounded,
-                            onPressed: () =>
-                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.rent,
-                            icon: Icons.home_work,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.sale,
-                            icon: Icons.local_offer,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.price,
-                            icon: Icons.attach_money_rounded,
-                            onPressed: () async {
-                              await showDialog<double>(
-                                context: context,
-                                builder: (context) => StatefulBuilder(builder: (context, setState) {
-                                  return Center(
-                                    child: SizedBox(
-                                      height: 300,
-                                      width: 300,
-                                      child: Card(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text('${AppLocalizations.of(context).minimumPrice}: $_minimumPrice'),
-                                            MainButton(
-                                              width: 200,
-                                              color: Colors.lightBlue,
-                                              textColor: Colors.white,
-                                              onPressed: () async {
-                                                final minimumPrice = await _showMinPricePickerDialog();
-                                                setState(
-                                                  () {
-                                                    _minimumPrice = minimumPrice;
-                                                  },
-                                                );
-                                              },
-                                              text: AppLocalizations.of(context).selectMinimumPrice,
-                                            ),
-                                            Text('${AppLocalizations.of(context).maximumPrice}: $_maximumPrice'),
-                                            MainButton(
-                                              width: 200,
-                                              color: Colors.lightBlue,
-                                              textColor: Colors.white,
-                                              onPressed: () async {
-                                                final maximumPrice = await _showMaxPricePickerDialog();
-                                                setState(
-                                                  () {
-                                                    _maximumPrice = maximumPrice;
-                                                  },
-                                                );
-                                              },
-                                              text: AppLocalizations.of(context).selectMaximumPrice,
-                                            ),
-                                            const SizedBox(height: 30),
-                                            MainButton(
-                                              color: Colors.lightBlue,
-                                              textColor: Colors.white,
-                                              width: 120,
-                                              text: AppLocalizations.of(context).filter,
-                                              onPressed: () {
-                                                BlocProvider.of<HomeCubit>(context).filter(
-                                                  filterType: FilterType.price,
-                                                  minimPrice: _minimumPrice,
-                                                  maxPrice: _maximumPrice,
-                                                );
-                                                AutoRouter.of(context).popForced();
-                                              },
-                                            )
-                                          ],
+              body: RefreshIndicator(
+                onRefresh: () async {
+                  await BlocProvider.of<HomeCubit>(context).refresh();
+                },
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.house,
+                              icon: Icons.home,
+                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
+                            ),
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.apartment,
+                              icon: Icons.apartment_rounded,
+                              onPressed: () =>
+                                  BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
+                            ),
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.rent,
+                              icon: Icons.home_work,
+                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
+                            ),
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.sale,
+                              icon: Icons.local_offer,
+                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
+                            ),
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.price,
+                              icon: Icons.attach_money_rounded,
+                              onPressed: () async {
+                                await showDialog<double>(
+                                  context: context,
+                                  builder: (context) => StatefulBuilder(builder: (context, setState) {
+                                    return Center(
+                                      child: SizedBox(
+                                        height: 300,
+                                        width: 300,
+                                        child: Card(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text('${AppLocalizations.of(context).minimumPrice}: $_minimumPrice'),
+                                              MainButton(
+                                                width: 200,
+                                                color: Colors.lightBlue,
+                                                textColor: Colors.white,
+                                                onPressed: () async {
+                                                  final minimumPrice = await _showMinPricePickerDialog();
+                                                  setState(
+                                                    () {
+                                                      _minimumPrice = minimumPrice;
+                                                    },
+                                                  );
+                                                },
+                                                text: AppLocalizations.of(context).selectMinimumPrice,
+                                              ),
+                                              Text('${AppLocalizations.of(context).maximumPrice}: $_maximumPrice'),
+                                              MainButton(
+                                                width: 200,
+                                                color: Colors.lightBlue,
+                                                textColor: Colors.white,
+                                                onPressed: () async {
+                                                  final maximumPrice = await _showMaxPricePickerDialog();
+                                                  setState(
+                                                    () {
+                                                      _maximumPrice = maximumPrice;
+                                                    },
+                                                  );
+                                                },
+                                                text: AppLocalizations.of(context).selectMaximumPrice,
+                                              ),
+                                              const SizedBox(height: 30),
+                                              MainButton(
+                                                color: Colors.lightBlue,
+                                                textColor: Colors.white,
+                                                width: 120,
+                                                text: AppLocalizations.of(context).filter,
+                                                onPressed: () {
+                                                  BlocProvider.of<HomeCubit>(context).filter(
+                                                    filterType: FilterType.price,
+                                                    minimPrice: _minimumPrice,
+                                                    maxPrice: _maximumPrice,
+                                                  );
+                                                  AutoRouter.of(context).popForced();
+                                                },
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                }),
-                              );
-                            },
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.location,
-                            icon: Icons.location_on,
-                            onPressed: () =>
-                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.location),
-                          ),
-                        ],
+                                    );
+                                  }),
+                                );
+                              },
+                            ),
+                            FilterItem(
+                              context: context,
+                              filterType: FilterType.location,
+                              icon: Icons.location_on,
+                              onPressed: () =>
+                                  BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.location),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  if (_isPagePriceFiltered)
-                    MainButton(
-                      width: 200,
-                      color: Colors.lightBlue,
-                      textColor: Colors.white,
-                      text: AppLocalizations.of(context).removeFilter,
-                      onPressed: () {
-                        BlocProvider.of<HomeCubit>(context).resetFilter();
-                      },
+                    if (_isPagePriceFiltered)
+                      MainButton(
+                        width: 200,
+                        color: Colors.lightBlue,
+                        textColor: Colors.white,
+                        text: AppLocalizations.of(context).removeFilter,
+                        onPressed: () {
+                          BlocProvider.of<HomeCubit>(context).resetFilter();
+                        },
+                      ),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 60),
+                        itemCount: listings.length,
+                        itemBuilder: (context, index) {
+                          return PropertyItem(
+                            listing: listings[index].listing,
+                            onPressed: () =>
+                                AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user)),
+                            onFavoriteIconPressed: () {
+                              if (listings[index].isSaved) {
+                                BlocProvider.of<HomeCubit>(context)
+                                    .removeListingToFavorites(id: listings[index].listing.property.id);
+                              } else {
+                                BlocProvider.of<HomeCubit>(context)
+                                    .addListingToFavorites(id: listings[index].listing.property.id);
+                              }
+                              setState(() {
+                                listings[index] = ListingData(
+                                  listing: listings[index].listing,
+                                  isSaved: !listings[index].isSaved,
+                                );
+                              });
+                            },
+                            isSaved: listings[index].isSaved,
+                          );
+                        },
+                      ),
                     ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 60),
-                      itemCount: listings.length,
-                      itemBuilder: (context, index) {
-                        return PropertyItem(
-                          listing: listings[index],
-                          onPressed: () =>
-                              AutoRouter.of(context).push(ListingRoute(listing: listings[index], user: user)),
-                          onFavoriteIconPressed: () {
-                            setState(() {
-                              _isSaved = !_isSaved;
-                            });
-                          },
-                          isSaved: _isSaved,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
