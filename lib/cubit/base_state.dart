@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class BaseState extends Equatable {
+  const BaseState();
+
   @override
   List<Object?> get props => [];
 }
