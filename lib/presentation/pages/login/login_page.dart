@@ -48,6 +48,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    emailTextController.dispose();
+    passwordTextController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, BaseState>(
       listener: (context, state) {
@@ -86,90 +93,67 @@ class _LoginPageState extends State<LoginPage> {
                 child: Center(
                   child: Column(
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.2,
-                        ),
-                        child: Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height * 0.225,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SvgIcon(
-                                  iconName: 'home',
-                                  color: Colors.lightBlue,
-                                  size: 80,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context).appTitle,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 36,
-                                  ),
-                                ),
-                              ],
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SvgIcon(
+                            iconName: 'home',
+                            color: Colors.lightBlue,
+                            size: 80,
+                          ),
+                          Text(
+                            AppLocalizations.of(context).appTitle,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 36,
                             ),
                           ),
+                        ],
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                        child: Column(
+                          children: [
+                            MainTextField(
+                              textController: emailTextController,
+                              placeholder: AppLocalizations.of(context).email,
+                            ),
+                            const SizedBox(height: 16),
+                            MainTextField(
+                              textController: passwordTextController,
+                              placeholder: AppLocalizations.of(context).password,
+                              isPassword: true,
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: MainTextButton(
+                                text: AppLocalizations.of(context).forgotPassword,
+                                onPressed: () => AutoRouter.of(context).push(
+                                  const ForgotPasswordRoute(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            MainButton(
+                              width: 150,
+                              text: AppLocalizations.of(context).login,
+                              isEnabled: isButtonAvailable,
+                              onPressed: () => BlocProvider.of<LoginCubit>(context).login(
+                                email: emailTextController.text,
+                                password: passwordTextController.text,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Flexible(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 60),
-                                  child: Column(
-                                    children: [
-                                      MainTextField(
-                                        textController: emailTextController,
-                                        placeholder: AppLocalizations.of(context).email,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      MainTextField(
-                                        textController: passwordTextController,
-                                        placeholder: AppLocalizations.of(context).password,
-                                        isPassword: true,
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: MainTextButton(
-                                          text: AppLocalizations.of(context).forgotPassword,
-                                          onPressed: () => AutoRouter.of(context).push(
-                                            const ForgotPasswordRoute(),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      MainButton(
-                                        width: 150,
-                                        text: AppLocalizations.of(context).login,
-                                        isEnabled: isButtonAvailable,
-                                        onPressed: () => BlocProvider.of<LoginCubit>(context).login(
-                                          email: emailTextController.text,
-                                          password: passwordTextController.text,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 0),
-                                child: MainTextButton(
-                                  text: AppLocalizations.of(context).createNewAccount,
-                                  onPressed: () => BlocProvider.of<LoginCubit>(context).goToSignup(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      const SizedBox(height: 20),
+                      MainTextButton(
+                        text: AppLocalizations.of(context).createNewAccount,
+                        onPressed: () => BlocProvider.of<LoginCubit>(context).goToSignup(),
                       ),
                     ],
                   ),

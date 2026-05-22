@@ -52,6 +52,14 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   @override
+  void dispose() {
+    emailTextController.dispose();
+    passwordTextController.dispose();
+    repeatPasswordTextController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignupCubit, BaseState>(
       listener: (context, state) {
@@ -83,75 +91,65 @@ class _SignupPageState extends State<SignupPage> {
                 child: Center(
                   child: Column(
                     children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 130),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SvgIcon(
-                                iconName: 'home',
-                                color: Colors.lightBlue,
-                                size: 80,
-                              ),
-                              Text(
-                                AppLocalizations.of(context).appTitle,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 36,
-                                ),
-                              ),
-                            ],
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SvgIcon(
+                            iconName: 'home',
+                            color: Colors.lightBlue,
+                            size: 80,
                           ),
-                        ),
+                          Text(
+                            AppLocalizations.of(context).appTitle,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 36,
+                            ),
+                          ),
+                        ],
                       ),
-                      Expanded(
+                      const SizedBox(height: 60),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
                         child: Column(
                           children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 60),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 16),
-                                    MainTextField(
-                                      textController: emailTextController,
-                                      placeholder: AppLocalizations.of(context).email,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    MainTextField(
-                                      textController: passwordTextController,
-                                      placeholder: AppLocalizations.of(context).password,
-                                      isPassword: true,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    MainTextField(
-                                      textController: repeatPasswordTextController,
-                                      placeholder: AppLocalizations.of(context).repeatPassword,
-                                      isPassword: true,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    MainButton(
-                                      isEnabled: isButtonAvailable,
-                                      onPressed: () {
-                                        BlocProvider.of<SignupCubit>(context).goToSecondSignupPage();
-                                      },
-                                      text: AppLocalizations.of(context).signup,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const SizedBox(height: 16),
+                            MainTextField(
+                              textController: emailTextController,
+                              placeholder: AppLocalizations.of(context).email,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 40),
-                              child: MainTextButton(
-                                text: AppLocalizations.of(context).alreadyHaveAccount,
-                                onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
-                              ),
+                            const SizedBox(height: 16),
+                            MainTextField(
+                              textController: passwordTextController,
+                              placeholder: AppLocalizations.of(context).password,
+                              isPassword: true,
+                            ),
+                            const SizedBox(height: 16),
+                            MainTextField(
+                              textController: repeatPasswordTextController,
+                              placeholder: AppLocalizations.of(context).repeatPassword,
+                              isPassword: true,
+                            ),
+                            const SizedBox(height: 20),
+                            MainButton(
+                              isEnabled: isButtonAvailable,
+                              onPressed: () {
+                                BlocProvider.of<SignupCubit>(context).goToSecondSignupPage();
+                              },
+                              text: AppLocalizations.of(context).signup,
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 40),
+                        child: MainTextButton(
+                          text: AppLocalizations.of(context).alreadyHaveAccount,
+                          onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
                         ),
                       ),
                     ],

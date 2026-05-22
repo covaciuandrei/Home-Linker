@@ -28,6 +28,8 @@ class ForgotPasswordPage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final emailTextController = TextEditingController();
+
   @override
   void initState() {
     BlocProvider.of<ForgotPasswordCubit>(context).loadPage();
@@ -35,9 +37,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final emailTextController = TextEditingController();
+  void dispose() {
+    emailTextController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<ForgotPasswordCubit, BaseState>(listener: (context, state) {
       if (state is EmailSentSuccessfullyState) {
         AutoRouter.of(context).push(const EmailSentSuccessfullyRoute());

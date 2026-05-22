@@ -28,6 +28,10 @@ class ResetPasswordPage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final oldPasswordTextController = TextEditingController();
+  final newPasswordTextController = TextEditingController();
+  final repeatNewPasswordTextController = TextEditingController();
+
   @override
   void initState() {
     BlocProvider.of<ResetPasswordCubit>(context).loadPage();
@@ -35,11 +39,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final oldPasswordTextController = TextEditingController();
-    final newPasswordTextController = TextEditingController();
-    final repeatNewPasswordTextController = TextEditingController();
+  void dispose() {
+    oldPasswordTextController.dispose();
+    newPasswordTextController.dispose();
+    repeatNewPasswordTextController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<ResetPasswordCubit, BaseState>(
         listener: (context, state) {},
         builder: (context, state) {

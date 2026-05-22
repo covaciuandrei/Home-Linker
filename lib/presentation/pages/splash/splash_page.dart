@@ -37,12 +37,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     );
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.dispose();
-      }
-    });
     BlocProvider.of<SplashCubit>(context).load();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
