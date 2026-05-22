@@ -5,10 +5,11 @@ import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
-import 'package:homelinker/cubit/home/home_cubit.dart';
+import 'package:homelinker/cubit/favorites/favorites_cubit.dart';
 import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
+import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/range.dart';
 import 'package:homelinker/models/user.dart';
@@ -20,22 +21,22 @@ import 'package:homelinker/presentation/widgets/main_drawer.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
-class HomePage extends StatefulWidget implements AutoRouteWrapper {
-  const HomePage({super.key});
+class FavoritesPage extends StatefulWidget implements AutoRouteWrapper {
+  const FavoritesPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<FavoritesPage> createState() => _FavoritesPageState();
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<HomeCubit>(
-      create: (context) => getIt<HomeCubit>(),
+    return BlocProvider<FavoritesCubit>(
+      create: (context) => getIt<FavoritesCubit>(),
       child: this,
     );
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _FavoritesPageState extends State<FavoritesPage> {
   List<ListingData> listings = [];
   List<String> languages = [];
   bool _isPagePriceFiltered = false;
@@ -56,21 +57,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    BlocProvider.of<HomeCubit>(context).load();
+    BlocProvider.of<FavoritesCubit>(context).load();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, BaseState>(
+    return BlocConsumer<FavoritesCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingAddedToFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: true,
-            );
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).listingAddedToFavorites),
@@ -78,12 +73,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         } else if (state is ListingRemovedToFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: false,
-            );
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).listingRemovedFromFavorites),
@@ -91,12 +80,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         } else if (state is ListingAlreadyInFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: true,
-            );
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).listingAlreadyInFavorites),
@@ -132,7 +115,7 @@ class _HomePageState extends State<HomePage> {
           user = state.user;
         }
         return GestureDetector(
-          onTap: () => BlocProvider.of<HomeCubit>(context).resetFilter(),
+          onTap: () => BlocProvider.of<FavoritesCubit>(context).resetFilter(),
           child: LoadingScreen(
             loading: state is PendingState,
             child: Scaffold(
@@ -151,7 +134,7 @@ class _HomePageState extends State<HomePage> {
               drawer: MainDrawer(languages: languages),
               body: RefreshIndicator(
                 onRefresh: () async {
-                  await BlocProvider.of<HomeCubit>(context).refresh();
+                  await BlocProvider.of<FavoritesCubit>(context).refresh();
                 },
                 child: Column(
                   children: [
@@ -165,26 +148,29 @@ class _HomePageState extends State<HomePage> {
                               context: context,
                               filterType: FilterType.house,
                               icon: Icons.home,
-                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
+                              onPressed: () =>
+                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.house),
                             ),
                             FilterItem(
                               context: context,
                               filterType: FilterType.apartment,
                               icon: Icons.apartment_rounded,
                               onPressed: () =>
-                                  BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
+                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.apartment),
                             ),
                             FilterItem(
                               context: context,
                               filterType: FilterType.rent,
                               icon: Icons.home_work,
-                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
+                              onPressed: () =>
+                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.rent),
                             ),
                             FilterItem(
                               context: context,
                               filterType: FilterType.sale,
                               icon: Icons.local_offer,
-                              onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
+                              onPressed: () =>
+                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.sale),
                             ),
                             FilterItem(
                               context: context,
@@ -240,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                                                 width: 120,
                                                 text: AppLocalizations.of(context).filter,
                                                 onPressed: () {
-                                                  BlocProvider.of<HomeCubit>(context).filter(
+                                                  BlocProvider.of<FavoritesCubit>(context).filter(
                                                     filterType: FilterType.price,
                                                     minimPrice: _minimumPrice,
                                                     maxPrice: _maximumPrice,
@@ -262,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                               filterType: FilterType.location,
                               icon: Icons.location_on,
                               onPressed: () =>
-                                  BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.location),
+                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.location),
                             ),
                           ],
                         ),
@@ -275,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                         textColor: Colors.white,
                         text: AppLocalizations.of(context).removeFilter,
                         onPressed: () {
-                          BlocProvider.of<HomeCubit>(context).resetFilter();
+                          BlocProvider.of<FavoritesCubit>(context).resetFilter();
                         },
                       ),
                     Expanded(
@@ -289,11 +275,11 @@ class _HomePageState extends State<HomePage> {
                                 AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user)),
                             onFavoriteIconPressed: () {
                               if (listings[index].isSaved) {
-                                BlocProvider.of<HomeCubit>(context)
-                                    .removeListingToFavorites(id: listings[index].listing.property.id, index: index);
+                                BlocProvider.of<FavoritesCubit>(context)
+                                    .removeListingToFavorites(id: listings[index].listing.property.id);
                               } else {
-                                BlocProvider.of<HomeCubit>(context)
-                                    .addListingToFavorites(id: listings[index].listing.property.id, index: index);
+                                BlocProvider.of<FavoritesCubit>(context)
+                                    .addListingToFavorites(id: listings[index].listing.property.id);
                               }
                               setState(() {
                                 listings[index] = ListingData(

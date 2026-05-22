@@ -38,7 +38,38 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # Patch gRPC-Core for Xcode 16+ Clang: remove `template` keyword on a
+  # non-template member call in basic_seq.h, which otherwise triggers
+  # "A template argument list is expected after a name prefixed by the template keyword".
+  grpc_basic_seq = File.expand_path('Pods/gRPC-Core/src/core/lib/promise/detail/basic_seq.h', __dir__)
+  if File.exist?(grpc_basic_seq)
+    contents = File.read(grpc_basic_seq)
+    patched = contents.gsub('Traits::template CallSeqFactory(', 'Traits::CallSeqFactory(')
+    File.write(grpc_basic_seq, patched) if patched != contents
+  end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # Fix for: unsupported option '-G' for target 'x86_64-apple-ios-simulator'
+    # (BoringSSL-GRPC and similar pods on Xcode 15+).
+    target.build_configurations.each do |config|
+      if config.build_settings['OTHER_CFLAGS']
+        config.build_settings['OTHER_CFLAGS'] = Array(config.build_settings['OTHER_CFLAGS']).reject { |flag| flag == '-G' || flag == '-GCC_WARN_INHIBIT_ALL_WARNINGS' }
+      end
+      if config.build_settings['OTHER_CPLUSPLUSFLAGS']
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = Array(config.build_settings['OTHER_CPLUSPLUSFLAGS']).reject { |flag| flag == '-G' }
+      end
+    end
+
+    if target.respond_to?(:source_build_phase)
+      target.source_build_phase.files.each do |file|
+        if file.settings && file.settings['COMPILER_FLAGS']
+          flags = file.settings['COMPILER_FLAGS'].split
+          flags.reject! { |flag| flag == '-G' || flag == '-GCC_WARN_INHIBIT_ALL_WARNINGS' }
+          file.settings['COMPILER_FLAGS'] = flags.join(' ')
+        end
+      end
+    end
   end
 end

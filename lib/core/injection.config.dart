@@ -11,6 +11,7 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../cubit/favorites/favorites_cubit.dart' as _i519;
 import '../cubit/home/home_cubit.dart' as _i654;
 import '../cubit/introductive/introductive_cubit.dart' as _i75;
 import '../cubit/listing/listing_cubit.dart' as _i225;
@@ -98,6 +99,12 @@ _i174.GetIt $initGetIt(
         gh<_i361.UserRepository>(),
       ));
   gh.factory<_i654.HomeCubit>(() => _i654.HomeCubit(
+        gh<_i428.PropertyService>(),
+        gh<_i208.ImageService>(),
+        gh<_i261.UserService>(),
+        gh<_i1014.DatabaseProvider>(),
+      ));
+  gh.factory<_i519.FavoritesCubit>(() => _i519.FavoritesCubit(
         gh<_i428.PropertyService>(),
         gh<_i208.ImageService>(),
         gh<_i261.UserService>(),

@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/main.dart';
 

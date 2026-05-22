@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
@@ -16,7 +16,7 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper{
+class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper {
   const SignupSecondPage({
     super.key,
     required this.email,
@@ -28,7 +28,7 @@ class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper{
 
   @override
   State<SignupSecondPage> createState() => _SignupSecondPageState();
-    @override
+  @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider<SignupCubit>(
       create: (context) => getIt<SignupCubit>(),

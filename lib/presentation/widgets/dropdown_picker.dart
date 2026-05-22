@@ -47,9 +47,10 @@ class _DropdownPickerState extends State<DropdownPicker> {
             size: 24,
           ),
           elevation: 16,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          // await paymentCubit.refresh();
           underline: Container(height: 0),
+          // await appRouter.maybePop();
           onChanged: (String? value) {
             setState(() {
               dropdownValue = value!;

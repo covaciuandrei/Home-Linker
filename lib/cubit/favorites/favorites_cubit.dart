@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
@@ -6,6 +5,7 @@ import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/data/database/database_provider.dart';
 import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
+import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/services/image/image_service.dart';
@@ -13,11 +13,11 @@ import 'package:homelinker/services/property/property_service.dart';
 import 'package:homelinker/services/user/user_service.dart';
 import 'package:injectable/injectable.dart';
 
-part 'package:homelinker/cubit/home/home_states.dart';
+part 'package:homelinker/cubit/favorites/favorites_states.dart';
 
 @injectable
-class HomeCubit extends BaseCubit {
-  HomeCubit(
+class FavoritesCubit extends BaseCubit {
+  FavoritesCubit(
     this._propertyService,
     this._imageService,
     this._userService,
@@ -154,56 +154,43 @@ class HomeCubit extends BaseCubit {
     return maxPrice;
   }
 
-  Future<void> addListingToFavorites({required String id, required int index}) async {
+  Future<void> addListingToFavorites({required String id}) async {
     safeEmit(PendingState());
 
     final user = await _userService.getLoggedUser();
 
     if (user.favoriteListingsIds.contains(id)) {
-      safeEmit(ListingAlreadyInFavoritesState(index: index));
+      safeEmit(const ListingAlreadyInFavoritesState());
       return;
     }
 
     try {
       await _userService.addListingToFavorites(id: id);
 
-      safeEmit(ListingAddedToFavoritesState(index: index));
+      safeEmit(const ListingAddedToFavoritesState());
     } catch (e) {
       safeEmit(SomethingWentWrongState());
       print(e);
     }
   }
 
-  Future<void> removeListingToFavorites({required String id, required int index}) async {
+  Future<void> removeListingToFavorites({required String id}) async {
     safeEmit(PendingState());
 
     final user = await _userService.getLoggedUser();
 
     if (!user.favoriteListingsIds.contains(id)) {
-      safeEmit(ListingAlreadyRemovedFromFavoritesState(index: index));
+      safeEmit(const ListingAlreadyRemovedFromFavoritesState());
       return;
     }
 
     try {
       await _userService.removeListingToFavorites(id: id);
 
-      safeEmit(ListingRemovedToFavoritesState(index: index));
+      safeEmit(const ListingRemovedToFavoritesState());
     } catch (e) {
       safeEmit(SomethingWentWrongState());
       print(e);
     }
   }
-}
-
-class ListingData extends Equatable {
-  const ListingData({required this.listing, required this.isSaved});
-
-  final Listing listing;
-  final bool isSaved;
-
-  @override
-  List<Object?> get props => [
-        listing,
-        isSaved,
-      ];
 }

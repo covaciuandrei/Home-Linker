@@ -1,4 +1,4 @@
-part of 'package:homelinker/cubit/home/home_cubit.dart';
+part of 'package:homelinker/cubit/favorites/favorites_cubit.dart';
 
 class DataLoadedState extends BaseState {
   const DataLoadedState({
@@ -17,25 +17,17 @@ class DataLoadedState extends BaseState {
 }
 
 class ListingAddedToFavoritesState extends BaseState {
-  const ListingAddedToFavoritesState({required this.index});
-
-  final int index;
+  const ListingAddedToFavoritesState();
 }
 
 class ListingRemovedToFavoritesState extends BaseState {
-  const ListingRemovedToFavoritesState({required this.index});
-
-  final int index;
+  const ListingRemovedToFavoritesState();
 }
 
 class ListingAlreadyInFavoritesState extends BaseState {
-  const ListingAlreadyInFavoritesState({required this.index});
-
-  final int index;
+  const ListingAlreadyInFavoritesState();
 }
 
 class ListingAlreadyRemovedFromFavoritesState extends BaseState {
-  const ListingAlreadyRemovedFromFavoritesState({required this.index});
-
-  final int index;
+  const ListingAlreadyRemovedFromFavoritesState();
 }
