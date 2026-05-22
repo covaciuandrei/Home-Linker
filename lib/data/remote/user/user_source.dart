@@ -97,12 +97,9 @@ class UserSource {
     try {
       if (dataToUpdate.isNotEmpty) {
         await documentReference.update(dataToUpdate);
-        print('cod setat');
         return true;
       }
-    } catch (e) {
-      print(e);
-      print('cod nesetat');
+    } catch (_) {
       return false;
     }
     return false;

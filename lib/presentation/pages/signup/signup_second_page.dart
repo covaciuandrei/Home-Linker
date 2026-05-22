@@ -79,37 +79,36 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
           loading: state is PendingState,
           child: Scaffold(
             appBar: AppBar(),
-            body: SingleChildScrollView(
-              child: BlueShadowBackground(
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SvgIcon(
-                            iconName: 'home',
-                            color: Colors.lightBlue,
-                            size: 80,
+            body: BlueShadowBackground(
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SvgIcon(
+                          iconName: 'home',
+                          color: Colors.lightBlue,
+                          size: 80,
+                        ),
+                        Text(
+                          AppLocalizations.of(context).appTitle,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 36,
                           ),
-                          Text(
-                            AppLocalizations.of(context).appTitle,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 36,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 60),
-                      Padding(
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 60),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 16),
                             MainTextField(
                               textController: nameTextController,
                               placeholder: AppLocalizations.of(context).name,
@@ -147,16 +146,15 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 60),
-                        child: MainTextButton(
-                          text: AppLocalizations.of(context).alreadyHaveAccount,
-                          onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
-                        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 60),
+                      child: MainTextButton(
+                        text: AppLocalizations.of(context).alreadyHaveAccount,
+                        onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

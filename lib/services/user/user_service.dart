@@ -28,10 +28,8 @@ class UserService {
       await _userRepository.insert(
         users: [user],
       );
-      print('user cloud');
       return user;
     }
-    print('user repo');
     return _userRepository.get(userId);
   }
 

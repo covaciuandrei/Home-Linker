@@ -168,9 +168,8 @@ class HomeCubit extends BaseCubit {
       await _userService.addListingToFavorites(id: id);
 
       safeEmit(ListingAddedToFavoritesState(index: index));
-    } catch (e) {
+    } catch (_) {
       safeEmit(SomethingWentWrongState());
-      print(e);
     }
   }
 
@@ -188,9 +187,8 @@ class HomeCubit extends BaseCubit {
       await _userService.removeListingToFavorites(id: id);
 
       safeEmit(ListingRemovedToFavoritesState(index: index));
-    } catch (e) {
+    } catch (_) {
       safeEmit(SomethingWentWrongState());
-      print(e);
     }
   }
 }

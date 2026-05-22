@@ -88,35 +88,35 @@ class _LoginPageState extends State<LoginPage> {
           child: Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(),
-            body: SingleChildScrollView(
-              child: BlueShadowBackground(
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SvgIcon(
-                            iconName: 'home',
-                            color: Colors.lightBlue,
-                            size: 80,
+            body: BlueShadowBackground(
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SvgIcon(
+                          iconName: 'home',
+                          color: Colors.lightBlue,
+                          size: 80,
+                        ),
+                        Text(
+                          AppLocalizations.of(context).appTitle,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 36,
                           ),
-                          Text(
-                            AppLocalizations.of(context).appTitle,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 36,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.08),
-                      Padding(
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 60),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             MainTextField(
                               textController: emailTextController,
@@ -150,13 +150,15 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      MainTextButton(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 40),
+                      child: MainTextButton(
                         text: AppLocalizations.of(context).createNewAccount,
                         onPressed: () => BlocProvider.of<LoginCubit>(context).goToSignup(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -42,8 +42,7 @@ class SignupCubit extends BaseCubit {
         phoneNumber: phoneNumber,
       );
       safeEmit(SignUpSuccessfullyState());
-    } on Exception catch (e) {
-      print(e);
+    } on Exception {
       throw Exception();
     }
   }

@@ -19,10 +19,8 @@ class PropertyService {
 
       await _propertyRepository.clear();
       await _propertyRepository.insert(properties: properties);
-      print('properties cloud');
       return properties;
     }
-    print('properties repo');
     return _propertyRepository.getAll();
   }
 
