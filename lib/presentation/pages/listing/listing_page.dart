@@ -5,13 +5,13 @@ import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
-import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
+import 'package:homelinker/presentation/widgets/listing_image.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
@@ -55,13 +55,17 @@ class _ListingPageState extends State<ListingPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final listing = widget.listing;
+    final location = listing.property.location.trim();
     final user = widget.user;
 
     return BlocConsumer<ListingCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingDeletedState) {
-          BlocProvider.of<HomeCubit>(context).refresh();
-          AutoRouter.of(context).popForced();
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop(true);
+          } else {
+            AutoRouter.of(context).popForced<bool>(true);
+          }
         } else if (state is ListingFavoritedState) {
           setState(() => _isSaved = true);
           AppToast.show(
@@ -101,9 +105,9 @@ class _ListingPageState extends State<ListingPage> {
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: Hero(
                     tag: 'property_${listing.property.id}',
-                    child: Image.file(
-                      listing.image,
-                      fit: BoxFit.cover,
+                    child: ListingImage(
+                      image: listing.image,
+                      iconSize: 64,
                     ),
                   ),
                 ),
@@ -129,186 +133,186 @@ class _ListingPageState extends State<ListingPage> {
                 SafeArea(child: const BackArrowButton()),
 
                 // ── Content Sheet ────────────────────────────
-                _SlideUpOnEnter(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.35,
-                        ),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.65,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: AppColors.cardBackground,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(28),
-                              topRight: Radius.circular(28),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, -4),
-                              ),
-                            ],
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.35,
+                      ),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.65,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(28),
+                            topRight: Radius.circular(28),
                           ),
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              children: [
-                                // ── Handle bar ────────────────
-                                Container(
-                                  margin: const EdgeInsets.only(top: 12),
-                                  width: 40,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.divider,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, -4),
+                            ),
+                          ],
+                        ),
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              // ── Handle bar ────────────────
+                              Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                width: 40,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.divider,
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
+                              ),
 
-                                // ── Header Info ───────────────
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              listing.property.propertyType.name
-                                                  .translate(context, listing.property.propertyType.name)
-                                                  .capitalize(),
-                                              style: theme.textTheme.headlineSmall?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                                color: AppColors.textPrimary,
-                                              ),
+                              // ── Header Info ───────────────
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            listing.property.propertyType.name
+                                                .translate(context, listing.property.propertyType.name)
+                                                .capitalize(),
+                                            style: theme.textTheme.headlineSmall?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: AppColors.textPrimary,
                                             ),
-                                            const SizedBox(height: 6),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on_outlined,
-                                                  size: 16,
-                                                  color: AppColors.textTertiary,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Expanded(
-                                                  child: Text(
-                                                    listing.property.location,
-                                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                                      color: AppColors.textSecondary,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '${AppLocalizations.of(context).listedBy} ${listing.property.ownerName}',
-                                              style: theme.textTheme.bodySmall?.copyWith(
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_outlined,
+                                                size: 16,
                                                 color: AppColors.textTertiary,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          ListingPrice(
-                                            property: listing.property,
-                                            textSize: 24,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Material(
-                                            color: _isSaved
-                                                ? AppColors.error.withValues(alpha: 0.10)
-                                                : AppColors.primary.withValues(alpha: 0.08),
-                                            shape: const CircleBorder(),
-                                            child: InkWell(
-                                              customBorder: const CircleBorder(),
-                                              onTap: () {
-                                                if (_isSaved) {
-                                                  BlocProvider.of<ListingCubit>(context)
-                                                      .removeFavorite(id: listing.property.id);
-                                                } else {
-                                                  BlocProvider.of<ListingCubit>(context)
-                                                      .addFavorite(id: listing.property.id);
-                                                }
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(10),
-                                                child: AnimatedSwitcher(
-                                                  duration: const Duration(milliseconds: 250),
-                                                  child: Icon(
-                                                    _isSaved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                                    key: ValueKey<bool>(_isSaved),
-                                                    color: _isSaved ? AppColors.error : AppColors.primary,
-                                                    size: 22,
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  location.isNotEmpty
+                                                      ? location
+                                                      : AppLocalizations.of(context).noLocationChosen,
+                                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                                    color: AppColors.textSecondary,
                                                   ),
                                                 ),
                                               ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '${AppLocalizations.of(context).listedBy} ${listing.property.ownerName}',
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: AppColors.textTertiary,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-
-                                // ── Selling Points ────────────
-                                PropertySellingPointLine(
-                                  property: listing.property,
-                                  icons: const [
-                                    Icons.calendar_month_outlined,
-                                    Icons.real_estate_agent_outlined,
-                                    Icons.landscape_outlined,
-                                  ],
-                                  isFirstLine: true,
-                                ),
-                                PropertySellingPointLine(
-                                  property: listing.property,
-                                  icons: const [
-                                    Icons.bathroom_outlined,
-                                    Icons.bed_outlined,
-                                    Icons.local_parking_outlined,
-                                  ],
-                                  isFirstLine: false,
-                                ),
-
-                                // ── Description ───────────────
-                                PropertyDescription(
-                                  description: listing.property.description,
-                                ),
-                                const SizedBox(height: 20),
-
-                                // ── Delete Button ─────────────
-                                if (listing.property.ownerEmail == user.email)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                                    child: MainButton(
-                                      isDestructive: true,
-                                      width: 220,
-                                      text: AppLocalizations.of(context).deleteListing,
-                                      icon: Icons.delete_outline_rounded,
-                                      onPressed: () {
-                                        _confirmDelete(context);
-                                      },
                                     ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        ListingPrice(
+                                          property: listing.property,
+                                          textSize: 24,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Material(
+                                          color: _isSaved
+                                              ? AppColors.error.withValues(alpha: 0.10)
+                                              : AppColors.primary.withValues(alpha: 0.08),
+                                          shape: const CircleBorder(),
+                                          child: InkWell(
+                                            customBorder: const CircleBorder(),
+                                            onTap: () {
+                                              if (_isSaved) {
+                                                BlocProvider.of<ListingCubit>(context)
+                                                    .removeFavorite(id: listing.property.id);
+                                              } else {
+                                                BlocProvider.of<ListingCubit>(context)
+                                                    .addFavorite(id: listing.property.id);
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: AnimatedSwitcher(
+                                                duration: const Duration(milliseconds: 250),
+                                                child: Icon(
+                                                  _isSaved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                                  key: ValueKey<bool>(_isSaved),
+                                                  color: _isSaved ? AppColors.error : AppColors.primary,
+                                                  size: 22,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // ── Selling Points ────────────
+                              PropertySellingPointLine(
+                                property: listing.property,
+                                icons: const [
+                                  Icons.calendar_month_outlined,
+                                  Icons.real_estate_agent_outlined,
+                                  Icons.landscape_outlined,
+                                ],
+                                isFirstLine: true,
+                              ),
+                              PropertySellingPointLine(
+                                property: listing.property,
+                                icons: const [
+                                  Icons.bathroom_outlined,
+                                  Icons.bed_outlined,
+                                  Icons.local_parking_outlined,
+                                ],
+                                isFirstLine: false,
+                              ),
+
+                              // ── Description ───────────────
+                              PropertyDescription(
+                                description: listing.property.description,
+                              ),
+                              const SizedBox(height: 20),
+
+                              // ── Delete Button ─────────────
+                              if (listing.property.ownerEmail == user.email)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: MainButton(
+                                    isDestructive: true,
+                                    width: 220,
+                                    text: AppLocalizations.of(context).deleteListing,
+                                    icon: Icons.delete_outline_rounded,
+                                    onPressed: () {
+                                      _confirmDelete(context);
+                                    },
                                   ),
-                                const SizedBox(height: 40),
-                              ],
-                            ),
+                                ),
+                              const SizedBox(height: 40),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -516,35 +520,6 @@ class PropertySellingPoint extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Slides its child up from the bottom while the route is pushing in, so the
-/// content sheet appears to rise from below the hero image. On pop, it slides
-/// back down. While the route is settled, no transform is applied.
-class _SlideUpOnEnter extends StatelessWidget {
-  const _SlideUpOnEnter({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final route = ModalRoute.of(context);
-    if (route == null) return child;
-
-    final animation = CurvedAnimation(
-      parent: route.animation ?? const AlwaysStoppedAnimation(1),
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    );
-
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 1),
-        end: Offset.zero,
-      ).animate(animation),
-      child: child,
     );
   }
 }

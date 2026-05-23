@@ -4,6 +4,9 @@ class Properties extends Table {
   @override
   String? get tableName => 'properties';
 
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
   TextColumn get id => text()();
 
   IntColumn get areaSize => integer()();

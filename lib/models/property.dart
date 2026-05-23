@@ -16,6 +16,7 @@ class Property extends Equatable {
     required this.parkingSpaces,
     required this.price,
     required this.propertyType,
+    this.createdAt,
   });
 
   final String id;
@@ -32,6 +33,7 @@ class Property extends Equatable {
   final int parkingSpaces;
   final double price;
   final PropertyType propertyType;
+  final DateTime? createdAt;
 
   @override
   List<Object?> get props => [
@@ -49,6 +51,7 @@ class Property extends Equatable {
         parkingSpaces,
         price,
         propertyType,
+        createdAt,
       ];
 }
 

@@ -71,12 +71,13 @@ abstract class $AppRouter extends _i19.RootStackRouter {
       final args = routeData.argsAs<ListingRouteArgs>();
       return _i19.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: _i6.ListingPage(
+        child: _i19.WrappedRoute(
+            child: _i6.ListingPage(
           key: args.key,
           listing: args.listing,
           user: args.user,
           isSaved: args.isSaved,
-        ),
+        )),
       );
     },
     LoginRoute.name: (routeData) {

@@ -13,13 +13,14 @@ class PropertyMapper {
         constructionYear: dto.constructionYear,
         description: dto.description,
         imageId: dto.imageId,
-        listingType: ListingType.values.byName(dto.listingType),
+        listingType: _listingTypeFromName(dto.listingType),
         location: dto.location,
         ownerEmail: dto.ownerEmail,
         ownerName: dto.ownerName,
         parkingSpaces: dto.parkingSpaces,
         price: dto.price,
-        propertyType: PropertyType.values.byName(dto.propertyType),
+        propertyType: _propertyTypeFromName(dto.propertyType),
+        createdAt: dto.createdAt != null ? DateTime.tryParse(dto.createdAt!) : null,
       );
 
   List<Property> mapPropertyDtos(List<PropertyDto> propertyDtos) => propertyDtos.map(mapDtoToProperty).toList();
@@ -38,6 +39,7 @@ class PropertyMapper {
         property.parkingSpaces,
         property.price,
         property.propertyType.name,
+        createdAt: property.createdAt?.toIso8601String(),
       );
   List<PropertyDto> mapPropertiesToDtos(List<Property> properties) => properties.map(mapPropertyToDto).toList();
 
@@ -49,12 +51,28 @@ class PropertyMapper {
         constructionYear: dto.constructionYear,
         description: dto.description,
         imageId: dto.imageId,
-        listingType: ListingType.values.byName(dto.listingType),
+        listingType: _listingTypeFromName(dto.listingType),
         location: dto.location,
         ownerEmail: dto.ownerEmail,
         ownerName: dto.ownerName,
         parkingSpaces: dto.parkingSpaces,
         price: dto.price,
-        propertyType: PropertyType.values.byName(dto.propertyType),
+        propertyType: _propertyTypeFromName(dto.propertyType),
       );
+
+  ListingType _listingTypeFromName(String name) {
+    try {
+      return ListingType.values.byName(name);
+    } catch (_) {
+      return ListingType.sale;
+    }
+  }
+
+  PropertyType _propertyTypeFromName(String name) {
+    try {
+      return PropertyType.values.byName(name);
+    } catch (_) {
+      return PropertyType.apartment;
+    }
+  }
 }

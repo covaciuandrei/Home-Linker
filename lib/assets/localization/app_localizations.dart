@@ -449,7 +449,7 @@ abstract class AppLocalizations {
   /// No description provided for @noLocationChosen.
   ///
   /// In en, this message translates to:
-  /// **'No location chosen.'**
+  /// **'No location selected'**
   String get noLocationChosen;
 
   /// No description provided for @currentLocation.

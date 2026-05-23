@@ -76,14 +76,6 @@ class MainDrawer extends StatelessWidget {
 
                   // ── Navigation Items ───────────────────────────
                   _DrawerItem(
-                    icon: Icons.favorite_rounded,
-                    label: AppLocalizations.of(context).favorites,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      AutoRouter.of(context).push(const FavoritesRoute());
-                    },
-                  ),
-                  _DrawerItem(
                     icon: Icons.settings_rounded,
                     label: AppLocalizations.of(context).settings,
                     onTap: () {

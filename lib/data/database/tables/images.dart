@@ -4,13 +4,16 @@ class Images extends Table {
   @override
   String? get tableName => 'images';
 
-  TextColumn? get identifier => text()();
+  @override
+  Set<Column<Object>> get primaryKey => {identifier};
 
-  TextColumn? get name => text()();
+  TextColumn get identifier => text()();
 
-  TextColumn? get path => text()();
+  TextColumn get name => text()();
 
-  DateTimeColumn? get uploadDate => dateTime()();
+  TextColumn get path => text()();
 
-  BlobColumn? get data => blob()();
+  DateTimeColumn get uploadDate => dateTime()();
+
+  BlobColumn get data => blob()();
 }

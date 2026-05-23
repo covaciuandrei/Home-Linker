@@ -9,17 +9,21 @@ import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
+import 'package:homelinker/cubit/property_filter/property_filter_cubit.dart';
 import 'package:homelinker/models/enums/account_type.dart';
 import 'package:homelinker/models/listing.dart';
+import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
-import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
+import 'package:homelinker/presentation/widgets/listing_image.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_drawer.dart';
+import 'package:homelinker/presentation/widgets/price_range_inputs.dart';
 import 'package:homelinker/utils/extension_methods.dart';
+import 'package:intl/intl.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget implements AutoRouteWrapper {
@@ -30,227 +34,233 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<HomeCubit>(
-      create: (context) => getIt<HomeCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeCubit>(create: (_) => getIt<HomeCubit>()),
+        BlocProvider<PropertyFilterCubit>(create: (_) => getIt<PropertyFilterCubit>()),
+      ],
       child: this,
     );
   }
 }
 
 class _HomePageState extends State<HomePage> {
-  List<ListingData> listings = [];
-  List<String> languages = [];
-  bool _isPageFiltered = false;
-  RangeValues priceRange = const RangeValues(0, 100000);
-
-  // Active filter selections.
-  PropertyType? _propertyType;
-  ListingType? _listingType;
-  RangeValues? _priceFilter;
-
-  User user = const User(
-    email: '',
-    id: '',
-    name: '',
-    phone: '',
-    profilePictureId: '',
-    type: AccountType.client,
-    twoFactorAuthCode: '',
-    is2FaActivated: false,
-    favoriteListingsIds: [],
-  );
+  // No mirrored UI state — page reads everything from the cubits.
+  // The only local state is the scroll controller used to trigger pagination.
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
-    BlocProvider.of<HomeCubit>(context).load();
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+    BlocProvider.of<HomeCubit>(context).load();
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    _loadMoreIfNearBottom();
+  }
+
+  void _loadMoreIfNearBottom() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.extentAfter < 240) {
+      BlocProvider.of<HomeCubit>(context).loadMore();
+    }
+  }
+
+  void _loadMoreIfListCannotScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.maxScrollExtent <= 0) {
+      BlocProvider.of<HomeCubit>(context).loadMore();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, BaseState>(
+    return BlocListener<HomeCubit, BaseState>(
+      listenWhen: (prev, curr) => curr is! DataLoadedState || prev is! DataLoadedState,
       listener: (context, state) {
         if (state is ListingAddedToFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: true,
-            );
-          });
           _showThemedSnackBar(
-            context,
-            AppLocalizations.of(context).listingAddedToFavorites,
-            Icons.favorite_rounded,
-            AppColors.success,
-          );
+              context, AppLocalizations.of(context).listingAddedToFavorites, Icons.favorite_rounded, AppColors.success);
         } else if (state is ListingRemovedToFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: false,
-            );
-          });
-          _showThemedSnackBar(
-            context,
-            AppLocalizations.of(context).listingRemovedFromFavorites,
-            Icons.favorite_border_rounded,
-            AppColors.textSecondary,
-          );
+          _showThemedSnackBar(context, AppLocalizations.of(context).listingRemovedFromFavorites,
+              Icons.favorite_border_rounded, AppColors.textSecondary);
         } else if (state is ListingAlreadyInFavoritesState) {
-          setState(() {
-            listings[state.index] = ListingData(
-              listing: listings[state.index].listing,
-              isSaved: true,
-            );
-          });
-          _showThemedSnackBar(
-            context,
-            AppLocalizations.of(context).listingAlreadyInFavorites,
-            Icons.info_outline_rounded,
-            AppColors.warning,
-          );
+          _showThemedSnackBar(context, AppLocalizations.of(context).listingAlreadyInFavorites,
+              Icons.info_outline_rounded, AppColors.warning);
         } else if (state is ListingAlreadyRemovedFromFavoritesState) {
-          _showThemedSnackBar(
-            context,
-            AppLocalizations.of(context).listingAlreadyRemovedFromFavorites,
-            Icons.info_outline_rounded,
-            AppColors.warning,
-          );
+          _showThemedSnackBar(context, AppLocalizations.of(context).listingAlreadyRemovedFromFavorites,
+              Icons.info_outline_rounded, AppColors.warning);
         } else if (state is SomethingWentWrongState) {
           _showThemedSnackBar(
-            context,
-            AppLocalizations.of(context).somethingWrong,
-            Icons.error_outline_rounded,
-            AppColors.error,
-          );
+              context, AppLocalizations.of(context).somethingWrong, Icons.error_outline_rounded, AppColors.error);
+        } else if (state is DataLoadedState) {
+          // Seed the filter cubit's slider bounds from the freshly loaded data.
+          BlocProvider.of<PropertyFilterCubit>(context).initBounds(state.priceRange);
         }
       },
-      builder: (context, state) {
-        if (state is DataLoadedState) {
-          listings = state.listings;
-          languages = state.languages;
-          priceRange = state.priceRange;
-          _isPageFiltered = state.isPageFiltered;
-          user = state.user;
-        }
-        return LoadingScreen(
-          loading: state is PendingState,
-          child: Scaffold(
-            backgroundColor: AppColors.surface,
-            floatingActionButton: user.type == AccountType.propertyOwner
-                ? Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: AppColors.primaryGradient,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.35),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
+      child: BlocBuilder<HomeCubit, BaseState>(
+        builder: (context, homeState) {
+          final loaded = homeState is DataLoadedState ? homeState : null;
+          final user = loaded?.user;
+          final languages = loaded?.languages ?? const <String>[];
+
+          return BlocBuilder<PropertyFilterCubit, BaseState>(
+            builder: (context, filterStateBase) {
+              final filterState = filterStateBase as PropertyFilterState;
+              final visibleListings = loaded == null ? const <ListingData>[] : filterState.applyTo(loaded.listings);
+              if (loaded?.hasMore ?? false) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) _loadMoreIfListCannotScroll();
+                });
+              }
+
+              return LoadingScreen(
+                loading: homeState is PendingState,
+                child: Scaffold(
+                  backgroundColor: AppColors.surface,
+                  floatingActionButton: user?.type == AccountType.propertyOwner
+                      ? Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppColors.primaryGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.35),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            onPressed: () async {
+                              final result = await AutoRouter.of(context).push(const NewPropertyRoute());
+                              if (!context.mounted) return;
+                              if (result == true) {
+                                unawaited(BlocProvider.of<HomeCubit>(context).refresh());
+                              }
+                            },
+                            child: const Icon(Icons.add_rounded, size: 28),
+                          ),
+                        )
+                      : null,
+                  appBar: MainAppBar(
+                    title: AppLocalizations.of(context).appTitle,
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.favorite_rounded, color: Colors.white),
+                        tooltip: AppLocalizations.of(context).favorites,
+                        onPressed: () => AutoRouter.of(context).push(const FavoritesRoute()),
+                      ),
+                    ],
+                  ),
+                  drawer: MainDrawer(languages: languages),
+                  body: RefreshIndicator(
+                    color: AppColors.primary,
+                    onRefresh: () {
+                      unawaited(BlocProvider.of<HomeCubit>(context).refresh());
+                      return Future<void>.value();
+                    },
+                    child: Column(
+                      children: [
+                        _FilterToolbar(
+                          propertyType: filterState.propertyType,
+                          listingType: filterState.listingType,
+                          priceFilter: filterState.priceRange,
+                          isFiltered: filterState.isFiltered,
+                          onOpenFilters: () => _showFiltersBottomSheet(context, filterState),
+                          onClearPropertyType: () =>
+                              BlocProvider.of<PropertyFilterCubit>(context).setPropertyType(null),
+                          onClearListingType: () => BlocProvider.of<PropertyFilterCubit>(context).setListingType(null),
+                          onClearPrice: () => BlocProvider.of<PropertyFilterCubit>(context).setPriceRange(null),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.only(bottom: 80, top: 4),
+                            itemCount: visibleListings.length + ((loaded?.hasMore ?? false) ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index >= visibleListings.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                  ),
+                                );
+                              }
+                              final item = visibleListings[index];
+                              // Map filtered index back to source index for favorites toggle.
+                              final sourceIndex = loaded!.listings.indexOf(item);
+                              return PropertyItem(
+                                listing: item.listing,
+                                onPressed: () async {
+                                  final result = await AutoRouter.of(context).push(
+                                    ListingRoute(
+                                      listing: item.listing,
+                                      user: user!,
+                                      isSaved: item.isSaved,
+                                    ),
+                                  );
+                                  if (!context.mounted) return;
+                                  if (result == true) {
+                                    unawaited(BlocProvider.of<HomeCubit>(context).refresh());
+                                  }
+                                },
+                                onFavoriteIconPressed: () {
+                                  final cubit = BlocProvider.of<HomeCubit>(context);
+                                  if (item.isSaved) {
+                                    cubit.removeListingToFavorites(id: item.listing.property.id, index: sourceIndex);
+                                  } else {
+                                    cubit.addListingToFavorites(id: item.listing.property.id, index: sourceIndex);
+                                  }
+                                },
+                                isSaved: item.isSaved,
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
-                    child: FloatingActionButton(
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      onPressed: () => AutoRouter.of(context).push(const NewPropertyRoute()),
-                      child: const Icon(Icons.add_rounded, size: 28),
-                    ),
-                  )
-                : null,
-            appBar: MainAppBar(title: AppLocalizations.of(context).appTitle),
-            drawer: MainDrawer(languages: languages),
-            body: RefreshIndicator(
-              color: AppColors.primary,
-              onRefresh: () {
-                unawaited(BlocProvider.of<HomeCubit>(context).refresh());
-                return Future<void>.value();
-              },
-              child: Column(
-                children: [
-                  // ── Filter Toolbar ─────────────────────────────
-                  _FilterToolbar(
-                    propertyType: _propertyType,
-                    listingType: _listingType,
-                    priceFilter: _priceFilter,
-                    isFiltered: _isPageFiltered,
-                    onOpenFilters: () => _showFiltersBottomSheet(context),
-                    onClearPropertyType: () {
-                      setState(() => _propertyType = null);
-                      _applyCurrentFilters();
-                    },
-                    onClearListingType: () {
-                      setState(() => _listingType = null);
-                      _applyCurrentFilters();
-                    },
-                    onClearPrice: () {
-                      setState(() => _priceFilter = null);
-                      _applyCurrentFilters();
-                    },
                   ),
-
-                  // ── Property List ────────────────────────────
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 80, top: 4),
-                      itemCount: listings.length,
-                      itemBuilder: (context, index) {
-                        return PropertyItem(
-                          listing: listings[index].listing,
-                          onPressed: () => AutoRouter.of(context).push(ListingRoute(
-                              listing: listings[index].listing, user: user, isSaved: listings[index].isSaved)),
-                          onFavoriteIconPressed: () {
-                            if (listings[index].isSaved) {
-                              BlocProvider.of<HomeCubit>(context)
-                                  .removeListingToFavorites(id: listings[index].listing.property.id, index: index);
-                            } else {
-                              BlocProvider.of<HomeCubit>(context)
-                                  .addListingToFavorites(id: listings[index].listing.property.id, index: index);
-                            }
-                            setState(() {
-                              listings[index] = ListingData(
-                                listing: listings[index].listing,
-                                isSaved: !listings[index].isSaved,
-                              );
-                            });
-                          },
-                          isSaved: listings[index].isSaved,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
   void _showThemedSnackBar(BuildContext context, String message, IconData icon, Color accentColor) {
-    AppToast.show(
-      context,
-      message: message,
-      icon: icon,
-      accentColor: accentColor,
-    );
+    AppToast.show(context, message: message, icon: icon, accentColor: accentColor);
   }
 
-  void _applyCurrentFilters() {
-    BlocProvider.of<HomeCubit>(context).applyFilters(
-      propertyType: _propertyType,
-      listingType: _listingType,
-      minPrice: _priceFilter?.start,
-      maxPrice: _priceFilter?.end,
-    );
-  }
+  Future<void> _showFiltersBottomSheet(BuildContext context, PropertyFilterState filterState) async {
+    final filterCubit = BlocProvider.of<PropertyFilterCubit>(context);
+    final bounds = filterState.bounds;
 
-  Future<void> _showFiltersBottomSheet(BuildContext context) async {
-    PropertyType? draftPropertyType = _propertyType;
-    ListingType? draftListingType = _listingType;
-    RangeValues draftPrice = _priceFilter ?? priceRange;
+    PropertyType? draftPropertyType = filterState.propertyType;
+    ListingType? draftListingType = filterState.listingType;
+    RangeValues draftPrice = filterState.priceRange ?? bounds;
+    var minimumPriceText = formatPriceInputValue(draftPrice.start);
+    var maximumPriceText = formatPriceInputValue(draftPrice.end);
+    var priceInputsResetSignal = 0;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -262,162 +272,142 @@ class _HomePageState extends State<HomePage> {
       builder: (bottomSheetContext) {
         return StatefulBuilder(
           builder: (bottomSheetContext, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 12,
-                bottom: 24 + MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Handle bar
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppColors.divider,
-                        borderRadius: BorderRadius.circular(2),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 12,
+                  bottom: 24 + MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.divider,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    AppLocalizations.of(context).filters,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Property Type
-                  _FilterSectionLabel(
-                    text: AppLocalizations.of(context).propertyType,
-                  ),
-                  const SizedBox(height: 10),
-                  _SegmentedSelector<PropertyType?>(
-                    value: draftPropertyType,
-                    options: [
-                      _SegmentOption(
-                        value: null,
-                        label: AppLocalizations.of(context).any,
-                        icon: Icons.apps_rounded,
-                      ),
-                      _SegmentOption(
-                        value: PropertyType.house,
-                        label: AppLocalizations.of(context).house.capitalize(),
-                        icon: Icons.home_rounded,
-                      ),
-                      _SegmentOption(
-                        value: PropertyType.apartment,
-                        label: AppLocalizations.of(context).apartment.capitalize(),
-                        icon: Icons.apartment_rounded,
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => draftPropertyType = v),
-                  ),
-                  const SizedBox(height: 22),
-
-                  // Listing Type
-                  _FilterSectionLabel(
-                    text: AppLocalizations.of(context).listType,
-                  ),
-                  const SizedBox(height: 10),
-                  _SegmentedSelector<ListingType?>(
-                    value: draftListingType,
-                    options: [
-                      _SegmentOption(
-                        value: null,
-                        label: AppLocalizations.of(context).any,
-                        icon: Icons.apps_rounded,
-                      ),
-                      _SegmentOption(
-                        value: ListingType.rent,
-                        label: AppLocalizations.of(context).rent.capitalize(),
-                        icon: Icons.home_work_rounded,
-                      ),
-                      _SegmentOption(
-                        value: ListingType.sale,
-                        label: AppLocalizations.of(context).sale.capitalize(),
-                        icon: Icons.local_offer_rounded,
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => draftListingType = v),
-                  ),
-                  const SizedBox(height: 22),
-
-                  // Price Range
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _FilterSectionLabel(
-                        text: AppLocalizations.of(context).priceRange,
-                      ),
-                      Text(
-                        '\$${draftPrice.start.round()} – \$${draftPrice.end.round()}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                    ],
-                  ),
-                  RangeSlider(
-                    values: draftPrice,
-                    min: priceRange.start,
-                    max: priceRange.end == priceRange.start ? priceRange.start + 1 : priceRange.end,
-                    divisions: 100,
-                    activeColor: AppColors.primary,
-                    inactiveColor: AppColors.divider,
-                    labels: RangeLabels(
-                      '\$${draftPrice.start.round()}',
-                      '\$${draftPrice.end.round()}',
+                    const SizedBox(height: 18),
+                    Text(
+                      AppLocalizations.of(context).filters,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
-                    onChanged: (values) => setSheetState(() => draftPrice = values),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Actions
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MainButton(
-                          isOutlined: true,
-                          text: AppLocalizations.of(context).reset,
-                          onPressed: () {
-                            setSheetState(() {
-                              draftPropertyType = null;
-                              draftListingType = null;
-                              draftPrice = priceRange;
-                            });
-                          },
+                    const SizedBox(height: 20),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).propertyType),
+                    const SizedBox(height: 10),
+                    _SegmentedSelector<PropertyType?>(
+                      value: draftPropertyType,
+                      options: [
+                        _SegmentOption(
+                          value: null,
+                          label: AppLocalizations.of(context).any,
+                          icon: Icons.apps_rounded,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: MainButton(
-                          isGradient: true,
-                          text: AppLocalizations.of(context).applyLabel,
-                          onPressed: () {
-                            setState(() {
-                              _propertyType = draftPropertyType;
-                              _listingType = draftListingType;
-                              final usingFullRange =
-                                  draftPrice.start <= priceRange.start && draftPrice.end >= priceRange.end;
-                              _priceFilter = usingFullRange ? null : draftPrice;
-                            });
-                            _applyCurrentFilters();
-                            Navigator.of(bottomSheetContext).pop();
-                          },
+                        _SegmentOption(
+                          value: PropertyType.house,
+                          label: AppLocalizations.of(context).house.capitalize(),
+                          icon: Icons.home_rounded,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        _SegmentOption(
+                          value: PropertyType.apartment,
+                          label: AppLocalizations.of(context).apartment.capitalize(),
+                          icon: Icons.apartment_rounded,
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => draftPropertyType = v),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).listType),
+                    const SizedBox(height: 10),
+                    _SegmentedSelector<ListingType?>(
+                      value: draftListingType,
+                      options: [
+                        _SegmentOption(
+                          value: null,
+                          label: AppLocalizations.of(context).any,
+                          icon: Icons.apps_rounded,
+                        ),
+                        _SegmentOption(
+                          value: ListingType.rent,
+                          label: AppLocalizations.of(context).rent.capitalize(),
+                          icon: Icons.home_work_rounded,
+                        ),
+                        _SegmentOption(
+                          value: ListingType.sale,
+                          label: AppLocalizations.of(context).sale.capitalize(),
+                          icon: Icons.local_offer_rounded,
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => draftListingType = v),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).priceRange),
+                    const SizedBox(height: 10),
+                    PriceRangeInputs(
+                      initialMinimum: minimumPriceText,
+                      initialMaximum: maximumPriceText,
+                      minimumLabel: AppLocalizations.of(context).minimumPrice,
+                      maximumLabel: AppLocalizations.of(context).maximumPrice,
+                      resetSignal: priceInputsResetSignal,
+                      onChanged: (value) {
+                        minimumPriceText = value.minimumText;
+                        maximumPriceText = value.maximumText;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MainButton(
+                            isOutlined: true,
+                            text: AppLocalizations.of(context).reset,
+                            onPressed: () {
+                              setSheetState(() {
+                                draftPropertyType = null;
+                                draftListingType = null;
+                                draftPrice = bounds;
+                                minimumPriceText = formatPriceInputValue(bounds.start);
+                                maximumPriceText = formatPriceInputValue(bounds.end);
+                                priceInputsResetSignal++;
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: MainButton(
+                            isGradient: true,
+                            text: AppLocalizations.of(context).applyLabel,
+                            onPressed: () {
+                              draftPrice = normalizedPriceRange(
+                                minimumText: minimumPriceText,
+                                maximumText: maximumPriceText,
+                                bounds: bounds,
+                              );
+                              final usingFullRange = draftPrice.start <= bounds.start && draftPrice.end >= bounds.end;
+                              filterCubit.apply(
+                                propertyType: draftPropertyType,
+                                listingType: draftListingType,
+                                priceRange: usingFullRange ? null : draftPrice,
+                              );
+                              Navigator.of(bottomSheetContext).pop();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -723,6 +713,7 @@ class PropertyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final location = listing.property.location.trim();
 
     return GestureDetector(
       onTap: onPressed,
@@ -747,10 +738,7 @@ class PropertyItem extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Hero(
                   tag: 'property_${listing.property.id}',
-                  child: Image.file(
-                    listing.image,
-                    fit: BoxFit.cover,
-                  ),
+                  child: ListingImage(image: listing.image),
                 ),
               ),
             ),
@@ -779,29 +767,54 @@ class PropertyItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
 
-                    // Location
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: AppColors.textTertiary,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(
-                            listing.property.location,
+                      // Location
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: AppColors.textTertiary,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (listing.property.createdAt != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_outlined,
+                            color: AppColors.textTertiary,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            () {
+                              final locale = Localizations.localeOf(context).toString();
+                              final dt = listing.property.createdAt!.toLocal();
+                              return '${DateFormat.yMMMd(locale).format(dt)} · ${DateFormat.Hm(locale).format(dt)}';
+                            }(),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 6),
 
                     // Listing type badge

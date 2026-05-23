@@ -1,11 +1,12 @@
-import 'package:equatable/equatable.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/data/database/database_provider.dart';
-import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
+import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/services/image/image_service.dart';
@@ -15,6 +16,9 @@ import 'package:injectable/injectable.dart';
 
 part 'package:homelinker/cubit/home/home_states.dart';
 
+/// Owns the home feed's data: listings, pagination cursor, favourites flags,
+/// and metadata (locale list, max-price bound). All filter selection state is
+/// owned by `PropertyFilterCubit`; this cubit is intentionally filter-agnostic.
 @injectable
 class HomeCubit extends BaseCubit {
   HomeCubit(
@@ -29,214 +33,170 @@ class HomeCubit extends BaseCubit {
   final UserService _userService;
   final DatabaseProvider _databaseProvider;
 
-  List<Property> properties = [];
+  static const int _pageSize = 7;
 
-  List<String> languages = [];
-  List<ListingData> listingsData = [];
-  RangeValues priceRange = const RangeValues(0, 1000000);
+  List<ListingData> _listingsData = [];
+  List<String> _languages = [];
+  double _maxPrice = 0;
+  User? _user;
+
+  String? _lastId;
+  String? _lastCreatedAt;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
 
   Future<void> deleteData() async {
     await _databaseProvider.get.clear();
   }
 
   Future<void> refresh() async {
-    await _internalLoad(forceRefresh: true);
+    _lastId = null;
+    _lastCreatedAt = null;
+    _hasMore = true;
+    _listingsData = [];
+    await _loadFirstPage(forceRefresh: true);
   }
 
   Future<void> load() async {
-    await _internalLoad();
+    await _loadFirstPage();
   }
 
-  Future<void> _internalLoad({bool forceRefresh = false}) async {
+  Future<void> _loadFirstPage({bool forceRefresh = false}) async {
     safeEmit(PendingState());
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
 
     final user = await _userService.getLoggedUser(forceRefresh: forceRefresh);
-    final savedListings = user.favoriteListingsIds;
+    final savedListings = user.favoriteListingsIds.toSet();
+    _user = user;
 
-    properties = await _propertyService.getAll(forceRefresh: forceRefresh);
-
-    listingsData = [];
-
-    for (final property in properties) {
-      final image = await _imageService.getImage(imageId: property.imageId);
-
-      final listing = Listing(image: image!, property: property);
-
-      final isSaved = savedListings.contains(property.id);
-
-      final listingData = ListingData(listing: listing, isSaved: isSaved);
-
-      listingsData.add(listingData);
+    final firstPage = await _propertyService.getPage(pageSize: _pageSize);
+    _hasMore = firstPage.length == _pageSize;
+    if (firstPage.isNotEmpty) {
+      _lastId = firstPage.last.id;
+      _lastCreatedAt = firstPage.last.createdAt?.toIso8601String();
+    } else {
+      _lastId = null;
+      _lastCreatedAt = null;
     }
 
-    final maxPropertyPrice = getPropertyMaxPrice();
-    priceRange = RangeValues(0, maxPropertyPrice);
+    _listingsData = await _hydrate(firstPage, savedListings);
+    _maxPrice = _computeMaxPrice(_listingsData);
+    _languages = AppLocalizations.supportedLocales.map((e) => e.languageCode).toList();
 
-    languages = AppLocalizations.supportedLocales.map((e) => e.languageCode).toList();
-
-    safeEmit(DataLoadedState(
-      listings: listingsData,
-      languages: languages,
-      priceRange: priceRange,
-      isPageFiltered: false,
-      user: user,
-    ));
+    safeEmit(_buildLoadedState());
   }
 
-  void resetFilter() async {
-    safeEmit(PendingState());
-    Future.delayed(const Duration(milliseconds: 100));
-    final user = await _userService.getLoggedUser();
-    safeEmit(DataLoadedState(
-      listings: listingsData,
-      languages: languages,
-      priceRange: priceRange,
-      isPageFiltered: false,
-      user: user,
-    ));
-  }
-
-  Future<void> applyFilters({
-    PropertyType? propertyType,
-    ListingType? listingType,
-    double? minPrice,
-    double? maxPrice,
-  }) async {
-    safeEmit(PendingState());
-
-    final hasPrice = minPrice != null && maxPrice != null;
-    final isFiltered = propertyType != null || listingType != null || hasPrice;
-
-    final filtered = listingsData.where((element) {
-      final property = element.listing.property;
-      if (propertyType != null && property.propertyType != propertyType) {
-        return false;
+  Future<void> loadMore() async {
+    if (!_hasMore || _isLoadingMore || _user == null) return;
+    _isLoadingMore = true;
+    try {
+      final user = _user!;
+      final savedListings = user.favoriteListingsIds.toSet();
+      final next = await _propertyService.getPage(
+        pageSize: _pageSize,
+        startAfterCreatedAt: _lastCreatedAt,
+        startAfterId: _lastId,
+      );
+      _hasMore = next.length == _pageSize;
+      if (next.isNotEmpty) {
+        _lastId = next.last.id;
+        _lastCreatedAt = next.last.createdAt?.toIso8601String();
+        final hydrated = await _hydrate(next, savedListings);
+        _listingsData = [..._listingsData, ...hydrated];
+        _maxPrice = _computeMaxPrice(_listingsData);
       }
-      if (listingType != null && property.listingType != listingType) {
-        return false;
-      }
-      if (hasPrice && (property.price < minPrice || property.price > maxPrice)) {
-        return false;
-      }
-      return true;
-    }).toList();
-
-    final user = await _userService.getLoggedUser();
-    safeEmit(DataLoadedState(
-      listings: filtered,
-      languages: languages,
-      priceRange: priceRange,
-      isPageFiltered: isFiltered,
-      user: user,
-    ));
-  }
-
-  void filter({
-    required FilterType filterType,
-    double? minimPrice,
-    double? maxPrice,
-  }) async {
-    safeEmit(PendingState());
-    List<ListingData> filteredListings = [];
-
-    switch (filterType) {
-      case FilterType.house:
-        filteredListings =
-            listingsData.where((element) => element.listing.property.propertyType == PropertyType.house).toList();
-      case FilterType.apartment:
-        filteredListings =
-            listingsData.where((element) => element.listing.property.propertyType == PropertyType.apartment).toList();
-      case FilterType.rent:
-        filteredListings =
-            listingsData.where((element) => element.listing.property.listingType == ListingType.rent).toList();
-        break;
-      case FilterType.sale:
-        filteredListings =
-            listingsData.where((element) => element.listing.property.listingType == ListingType.sale).toList();
-      case FilterType.price:
-        filteredListings = listingsData.where((element) {
-          return element.listing.property.price > minimPrice! && element.listing.property.price < maxPrice!;
-        }).toList();
-      case FilterType.location:
-        filteredListings = listingsData;
-      case FilterType.reset:
-        filteredListings = listingsData;
+      safeEmit(_buildLoadedState());
+    } catch (_) {
+      safeEmit(SomethingWentWrongState());
+      safeEmit(_buildLoadedState());
+    } finally {
+      _isLoadingMore = false;
     }
-
-    Future.delayed(const Duration(milliseconds: 100));
-    final user = await _userService.getLoggedUser();
-    safeEmit(DataLoadedState(
-      listings: filteredListings,
-      languages: languages,
-      priceRange: priceRange,
-      isPageFiltered: true,
-      user: user,
-    ));
   }
 
-  double getPropertyMaxPrice() {
-    if (properties.isEmpty) {
-      return 0;
-    }
-    double maxPrice = properties[0].price;
-    for (var property in properties) {
-      if (property.price > maxPrice) {
-        maxPrice = property.price;
-      }
-    }
+  Future<List<ListingData>> _hydrate(List<Property> properties, Set<String> saved) {
+    return Future.wait(properties.map((property) async {
+      final image = await _getListingImage(property.imageId);
+      return ListingData(
+        listing: Listing(image: image, property: property),
+        isSaved: saved.contains(property.id),
+      );
+    }));
+  }
 
-    return maxPrice;
+  Future<File?> _getListingImage(String imageId) async {
+    try {
+      return await _imageService.getImage(imageId: imageId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  double _computeMaxPrice(List<ListingData> data) {
+    if (data.isEmpty) return 0;
+    var max = data.first.listing.property.price;
+    for (final element in data) {
+      if (element.listing.property.price > max) max = element.listing.property.price;
+    }
+    return max;
+  }
+
+  DataLoadedState _buildLoadedState() {
+    return DataLoadedState(
+      listings: List.unmodifiable(_listingsData),
+      languages: _languages,
+      priceRange: RangeValues(0, _maxPrice),
+      user: _user!,
+      hasMore: _hasMore,
+    );
   }
 
   Future<void> addListingToFavorites({required String id, required int index}) async {
-    safeEmit(PendingState());
-
     final user = await _userService.getLoggedUser();
+    _user = user;
 
     if (user.favoriteListingsIds.contains(id)) {
       safeEmit(ListingAlreadyInFavoritesState(index: index));
+      safeEmit(_buildLoadedState());
       return;
     }
 
     try {
       await _userService.addListingToFavorites(id: id);
-
+      _updateSavedFlag(index, true);
       safeEmit(ListingAddedToFavoritesState(index: index));
+      safeEmit(_buildLoadedState());
     } catch (_) {
       safeEmit(SomethingWentWrongState());
+      safeEmit(_buildLoadedState());
     }
   }
 
   Future<void> removeListingToFavorites({required String id, required int index}) async {
-    safeEmit(PendingState());
-
     final user = await _userService.getLoggedUser();
+    _user = user;
 
     if (!user.favoriteListingsIds.contains(id)) {
       safeEmit(ListingAlreadyRemovedFromFavoritesState(index: index));
+      safeEmit(_buildLoadedState());
       return;
     }
 
     try {
       await _userService.removeListingToFavorites(id: id);
-
+      _updateSavedFlag(index, false);
       safeEmit(ListingRemovedToFavoritesState(index: index));
+      safeEmit(_buildLoadedState());
     } catch (_) {
       safeEmit(SomethingWentWrongState());
+      safeEmit(_buildLoadedState());
     }
   }
-}
 
-class ListingData extends Equatable {
-  const ListingData({required this.listing, required this.isSaved});
-
-  final Listing listing;
-  final bool isSaved;
-
-  @override
-  List<Object?> get props => [
-        listing,
-        isSaved,
-      ];
+  void _updateSavedFlag(int index, bool isSaved) {
+    if (index < 0 || index >= _listingsData.length) return;
+    final current = _listingsData[index];
+    _listingsData = [..._listingsData];
+    _listingsData[index] = ListingData(listing: current.listing, isSaved: isSaved);
+  }
 }

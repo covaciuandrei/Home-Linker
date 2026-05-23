@@ -7,11 +7,13 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.hasBackButtonOrDrawer = true,
     this.onBackButtonPressed,
+    this.actions,
   });
 
   final String? title;
   final bool hasBackButtonOrDrawer;
   final VoidCallback? onBackButtonPressed;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                 fontSize: 20,
               ),
         ),
+        actions: actions,
       ),
     );
   }

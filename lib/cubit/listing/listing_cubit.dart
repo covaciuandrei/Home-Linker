@@ -10,8 +10,7 @@ part 'package:homelinker/cubit/listing/listing_states.dart';
 
 @injectable
 class ListingCubit extends BaseCubit {
-  ListingCubit(this._propertyService, this._imageService, this._userService)
-      : super(InitialState());
+  ListingCubit(this._propertyService, this._imageService, this._userService) : super(InitialState());
 
   final PropertyService _propertyService;
   final ImageService _imageService;
@@ -20,20 +19,24 @@ class ListingCubit extends BaseCubit {
   Future<void> loadPage() async {
     safeEmit(PendingState());
 
-    Future.delayed(
-        const Duration(milliseconds: 50), () => safeEmit(ListingLoadedState()));
+    Future.delayed(const Duration(milliseconds: 50), () => safeEmit(ListingLoadedState()));
   }
 
   Future<void> deleteListing({required Property property}) async {
     safeEmit(PendingState());
 
     try {
-      await _imageService.delete(imageId: property.imageId);
+      try {
+        await _imageService.delete(imageId: property.imageId);
+      } catch (_) {
+        // Image cleanup is best-effort; a missing/broken image must not block
+        // deleting the listing document itself.
+      }
       await _propertyService.delete(propertyId: property.id);
-    } on Exception {
+      safeEmit(ListingDeletedState());
+    } catch (_) {
       safeEmit(SomethingWentWrongState());
     }
-    safeEmit(ListingDeletedState());
   }
 
   Future<void> addFavorite({required String id}) async {
