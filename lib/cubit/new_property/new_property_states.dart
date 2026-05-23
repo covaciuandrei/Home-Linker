@@ -9,13 +9,13 @@ class PropertyAddedSuccessfullyState extends BaseState {}
 class NoFileChosenState extends BaseState {}
 
 class FileUploadedState extends BaseState {
-  FileUploadedState({required this.imageFile});
+  const FileUploadedState({required this.imageFile});
 
   final File? imageFile;
 }
 
 class LocationPickedState extends BaseState {
-  LocationPickedState({required this.location});
+  const LocationPickedState({required this.location});
 
   final PlaceLocation location;
 

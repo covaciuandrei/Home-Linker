@@ -250,6 +250,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   late final GeneratedColumn<String> twoFactorAuthCode =
       GeneratedColumn<String>('two_factor_auth_code', aliasedName, false,
           type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _favoriteListingsIdsMeta =
+      const VerificationMeta('favoriteListingsIds');
+  @override
+  late final GeneratedColumn<String> favoriteListingsIds =
+      GeneratedColumn<String>('favorite_listings_ids', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -259,7 +265,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         profilePictureId,
         type,
         is2FaActivated,
-        twoFactorAuthCode
+        twoFactorAuthCode,
+        favoriteListingsIds
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -324,6 +331,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_twoFactorAuthCodeMeta);
     }
+    if (data.containsKey('favorite_listings_ids')) {
+      context.handle(
+          _favoriteListingsIdsMeta,
+          favoriteListingsIds.isAcceptableOrUnknown(
+              data['favorite_listings_ids']!, _favoriteListingsIdsMeta));
+    } else if (isInserting) {
+      context.missing(_favoriteListingsIdsMeta);
+    }
     return context;
   }
 
@@ -349,6 +364,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           .read(DriftSqlType.bool, data['${effectivePrefix}is2_fa_activated'])!,
       twoFactorAuthCode: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}two_factor_auth_code'])!,
+      favoriteListingsIds: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}favorite_listings_ids'])!,
     );
   }
 
@@ -367,6 +385,7 @@ class User extends DataClass implements Insertable<User> {
   final String type;
   final bool is2FaActivated;
   final String twoFactorAuthCode;
+  final String favoriteListingsIds;
   const User(
       {required this.id,
       required this.email,
@@ -375,7 +394,8 @@ class User extends DataClass implements Insertable<User> {
       required this.profilePictureId,
       required this.type,
       required this.is2FaActivated,
-      required this.twoFactorAuthCode});
+      required this.twoFactorAuthCode,
+      required this.favoriteListingsIds});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -387,6 +407,7 @@ class User extends DataClass implements Insertable<User> {
     map['type'] = Variable<String>(type);
     map['is2_fa_activated'] = Variable<bool>(is2FaActivated);
     map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode);
+    map['favorite_listings_ids'] = Variable<String>(favoriteListingsIds);
     return map;
   }
 
@@ -400,6 +421,7 @@ class User extends DataClass implements Insertable<User> {
       type: Value(type),
       is2FaActivated: Value(is2FaActivated),
       twoFactorAuthCode: Value(twoFactorAuthCode),
+      favoriteListingsIds: Value(favoriteListingsIds),
     );
   }
 
@@ -415,6 +437,8 @@ class User extends DataClass implements Insertable<User> {
       type: serializer.fromJson<String>(json['type']),
       is2FaActivated: serializer.fromJson<bool>(json['is2FaActivated']),
       twoFactorAuthCode: serializer.fromJson<String>(json['twoFactorAuthCode']),
+      favoriteListingsIds:
+          serializer.fromJson<String>(json['favoriteListingsIds']),
     );
   }
   @override
@@ -429,6 +453,7 @@ class User extends DataClass implements Insertable<User> {
       'type': serializer.toJson<String>(type),
       'is2FaActivated': serializer.toJson<bool>(is2FaActivated),
       'twoFactorAuthCode': serializer.toJson<String>(twoFactorAuthCode),
+      'favoriteListingsIds': serializer.toJson<String>(favoriteListingsIds),
     };
   }
 
@@ -440,7 +465,8 @@ class User extends DataClass implements Insertable<User> {
           String? profilePictureId,
           String? type,
           bool? is2FaActivated,
-          String? twoFactorAuthCode}) =>
+          String? twoFactorAuthCode,
+          String? favoriteListingsIds}) =>
       User(
         id: id ?? this.id,
         email: email ?? this.email,
@@ -450,6 +476,7 @@ class User extends DataClass implements Insertable<User> {
         type: type ?? this.type,
         is2FaActivated: is2FaActivated ?? this.is2FaActivated,
         twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
+        favoriteListingsIds: favoriteListingsIds ?? this.favoriteListingsIds,
       );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -467,6 +494,9 @@ class User extends DataClass implements Insertable<User> {
       twoFactorAuthCode: data.twoFactorAuthCode.present
           ? data.twoFactorAuthCode.value
           : this.twoFactorAuthCode,
+      favoriteListingsIds: data.favoriteListingsIds.present
+          ? data.favoriteListingsIds.value
+          : this.favoriteListingsIds,
     );
   }
 
@@ -480,14 +510,15 @@ class User extends DataClass implements Insertable<User> {
           ..write('profilePictureId: $profilePictureId, ')
           ..write('type: $type, ')
           ..write('is2FaActivated: $is2FaActivated, ')
-          ..write('twoFactorAuthCode: $twoFactorAuthCode')
+          ..write('twoFactorAuthCode: $twoFactorAuthCode, ')
+          ..write('favoriteListingsIds: $favoriteListingsIds')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, email, name, phone, profilePictureId,
-      type, is2FaActivated, twoFactorAuthCode);
+      type, is2FaActivated, twoFactorAuthCode, favoriteListingsIds);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -499,7 +530,8 @@ class User extends DataClass implements Insertable<User> {
           other.profilePictureId == this.profilePictureId &&
           other.type == this.type &&
           other.is2FaActivated == this.is2FaActivated &&
-          other.twoFactorAuthCode == this.twoFactorAuthCode);
+          other.twoFactorAuthCode == this.twoFactorAuthCode &&
+          other.favoriteListingsIds == this.favoriteListingsIds);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -511,6 +543,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> type;
   final Value<bool> is2FaActivated;
   final Value<String> twoFactorAuthCode;
+  final Value<String> favoriteListingsIds;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -521,6 +554,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.type = const Value.absent(),
     this.is2FaActivated = const Value.absent(),
     this.twoFactorAuthCode = const Value.absent(),
+    this.favoriteListingsIds = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -532,6 +566,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String type,
     required bool is2FaActivated,
     required String twoFactorAuthCode,
+    required String favoriteListingsIds,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         email = Value(email),
@@ -540,7 +575,8 @@ class UsersCompanion extends UpdateCompanion<User> {
         profilePictureId = Value(profilePictureId),
         type = Value(type),
         is2FaActivated = Value(is2FaActivated),
-        twoFactorAuthCode = Value(twoFactorAuthCode);
+        twoFactorAuthCode = Value(twoFactorAuthCode),
+        favoriteListingsIds = Value(favoriteListingsIds);
   static Insertable<User> custom({
     Expression<String>? id,
     Expression<String>? email,
@@ -550,6 +586,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? type,
     Expression<bool>? is2FaActivated,
     Expression<String>? twoFactorAuthCode,
+    Expression<String>? favoriteListingsIds,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -561,6 +598,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (type != null) 'type': type,
       if (is2FaActivated != null) 'is2_fa_activated': is2FaActivated,
       if (twoFactorAuthCode != null) 'two_factor_auth_code': twoFactorAuthCode,
+      if (favoriteListingsIds != null)
+        'favorite_listings_ids': favoriteListingsIds,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -574,6 +613,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       Value<String>? type,
       Value<bool>? is2FaActivated,
       Value<String>? twoFactorAuthCode,
+      Value<String>? favoriteListingsIds,
       Value<int>? rowid}) {
     return UsersCompanion(
       id: id ?? this.id,
@@ -584,6 +624,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       type: type ?? this.type,
       is2FaActivated: is2FaActivated ?? this.is2FaActivated,
       twoFactorAuthCode: twoFactorAuthCode ?? this.twoFactorAuthCode,
+      favoriteListingsIds: favoriteListingsIds ?? this.favoriteListingsIds,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -615,6 +656,10 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (twoFactorAuthCode.present) {
       map['two_factor_auth_code'] = Variable<String>(twoFactorAuthCode.value);
     }
+    if (favoriteListingsIds.present) {
+      map['favorite_listings_ids'] =
+          Variable<String>(favoriteListingsIds.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -632,6 +677,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('type: $type, ')
           ..write('is2FaActivated: $is2FaActivated, ')
           ..write('twoFactorAuthCode: $twoFactorAuthCode, ')
+          ..write('favoriteListingsIds: $favoriteListingsIds, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1671,23 +1717,81 @@ typedef $$TablesUpdateTimesTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$TablesUpdateTimesTableFilterComposer
+    extends Composer<_$AppDatabase, $TablesUpdateTimesTable> {
+  $$TablesUpdateTimesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => ColumnFilters(column));
+}
+
+class $$TablesUpdateTimesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TablesUpdateTimesTable> {
+  $$TablesUpdateTimesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TablesUpdateTimesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TablesUpdateTimesTable> {
+  $$TablesUpdateTimesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdate => $composableBuilder(
+      column: $table.lastUpdate, builder: (column) => column);
+}
+
 class $$TablesUpdateTimesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TablesUpdateTimesTable,
     TablesUpdateTime,
     $$TablesUpdateTimesTableFilterComposer,
     $$TablesUpdateTimesTableOrderingComposer,
+    $$TablesUpdateTimesTableAnnotationComposer,
     $$TablesUpdateTimesTableCreateCompanionBuilder,
-    $$TablesUpdateTimesTableUpdateCompanionBuilder> {
+    $$TablesUpdateTimesTableUpdateCompanionBuilder,
+    (
+      TablesUpdateTime,
+      BaseReferences<_$AppDatabase, $TablesUpdateTimesTable, TablesUpdateTime>
+    ),
+    TablesUpdateTime,
+    PrefetchHooks Function()> {
   $$TablesUpdateTimesTableTableManager(
       _$AppDatabase db, $TablesUpdateTimesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TablesUpdateTimesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$TablesUpdateTimesTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$TablesUpdateTimesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TablesUpdateTimesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TablesUpdateTimesTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> name = const Value.absent(),
             Value<DateTime> lastUpdate = const Value.absent(),
@@ -1708,37 +1812,28 @@ class $$TablesUpdateTimesTableTableManager extends RootTableManager<
             lastUpdate: lastUpdate,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$TablesUpdateTimesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $TablesUpdateTimesTable> {
-  $$TablesUpdateTimesTableFilterComposer(super.$state);
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get lastUpdate => $state.composableBuilder(
-      column: $state.table.lastUpdate,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$TablesUpdateTimesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $TablesUpdateTimesTable> {
-  $$TablesUpdateTimesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get lastUpdate => $state.composableBuilder(
-      column: $state.table.lastUpdate,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$TablesUpdateTimesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $TablesUpdateTimesTable,
+    TablesUpdateTime,
+    $$TablesUpdateTimesTableFilterComposer,
+    $$TablesUpdateTimesTableOrderingComposer,
+    $$TablesUpdateTimesTableAnnotationComposer,
+    $$TablesUpdateTimesTableCreateCompanionBuilder,
+    $$TablesUpdateTimesTableUpdateCompanionBuilder,
+    (
+      TablesUpdateTime,
+      BaseReferences<_$AppDatabase, $TablesUpdateTimesTable, TablesUpdateTime>
+    ),
+    TablesUpdateTime,
+    PrefetchHooks Function()>;
 typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   required String id,
   required String email,
@@ -1748,6 +1843,7 @@ typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   required String type,
   required bool is2FaActivated,
   required String twoFactorAuthCode,
+  required String favoriteListingsIds,
   Value<int> rowid,
 });
 typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
@@ -1759,8 +1855,127 @@ typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<String> type,
   Value<bool> is2FaActivated,
   Value<String> twoFactorAuthCode,
+  Value<String> favoriteListingsIds,
   Value<int> rowid,
 });
+
+class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get profilePictureId => $composableBuilder(
+      column: $table.profilePictureId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get is2FaActivated => $composableBuilder(
+      column: $table.is2FaActivated,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get twoFactorAuthCode => $composableBuilder(
+      column: $table.twoFactorAuthCode,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get favoriteListingsIds => $composableBuilder(
+      column: $table.favoriteListingsIds,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$UsersTableOrderingComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+      column: $table.phone, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get profilePictureId => $composableBuilder(
+      column: $table.profilePictureId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get is2FaActivated => $composableBuilder(
+      column: $table.is2FaActivated,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get twoFactorAuthCode => $composableBuilder(
+      column: $table.twoFactorAuthCode,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get favoriteListingsIds => $composableBuilder(
+      column: $table.favoriteListingsIds,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$UsersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get profilePictureId => $composableBuilder(
+      column: $table.profilePictureId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<bool> get is2FaActivated => $composableBuilder(
+      column: $table.is2FaActivated, builder: (column) => column);
+
+  GeneratedColumn<String> get twoFactorAuthCode => $composableBuilder(
+      column: $table.twoFactorAuthCode, builder: (column) => column);
+
+  GeneratedColumn<String> get favoriteListingsIds => $composableBuilder(
+      column: $table.favoriteListingsIds, builder: (column) => column);
+}
 
 class $$UsersTableTableManager extends RootTableManager<
     _$AppDatabase,
@@ -1768,16 +1983,22 @@ class $$UsersTableTableManager extends RootTableManager<
     User,
     $$UsersTableFilterComposer,
     $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
     $$UsersTableCreateCompanionBuilder,
-    $$UsersTableUpdateCompanionBuilder> {
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()> {
   $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$UsersTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$UsersTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$UsersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UsersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UsersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> email = const Value.absent(),
@@ -1787,6 +2008,7 @@ class $$UsersTableTableManager extends RootTableManager<
             Value<String> type = const Value.absent(),
             Value<bool> is2FaActivated = const Value.absent(),
             Value<String> twoFactorAuthCode = const Value.absent(),
+            Value<String> favoriteListingsIds = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               UsersCompanion(
@@ -1798,6 +2020,7 @@ class $$UsersTableTableManager extends RootTableManager<
             type: type,
             is2FaActivated: is2FaActivated,
             twoFactorAuthCode: twoFactorAuthCode,
+            favoriteListingsIds: favoriteListingsIds,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -1809,6 +2032,7 @@ class $$UsersTableTableManager extends RootTableManager<
             required String type,
             required bool is2FaActivated,
             required String twoFactorAuthCode,
+            required String favoriteListingsIds,
             Value<int> rowid = const Value.absent(),
           }) =>
               UsersCompanion.insert(
@@ -1820,99 +2044,28 @@ class $$UsersTableTableManager extends RootTableManager<
             type: type,
             is2FaActivated: is2FaActivated,
             twoFactorAuthCode: twoFactorAuthCode,
+            favoriteListingsIds: favoriteListingsIds,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$UsersTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $UsersTable> {
-  $$UsersTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get email => $state.composableBuilder(
-      column: $state.table.email,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get phone => $state.composableBuilder(
-      column: $state.table.phone,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get profilePictureId => $state.composableBuilder(
-      column: $state.table.profilePictureId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get is2FaActivated => $state.composableBuilder(
-      column: $state.table.is2FaActivated,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get twoFactorAuthCode => $state.composableBuilder(
-      column: $state.table.twoFactorAuthCode,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$UsersTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $UsersTable> {
-  $$UsersTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get email => $state.composableBuilder(
-      column: $state.table.email,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get phone => $state.composableBuilder(
-      column: $state.table.phone,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get profilePictureId => $state.composableBuilder(
-      column: $state.table.profilePictureId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get is2FaActivated => $state.composableBuilder(
-      column: $state.table.is2FaActivated,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get twoFactorAuthCode => $state.composableBuilder(
-      column: $state.table.twoFactorAuthCode,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$UsersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()>;
 typedef $$PropertiesTableCreateCompanionBuilder = PropertiesCompanion Function({
   required String id,
   required int areaSize,
@@ -1948,22 +2101,188 @@ typedef $$PropertiesTableUpdateCompanionBuilder = PropertiesCompanion Function({
   Value<int> rowid,
 });
 
+class $$PropertiesTableFilterComposer
+    extends Composer<_$AppDatabase, $PropertiesTable> {
+  $$PropertiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get areaSize => $composableBuilder(
+      column: $table.areaSize, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get bathrooms => $composableBuilder(
+      column: $table.bathrooms, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get bedrooms => $composableBuilder(
+      column: $table.bedrooms, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get constructionYear => $composableBuilder(
+      column: $table.constructionYear,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get imageId => $composableBuilder(
+      column: $table.imageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get listingType => $composableBuilder(
+      column: $table.listingType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ownerEmail => $composableBuilder(
+      column: $table.ownerEmail, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ownerName => $composableBuilder(
+      column: $table.ownerName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get parkingSpaces => $composableBuilder(
+      column: $table.parkingSpaces, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get price => $composableBuilder(
+      column: $table.price, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get propertyType => $composableBuilder(
+      column: $table.propertyType, builder: (column) => ColumnFilters(column));
+}
+
+class $$PropertiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PropertiesTable> {
+  $$PropertiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get areaSize => $composableBuilder(
+      column: $table.areaSize, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get bathrooms => $composableBuilder(
+      column: $table.bathrooms, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get bedrooms => $composableBuilder(
+      column: $table.bedrooms, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get constructionYear => $composableBuilder(
+      column: $table.constructionYear,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get imageId => $composableBuilder(
+      column: $table.imageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get listingType => $composableBuilder(
+      column: $table.listingType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ownerEmail => $composableBuilder(
+      column: $table.ownerEmail, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ownerName => $composableBuilder(
+      column: $table.ownerName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get parkingSpaces => $composableBuilder(
+      column: $table.parkingSpaces,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get price => $composableBuilder(
+      column: $table.price, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get propertyType => $composableBuilder(
+      column: $table.propertyType,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$PropertiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PropertiesTable> {
+  $$PropertiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get areaSize =>
+      $composableBuilder(column: $table.areaSize, builder: (column) => column);
+
+  GeneratedColumn<int> get bathrooms =>
+      $composableBuilder(column: $table.bathrooms, builder: (column) => column);
+
+  GeneratedColumn<int> get bedrooms =>
+      $composableBuilder(column: $table.bedrooms, builder: (column) => column);
+
+  GeneratedColumn<int> get constructionYear => $composableBuilder(
+      column: $table.constructionYear, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get imageId =>
+      $composableBuilder(column: $table.imageId, builder: (column) => column);
+
+  GeneratedColumn<String> get listingType => $composableBuilder(
+      column: $table.listingType, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerEmail => $composableBuilder(
+      column: $table.ownerEmail, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerName =>
+      $composableBuilder(column: $table.ownerName, builder: (column) => column);
+
+  GeneratedColumn<int> get parkingSpaces => $composableBuilder(
+      column: $table.parkingSpaces, builder: (column) => column);
+
+  GeneratedColumn<double> get price =>
+      $composableBuilder(column: $table.price, builder: (column) => column);
+
+  GeneratedColumn<String> get propertyType => $composableBuilder(
+      column: $table.propertyType, builder: (column) => column);
+}
+
 class $$PropertiesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $PropertiesTable,
     Property,
     $$PropertiesTableFilterComposer,
     $$PropertiesTableOrderingComposer,
+    $$PropertiesTableAnnotationComposer,
     $$PropertiesTableCreateCompanionBuilder,
-    $$PropertiesTableUpdateCompanionBuilder> {
+    $$PropertiesTableUpdateCompanionBuilder,
+    (Property, BaseReferences<_$AppDatabase, $PropertiesTable, Property>),
+    Property,
+    PrefetchHooks Function()> {
   $$PropertiesTableTableManager(_$AppDatabase db, $PropertiesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PropertiesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PropertiesTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$PropertiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PropertiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PropertiesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<int> areaSize = const Value.absent(),
@@ -2032,157 +2351,25 @@ class $$PropertiesTableTableManager extends RootTableManager<
             propertyType: propertyType,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PropertiesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PropertiesTable> {
-  $$PropertiesTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get areaSize => $state.composableBuilder(
-      column: $state.table.areaSize,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get bathrooms => $state.composableBuilder(
-      column: $state.table.bathrooms,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get bedrooms => $state.composableBuilder(
-      column: $state.table.bedrooms,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get constructionYear => $state.composableBuilder(
-      column: $state.table.constructionYear,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get imageId => $state.composableBuilder(
-      column: $state.table.imageId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get listingType => $state.composableBuilder(
-      column: $state.table.listingType,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get location => $state.composableBuilder(
-      column: $state.table.location,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get ownerEmail => $state.composableBuilder(
-      column: $state.table.ownerEmail,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get ownerName => $state.composableBuilder(
-      column: $state.table.ownerName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get parkingSpaces => $state.composableBuilder(
-      column: $state.table.parkingSpaces,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get price => $state.composableBuilder(
-      column: $state.table.price,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get propertyType => $state.composableBuilder(
-      column: $state.table.propertyType,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PropertiesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PropertiesTable> {
-  $$PropertiesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get areaSize => $state.composableBuilder(
-      column: $state.table.areaSize,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get bathrooms => $state.composableBuilder(
-      column: $state.table.bathrooms,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get bedrooms => $state.composableBuilder(
-      column: $state.table.bedrooms,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get constructionYear => $state.composableBuilder(
-      column: $state.table.constructionYear,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get imageId => $state.composableBuilder(
-      column: $state.table.imageId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get listingType => $state.composableBuilder(
-      column: $state.table.listingType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get location => $state.composableBuilder(
-      column: $state.table.location,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get ownerEmail => $state.composableBuilder(
-      column: $state.table.ownerEmail,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get ownerName => $state.composableBuilder(
-      column: $state.table.ownerName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get parkingSpaces => $state.composableBuilder(
-      column: $state.table.parkingSpaces,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get price => $state.composableBuilder(
-      column: $state.table.price,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get propertyType => $state.composableBuilder(
-      column: $state.table.propertyType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$PropertiesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PropertiesTable,
+    Property,
+    $$PropertiesTableFilterComposer,
+    $$PropertiesTableOrderingComposer,
+    $$PropertiesTableAnnotationComposer,
+    $$PropertiesTableCreateCompanionBuilder,
+    $$PropertiesTableUpdateCompanionBuilder,
+    (Property, BaseReferences<_$AppDatabase, $PropertiesTable, Property>),
+    Property,
+    PrefetchHooks Function()>;
 typedef $$ImagesTableCreateCompanionBuilder = ImagesCompanion Function({
   required String identifier,
   required String name,
@@ -2200,22 +2387,103 @@ typedef $$ImagesTableUpdateCompanionBuilder = ImagesCompanion Function({
   Value<int> rowid,
 });
 
+class $$ImagesTableFilterComposer
+    extends Composer<_$AppDatabase, $ImagesTable> {
+  $$ImagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get identifier => $composableBuilder(
+      column: $table.identifier, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get uploadDate => $composableBuilder(
+      column: $table.uploadDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<Uint8List> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnFilters(column));
+}
+
+class $$ImagesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ImagesTable> {
+  $$ImagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get identifier => $composableBuilder(
+      column: $table.identifier, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get uploadDate => $composableBuilder(
+      column: $table.uploadDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<Uint8List> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ImagesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ImagesTable> {
+  $$ImagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get identifier => $composableBuilder(
+      column: $table.identifier, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get uploadDate => $composableBuilder(
+      column: $table.uploadDate, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+}
+
 class $$ImagesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ImagesTable,
     Image,
     $$ImagesTableFilterComposer,
     $$ImagesTableOrderingComposer,
+    $$ImagesTableAnnotationComposer,
     $$ImagesTableCreateCompanionBuilder,
-    $$ImagesTableUpdateCompanionBuilder> {
+    $$ImagesTableUpdateCompanionBuilder,
+    (Image, BaseReferences<_$AppDatabase, $ImagesTable, Image>),
+    Image,
+    PrefetchHooks Function()> {
   $$ImagesTableTableManager(_$AppDatabase db, $ImagesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ImagesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ImagesTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ImagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ImagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ImagesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> identifier = const Value.absent(),
             Value<String> name = const Value.absent(),
@@ -2248,66 +2516,25 @@ class $$ImagesTableTableManager extends RootTableManager<
             data: data,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$ImagesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ImagesTable> {
-  $$ImagesTableFilterComposer(super.$state);
-  ColumnFilters<String> get identifier => $state.composableBuilder(
-      column: $state.table.identifier,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get uploadDate => $state.composableBuilder(
-      column: $state.table.uploadDate,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<Uint8List> get data => $state.composableBuilder(
-      column: $state.table.data,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$ImagesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ImagesTable> {
-  $$ImagesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get identifier => $state.composableBuilder(
-      column: $state.table.identifier,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get uploadDate => $state.composableBuilder(
-      column: $state.table.uploadDate,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<Uint8List> get data => $state.composableBuilder(
-      column: $state.table.data,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
+typedef $$ImagesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ImagesTable,
+    Image,
+    $$ImagesTableFilterComposer,
+    $$ImagesTableOrderingComposer,
+    $$ImagesTableAnnotationComposer,
+    $$ImagesTableCreateCompanionBuilder,
+    $$ImagesTableUpdateCompanionBuilder,
+    (Image, BaseReferences<_$AppDatabase, $ImagesTable, Image>),
+    Image,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

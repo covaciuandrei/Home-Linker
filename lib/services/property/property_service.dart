@@ -19,10 +19,8 @@ class PropertyService {
 
       await _propertyRepository.clear();
       await _propertyRepository.insert(properties: properties);
-      print('properties cloud');
       return properties;
     }
-    print('properties repo');
     return _propertyRepository.getAll();
   }
 
@@ -31,6 +29,7 @@ class PropertyService {
   }) async {
     final newProperty = property;
     await _propertySource.insert(newProperty);
+    await _propertyRepository.invalidateCache(additionalParam: 'documents');
   }
 
   Future<void> delete({required String propertyId}) async {

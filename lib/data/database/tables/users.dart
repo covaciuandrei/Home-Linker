@@ -19,4 +19,6 @@ class Users extends Table {
   BoolColumn get is2FaActivated => boolean()();
 
   TextColumn get twoFactorAuthCode => text()();
+
+  TextColumn get favoriteListingsIds => text()();
 }

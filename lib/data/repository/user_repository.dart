@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:homelinker/data/database/database.dart';
 import 'package:homelinker/data/database/expiration_time.dart';
 import 'package:homelinker/data/mappers/user_mapper.dart';
@@ -33,6 +35,7 @@ class UserRepository extends BaseRepository {
         type: user.type.name,
         name: user.name,
         twoFactorAuthCode: user.twoFactorAuthCode,
+        favoriteListingsIds: jsonEncode(user.favoriteListingsIds),
       );
       await database.into(database.users).insert(companion);
     }

@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class PlaceLocation {
+class PlaceLocation extends Equatable {
   const PlaceLocation({
     required this.latLng,
     required this.address,
@@ -8,6 +9,9 @@ class PlaceLocation {
 
   final LatLng latLng;
   final String address;
+
+  @override
+  List<Object?> get props => [latLng, address];
 
   Map<String, dynamic> toJson() {
     return {

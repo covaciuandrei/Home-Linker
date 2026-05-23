@@ -53,7 +53,7 @@ class PropertySource {
 
   Future<void> insert(Property newProperty) async {
     try {
-      _collectionRef.add(_propertyMapper.mapPropertyToDto(newProperty));
+      await _collectionRef.add(_propertyMapper.mapPropertyToDto(newProperty));
     } on Exception {
       throw Exception();
     }

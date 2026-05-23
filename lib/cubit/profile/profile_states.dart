@@ -1,7 +1,7 @@
 part of 'package:homelinker/cubit/profile/profile_cubit.dart';
 
 class ProfilePageLoadedState extends BaseState {
-  ProfilePageLoadedState({
+  const ProfilePageLoadedState({
     required this.profilePicture,
     required this.user,
     required this.appVersion,
@@ -16,7 +16,7 @@ class NoFileChosenState extends BaseState {}
 class ImageDeletedSuccessfullyState extends BaseState {}
 
 class ImageUploadedSuccessfullyState extends BaseState {
-  ImageUploadedSuccessfullyState({required this.image});
+  const ImageUploadedSuccessfullyState({required this.image});
 
   final File? image;
 }

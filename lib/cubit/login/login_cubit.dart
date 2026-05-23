@@ -100,13 +100,8 @@ class LoginCubit extends BaseCubit {
       await send(message, smtpServer);
 
       final wasCodeSent = await _userService.set2FactorAuthCode(email: email, code: code);
-      print(code);
-
-      print('Message sent.');
       return wasCodeSent;
     } on Exception {
-      print('Message not sent.');
-
       return false;
     }
   }

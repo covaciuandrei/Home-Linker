@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/introductive/introductive_cubit.dart';
@@ -26,11 +27,33 @@ class IntroductivePage extends StatefulWidget implements AutoRouteWrapper {
   }
 }
 
-class _IntroductivePageState extends State<IntroductivePage> {
+class _IntroductivePageState extends State<IntroductivePage> with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
+
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
+
+    _animController.forward();
     BlocProvider.of<IntroductiveCubit>(context).load();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,73 +69,101 @@ class _IntroductivePageState extends State<IntroductivePage> {
       builder: (context, state) {
         return Scaffold(
           body: IntroductiveBackground(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 125),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).welcome,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          text: '${AppLocalizations.of(context).to} ',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 40,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: AppLocalizations.of(context).appTitle,
-                              style: const TextStyle(
-                                color: Colors.lightBlue,
-                                fontWeight: FontWeight.w700,
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // ── Welcome Text ─────────────────────────────
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 80, left: 32, right: 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context).welcome,
+                              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                text: '${AppLocalizations.of(context).to} ',
+                                style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: AppLocalizations.of(context).appTitle,
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                const SvgIcon(
-                  iconName: 'home',
-                  color: Colors.lightBlue,
-                  size: 200,
-                ),
-                const SizedBox(height: 0),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 100),
-                  child: Column(
-                    children: [
-                      MainButton(
-                        text: AppLocalizations.of(context).login,
-                        width: 240,
-                        height: 44,
-                        onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToLogin(),
                       ),
-                      const SizedBox(height: 16),
-                      MainButton(
-                        text: AppLocalizations.of(context).signup,
-                        width: 240,
-                        height: 44,
-                        onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToSignup(),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+
+                  // ── Home Icon ────────────────────────────────
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return AppColors.primaryGradient.createShader(bounds);
+                      },
+                      child: const SvgIcon(
+                        iconName: 'home',
+                        color: Colors.white,
+                        size: 180,
+                      ),
+                    ),
+                  ),
+
+                  // ── CTA Buttons ──────────────────────────────
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 60),
+                        child: Column(
+                          children: [
+                            // Primary CTA — Login
+                            MainButton(
+                              text: AppLocalizations.of(context).login,
+                              width: 260,
+                              height: 50,
+                              isGradient: true,
+                              onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToLogin(),
+                            ),
+                            const SizedBox(height: 14),
+                            // Secondary CTA — Sign Up
+                            MainButton(
+                              text: AppLocalizations.of(context).signup,
+                              width: 260,
+                              height: 50,
+                              isOutlined: true,
+                              color: AppColors.primary,
+                              onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToSignup(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

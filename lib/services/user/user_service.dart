@@ -18,21 +18,18 @@ class UserService {
   final SecureStorageSource _secureStorageSource;
   final UserRepository _userRepository;
 
-  Future<User> getLoggedUser() async {
+  Future<User> getLoggedUser({bool forceRefresh = false}) async {
     final email = await _secureStorageSource.get(SecureStorageKeys.userEmail);
     final userId = await _secureStorageSource.get(SecureStorageKeys.userId);
 
-    
-    if (await _userRepository.isExpired(additionalParam: userId!)) {
+    if (await _userRepository.isExpired(additionalParam: userId!) || forceRefresh) {
       final user = await _userSource.get(email!);
       await _userRepository.clear(userId: userId);
       await _userRepository.insert(
         users: [user],
       );
-      print('users cloud');
       return user;
     }
-    print('users repo');
     return _userRepository.get(userId);
   }
 
@@ -67,13 +64,41 @@ class UserService {
     return _userSource.deleteAccount(userId!);
   }
 
-  Future<void> updateUser({required String imageId}) async {
+  Future<void> updateUser({
+    String? imageId,
+    List<String>? favoriteListingsIds,
+  }) async {
     final user = await getLoggedUser();
-    await _userSource.updateUser(userId: user.id, imageId: imageId);
+
+    await _userSource.updateUser(
+      userId: user.id,
+      imageId: imageId,
+      favoriteListingsIds: favoriteListingsIds,
+    );
+
+    await _userRepository.invalidateCache(additionalParam: user.id);
   }
 
   Future<List<Object>> getAuthentificationCode({required String email}) async {
     final authentificationCode = await _userSource.getAuthentificationCode(email: email);
     return authentificationCode;
+  }
+
+  Future<void> addListingToFavorites({required String id}) async {
+    final user = await getLoggedUser();
+
+    if (!user.favoriteListingsIds.contains(id)) {
+      await updateUser(favoriteListingsIds: [...user.favoriteListingsIds, id]);
+    }
+  }
+
+  Future<void> removeListingToFavorites({required String id}) async {
+    final user = await getLoggedUser();
+    List<String> newFavoriteListingsIds = [];
+
+    if (user.favoriteListingsIds.contains(id)) {
+      newFavoriteListingsIds = user.favoriteListingsIds.where((listingId) => listingId != id).toList();
+      await updateUser(favoriteListingsIds: newFavoriteListingsIds);
+    }
   }
 }

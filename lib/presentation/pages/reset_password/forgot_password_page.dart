@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/reset_password/forgot_password_cubit.dart';
@@ -28,6 +29,8 @@ class ForgotPasswordPage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final emailTextController = TextEditingController();
+
   @override
   void initState() {
     BlocProvider.of<ForgotPasswordCubit>(context).loadPage();
@@ -35,46 +38,93 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final emailTextController = TextEditingController();
+  void dispose() {
+    emailTextController.dispose();
+    super.dispose();
+  }
 
-    return BlocConsumer<ForgotPasswordCubit, BaseState>(listener: (context, state) {
-      if (state is EmailSentSuccessfullyState) {
-        AutoRouter.of(context).push(const EmailSentSuccessfullyRoute());
-      }
-    }, builder: (context, state) {
-      return LoadingScreen(
-        loading: state is PendingState,
-        child: Scaffold(
-          appBar: AppBar(),
-          body: BlueShadowBackground(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 100),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    AppLocalizations.of(context).emailNeededForValidatingAccount,
-                    style: const TextStyle(color: Colors.white),
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<ForgotPasswordCubit, BaseState>(
+      listener: (context, state) {
+        if (state is EmailSentSuccessfullyState) {
+          AutoRouter.of(context).push(const EmailSentSuccessfullyRoute());
+        }
+      },
+      builder: (context, state) {
+        return LoadingScreen(
+          loading: state is PendingState,
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+            body: BlueShadowBackground(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // ── Icon ───────────────────────────────
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.lock_reset_rounded,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // ── Instructions ───────────────────────
+                        Text(
+                          AppLocalizations.of(context).emailNeededForValidatingAccount,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.85),
+                                height: 1.5,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── Email Field ───────────────────────
+                        MainTextField(
+                          textController: emailTextController,
+                          placeholder: AppLocalizations.of(context).email,
+                          prefixIcon: Icons.email_outlined,
+                        ),
+                        const SizedBox(height: 32),
+
+                        // ── Send Button ───────────────────────
+                        MainButton(
+                          width: 200,
+                          color: Colors.white,
+                          textColor: AppColors.primary,
+                          text: AppLocalizations.of(context).send,
+                          icon: Icons.send_rounded,
+                          onPressed: () {
+                            BlocProvider.of<ForgotPasswordCubit>(context)
+                                .resetPassword(email: emailTextController.text);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  MainTextField(
-                    textController: emailTextController,
-                    placeholder: AppLocalizations.of(context).email,
-                  ),
-                  const SizedBox(height: 40),
-                  MainButton(
-                    text: AppLocalizations.of(context).send,
-                    onPressed: () {
-                      BlocProvider.of<ForgotPasswordCubit>(context).resetPassword(email: emailTextController.text);
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

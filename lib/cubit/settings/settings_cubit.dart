@@ -35,8 +35,7 @@ class SettingsCubit extends BaseCubit {
       await _userService.deleteAccount();
 
       Future.delayed(const Duration(milliseconds: 50), () => safeEmit(AccountDeletedSuccessfullyState()));
-    } catch (e) {
-      print(e);
+    } catch (_) {
       safeEmit(SomethingWentWrongState());
     }
   }

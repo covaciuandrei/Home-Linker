@@ -5,7 +5,7 @@ class AccountDeletedSuccessfullyState extends BaseState {}
 class LoggedOutSuccessfullyState extends BaseState {}
 
 class SettingsPageLoadedState extends BaseState {
-  SettingsPageLoadedState({
+  const SettingsPageLoadedState({
     required this.appVersion,
   });
 

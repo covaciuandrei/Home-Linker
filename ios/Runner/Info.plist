@@ -35,6 +35,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Please give location permission to be able to use this feature</string>
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string>AIzaSyCDcueqVx0NObh2_b4CP0-pr2GBxtsBI90</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

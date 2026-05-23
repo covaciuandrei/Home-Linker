@@ -1,5 +1,7 @@
-class Property {
-  Property({
+import 'package:equatable/equatable.dart';
+
+class Property extends Equatable {
+  const Property({
     this.id = '',
     required this.areaSize,
     required this.bathrooms,
@@ -30,6 +32,24 @@ class Property {
   final int parkingSpaces;
   final double price;
   final PropertyType propertyType;
+
+  @override
+  List<Object?> get props => [
+        id,
+        areaSize,
+        bathrooms,
+        bedrooms,
+        constructionYear,
+        description,
+        imageId,
+        listingType,
+        location,
+        ownerEmail,
+        ownerName,
+        parkingSpaces,
+        price,
+        propertyType,
+      ];
 }
 
 enum PropertyType { apartment, house }

@@ -58,6 +58,7 @@ class ProfileCubit extends BaseCubit {
       }
 
       await _userService.updateUser(imageId: imageId);
+      _profilePicture = image;
 
       safeEmit(ImageUploadedSuccessfullyState(image: image));
     } on NoFileChosenException {
@@ -75,6 +76,7 @@ class ProfileCubit extends BaseCubit {
         await _imageService.delete(imageId: user.profilePictureId);
         await _userService.updateUser(imageId: '');
       }
+      _profilePicture = null;
 
       safeEmit(ImageDeletedSuccessfullyState());
     } on Exception {

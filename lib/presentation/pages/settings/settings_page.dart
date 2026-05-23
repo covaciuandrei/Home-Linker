@@ -1,17 +1,20 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
+import 'package:homelinker/cubit/profile/profile_cubit.dart';
 import 'package:homelinker/cubit/settings/settings_cubit.dart';
 import 'package:homelinker/models/app_version.dart';
-import 'package:homelinker/presentation/widgets/blue_shadow_background.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
-import 'package:homelinker/presentation/widgets/svg_icon.dart';
+import 'package:homelinker/presentation/widgets/profile_photo_editor.dart';
 
 @RoutePage()
 class SettingsPage extends StatefulWidget implements AutoRouteWrapper {
@@ -31,6 +34,7 @@ class SettingsPage extends StatefulWidget implements AutoRouteWrapper {
 
 class _SettingsPageState extends State<SettingsPage> {
   AppVersion? _appVersion;
+  File? _profilePicture;
 
   @override
   void initState() {
@@ -40,6 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocConsumer<SettingsCubit, BaseState>(
       listener: (context, state) {
         if (state is LoggedOutSuccessfullyState) {
@@ -55,7 +61,13 @@ class _SettingsPageState extends State<SettingsPage> {
         } else if (state is SomethingWentWrongState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context).somethingWrong),
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(AppLocalizations.of(context).somethingWrong)),
+                ],
+              ),
             ),
           );
         }
@@ -67,71 +79,100 @@ class _SettingsPageState extends State<SettingsPage> {
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
+            backgroundColor: AppColors.primary,
             appBar: MainAppBar(title: AppLocalizations.of(context).settings),
-            body: BlueShadowBackground(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.only(top: 30),
-                child: Column(
-                  children: [
-                    const SvgIcon(iconName: 'avatar', size: 200),
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SettingsOptionRow(
-                              icon: Icons.privacy_tip_rounded,
-                              text: AppLocalizations.of(context).privacyPolicy,
-                              onPressed: () {},
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: AppColors.backgroundGradient,
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 32, 20, 30),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight - 62,
+                      ),
+                      child: Column(
+                        children: [
+                          // ── Avatar ─────────────────────────────────
+                          _buildProfilePhotoSection(),
+
+                          const SizedBox(height: 36),
+
+                          // ── Settings Options Card ─────────────────
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.15),
+                              ),
                             ),
-                            Container(
-                              height: 0.5,
-                              color: Colors.white,
+                            child: Column(
+                              children: [
+                                _SettingsRow(
+                                  icon: Icons.privacy_tip_rounded,
+                                  text: AppLocalizations.of(context).privacyPolicy,
+                                  onPressed: () {},
+                                ),
+                                _buildDivider(),
+                                _SettingsRow(
+                                  icon: Icons.library_books_rounded,
+                                  text: AppLocalizations.of(context).termsAndCons,
+                                  onPressed: () {},
+                                ),
+                                _buildDivider(),
+                                _SettingsRow(
+                                  icon: Icons.lock_reset_rounded,
+                                  text: AppLocalizations.of(context).resetPassword,
+                                  onPressed: () {
+                                    AutoRouter.of(context).push(const ResetPasswordRoute());
+                                  },
+                                ),
+                                _buildDivider(),
+                                _SettingsRow(
+                                  icon: Icons.delete_forever_rounded,
+                                  text: AppLocalizations.of(context).deleteAccount,
+                                  isDestructive: true,
+                                  onPressed: () => _showDeleteBottomSheet(context),
+                                ),
+                              ],
                             ),
-                            SettingsOptionRow(
-                              icon: Icons.library_books_rounded,
-                              text: AppLocalizations.of(context).termsAndCons,
-                              onPressed: () {},
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // ── Logout Button ──────────────────────────
+                          MainButton(
+                            width: 240,
+                            height: 50,
+                            isOutlined: true,
+                            color: Colors.white,
+                            textColor: Colors.white,
+                            icon: Icons.logout_rounded,
+                            text: AppLocalizations.of(context).logout,
+                            onPressed: () => BlocProvider.of<SettingsCubit>(context).logOut(),
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          // ── Version ────────────────────────────────
+                          Text(
+                            _appVersion != null
+                                ? '${AppLocalizations.of(context).version} ${_appVersion!.appVersion} @ ${_appVersion!.releaseDate.year}'
+                                : '',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.6),
                             ),
-                            Container(
-                              height: 0.5,
-                              color: Colors.white,
-                            ),
-                            SettingsOptionRow(
-                              icon: Icons.delete_forever_rounded,
-                              text: AppLocalizations.of(context).deleteAccount,
-                              onPressed: () {
-                                _showDeleteBottomSheet(context);
-                              },
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    MainButton(
-                      width: 240,
-                      text: AppLocalizations.of(context).logout,
-                      onPressed: () => BlocProvider.of<SettingsCubit>(context).logOut(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 30, top: 50),
-                      child: Text(
-                        _appVersion != null
-                            ? '${AppLocalizations.of(context).version} ${_appVersion!.appVersion} @ ${_appVersion!.releaseDate.year}'
-                            : '',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -139,31 +180,114 @@ class _SettingsPageState extends State<SettingsPage> {
       },
     );
   }
+
+  Widget _buildProfilePhotoSection() {
+    return BlocProvider<ProfileCubit>(
+      create: (context) => getIt<ProfileCubit>()..load(),
+      child: BlocConsumer<ProfileCubit, BaseState>(
+        listener: (context, state) {
+          if (state is SomethingWentWrongState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(AppLocalizations.of(context).somethingWrong)),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
+        builder: (context, profileState) {
+          if (profileState is ProfilePageLoadedState) {
+            _profilePicture = profileState.profilePicture;
+          } else if (profileState is ImageUploadedSuccessfullyState) {
+            _profilePicture = profileState.image;
+          } else if (profileState is ImageDeletedSuccessfullyState) {
+            _profilePicture = null;
+          }
+
+          return ProfilePhotoEditor(
+            image: _profilePicture,
+            onDarkBackground: true,
+            avatarSize: 132,
+            isBusy: profileState is PendingState,
+            onChangePicture: () async {
+              await BlocProvider.of<ProfileCubit>(context).changePicture();
+            },
+            onDeletePicture: () async {
+              await BlocProvider.of<ProfileCubit>(context).deletePicture();
+            },
+          );
+        },
+      ),
+    );
+  }
 }
 
+// ── Delete Account Bottom Sheet ────────────────────────────────────
 void _showDeleteBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    builder: (BuildContext context) {
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 20.0),
+    builder: (bottomSheetContext) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: Text(AppLocalizations.of(context).deleteAccount),
-              onTap: () {
-                BlocProvider.of<SettingsCubit>(context).deleteAccount();
-                AutoRouter.of(context).popForced(context);
-              },
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.cancel),
-              title: Text(AppLocalizations.of(context).cancel),
-              onTap: () {
-                AutoRouter.of(context).popForced(context);
-              },
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.error,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context).deleteAccount,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: MainButton(
+                    isOutlined: true,
+                    text: AppLocalizations.of(context).cancel,
+                    onPressed: () => Navigator.of(bottomSheetContext).pop(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: MainButton(
+                    isDestructive: true,
+                    text: AppLocalizations.of(context).deleteAccount,
+                    onPressed: () {
+                      BlocProvider.of<SettingsCubit>(context).deleteAccount();
+                      Navigator.of(bottomSheetContext).pop();
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -172,39 +296,64 @@ void _showDeleteBottomSheet(BuildContext context) {
   );
 }
 
-class SettingsOptionRow extends StatelessWidget {
-  const SettingsOptionRow({
-    super.key,
+Widget _buildDivider() {
+  return Divider(
+    height: 1,
+    indent: 60,
+    endIndent: 16,
+    color: Colors.white.withValues(alpha: 0.12),
+  );
+}
+
+// ── Settings Row ───────────────────────────────────────────────────
+class _SettingsRow extends StatelessWidget {
+  const _SettingsRow({
     required this.icon,
     required this.text,
     required this.onPressed,
+    this.isDestructive = false,
   });
 
   final IconData icon;
   final String text;
   final VoidCallback onPressed;
+  final bool isDestructive;
 
   @override
   Widget build(BuildContext context) {
+    final foreground = isDestructive ? const Color(0xFFFFB4B4) : Colors.white;
+
     return InkWell(
+      borderRadius: BorderRadius.circular(12),
       onTap: onPressed,
-      child: SizedBox(
-        height: 40,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
               ),
-            )
+              child: Icon(icon, color: foreground, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: foreground,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white.withValues(alpha: 0.6),
+              size: 22,
+            ),
           ],
         ),
       ),

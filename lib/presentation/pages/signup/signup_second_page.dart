@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/signup/signup_cubit.dart';
@@ -16,7 +17,7 @@ import 'package:homelinker/presentation/widgets/main_text_field.dart';
 import 'package:homelinker/presentation/widgets/svg_icon.dart';
 
 @RoutePage()
-class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper{
+class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper {
   const SignupSecondPage({
     super.key,
     required this.email,
@@ -28,7 +29,8 @@ class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper{
 
   @override
   State<SignupSecondPage> createState() => _SignupSecondPageState();
-    @override
+
+  @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider<SignupCubit>(
       create: (context) => getIt<SignupCubit>(),
@@ -37,21 +39,46 @@ class SignupSecondPage extends StatefulWidget implements AutoRouteWrapper{
   }
 }
 
-class _SignupSecondPageState extends State<SignupSecondPage> {
+class _SignupSecondPageState extends State<SignupSecondPage> with SingleTickerProviderStateMixin {
   final phoneTextController = TextEditingController();
   final nameTextController = TextEditingController();
 
   bool isButtonAvailable = false;
   String accountType = '';
 
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
+
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
+
     BlocProvider.of<SignupCubit>(context).loadPage();
+    _animController.forward();
+
     phoneTextController
         .addListener(() => BlocProvider.of<SignupCubit>(context).checkPhoneValidity(phoneTextController.text));
     nameTextController
         .addListener(() => BlocProvider.of<SignupCubit>(context).checkNameValidity(nameTextController.text));
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    phoneTextController.dispose();
+    nameTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -71,93 +98,115 @@ class _SignupSecondPageState extends State<SignupSecondPage> {
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
-            appBar: AppBar(),
-            body: SingleChildScrollView(
-              child: BlueShadowBackground(
-                child: Center(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+            body: BlueShadowBackground(
+              child: Center(
+                child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 130),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SvgIcon(
-                                iconName: 'home',
-                                color: Colors.lightBlue,
-                                size: 80,
-                              ),
-                              Text(
-                                AppLocalizations.of(context).appTitle,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 36,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+
+                      // ── Logo ─────────────────────────────────
+                      FadeTransition(
+                        opacity: _fadeAnimation,
                         child: Column(
                           children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 60),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 16),
-                                    MainTextField(
-                                      textController: nameTextController,
-                                      placeholder: AppLocalizations.of(context).name,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    MainTextField(
-                                      textController: phoneTextController,
-                                      placeholder: AppLocalizations.of(context).phoneNumber,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    DropdownPicker(
-                                      onValueChanged: (value) {
-                                        accountType = value;
-                                      },
-                                      width: MediaQuery.of(context).size.width,
-                                      list: [
-                                        AccountType.propertyOwner.name,
-                                        AccountType.client.name,
-                                      ],
-                                    ),
-                                    const SizedBox(height: 20),
-                                    MainButton(
-                                      isEnabled: isButtonAvailable,
-                                      onPressed: () {
-                                        BlocProvider.of<SignupCubit>(context).createAccount(
-                                          accountType: getAccountType(accountType),
-                                          name: nameTextController.text,
-                                          phoneNumber: phoneTextController.text,
-                                          email: widget.email,
-                                          password: widget.password,
-                                        );
-                                      },
-                                      text: AppLocalizations.of(context).signup,
-                                    ),
+                            ShaderMask(
+                              shaderCallback: (Rect bounds) {
+                                return LinearGradient(
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.8),
+                                    Colors.white,
                                   ],
-                                ),
+                                ).createShader(bounds);
+                              },
+                              child: const SvgIcon(
+                                iconName: 'home',
+                                color: Colors.white,
+                                size: 80,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 60),
-                              child: MainTextButton(
-                                text: AppLocalizations.of(context).alreadyHaveAccount,
-                                onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
-                              ),
+                            const SizedBox(height: 8),
+                            Text(
+                              AppLocalizations.of(context).appTitle,
+                              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                             ),
                           ],
                         ),
                       ),
+
+                      const SizedBox(height: 40),
+
+                      // ── Form ─────────────────────────────────
+                      SlideTransition(
+                        position: _slideAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Column(
+                              children: [
+                                MainTextField(
+                                  textController: nameTextController,
+                                  placeholder: AppLocalizations.of(context).name,
+                                  prefixIcon: Icons.person_outline_rounded,
+                                ),
+                                const SizedBox(height: 16),
+                                MainTextField(
+                                  textController: phoneTextController,
+                                  placeholder: AppLocalizations.of(context).phoneNumber,
+                                  prefixIcon: Icons.phone_outlined,
+                                  keyboardType: TextInputType.phone,
+                                ),
+                                const SizedBox(height: 16),
+                                DropdownPicker(
+                                  onValueChanged: (value) {
+                                    accountType = value;
+                                  },
+                                  width: MediaQuery.of(context).size.width,
+                                  list: [
+                                    AccountType.propertyOwner.name,
+                                    AccountType.client.name,
+                                  ],
+                                ),
+                                const SizedBox(height: 28),
+                                MainButton(
+                                  width: 200,
+                                  isEnabled: isButtonAvailable,
+                                  color: Colors.white,
+                                  textColor: AppColors.primary,
+                                  onPressed: () {
+                                    BlocProvider.of<SignupCubit>(context).createAccount(
+                                      accountType: getAccountType(accountType),
+                                      name: nameTextController.text,
+                                      phoneNumber: phoneTextController.text,
+                                      email: widget.email,
+                                      password: widget.password,
+                                    );
+                                  },
+                                  text: AppLocalizations.of(context).signup,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+
+                      MainTextButton(
+                        text: AppLocalizations.of(context).alreadyHaveAccount,
+                        onPressed: () => BlocProvider.of<SignupCubit>(context).goToLogin(),
+                      ),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

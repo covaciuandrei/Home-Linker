@@ -42,6 +42,7 @@ class PropertyMapper {
   List<PropertyDto> mapPropertiesToDtos(List<Property> properties) => properties.map(mapPropertyToDto).toList();
 
   Property mapPropertyFromDatabase(database.Property dto) => Property(
+        id: dto.id,
         areaSize: dto.areaSize,
         bathrooms: dto.bathrooms,
         bedrooms: dto.bedrooms,

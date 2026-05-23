@@ -1,30 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:homelinker/core/app_theme.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MainAppBar({
     super.key,
     this.title,
-    this.color = const Color.fromRGBO(70, 179, 231, 1),
     this.hasBackButtonOrDrawer = true,
     this.onBackButtonPressed,
   });
 
   final String? title;
-  final Color color;
   final bool hasBackButtonOrDrawer;
   final VoidCallback? onBackButtonPressed;
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      iconTheme: const IconThemeData(color: Colors.white, size: 28),
-      backgroundColor: color,
-      automaticallyImplyLeading: hasBackButtonOrDrawer,
-      title: Text(
-        title ?? '',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppColors.appBarGradient,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x200D47A1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white, size: 24),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: hasBackButtonOrDrawer,
+        title: Text(
+          title ?? '',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:homelinker/data/database/database.dart' as database;
 import 'package:homelinker/data/remote/user/user_dto.dart';
 import 'package:homelinker/models/enums/account_type.dart';
@@ -15,6 +17,7 @@ class UserMapper {
         type: AccountType.values.byName(dto.type),
         is2FaActivated: dto.is2FaActivated,
         twoFactorAuthCode: dto.twoFactorAuthCode,
+        favoriteListingsIds: dto.favoriteListingsIds,
       );
 
   User mapUserFromDatabase(database.User dto) => User(
@@ -26,5 +29,19 @@ class UserMapper {
         type: AccountType.values.byName(dto.type),
         name: dto.name,
         twoFactorAuthCode: dto.twoFactorAuthCode,
+        favoriteListingsIds: _mapFavoriteListingsIdsFromDatabase(dto.favoriteListingsIds),
       );
+}
+
+List<String> _mapFavoriteListingsIdsFromDatabase(String? favListingsIds) {
+  if (favListingsIds == null) {
+    return [];
+  }
+  final jsonList = jsonDecode(favListingsIds);
+
+  final desiredListings = <String>[];
+
+  jsonList.forEach(desiredListings.add);
+
+  return desiredListings;
 }
