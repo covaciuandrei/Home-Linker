@@ -87,6 +87,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadPhoto => 'Upload photo';
 
   @override
+  String get edit => 'Edit';
+
+  @override
+  String get upload => 'Upload';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
   String get propertyType => 'Property type';
 
   @override

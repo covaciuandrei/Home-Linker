@@ -87,6 +87,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get uploadPhoto => 'Încarcă poza';
 
   @override
+  String get edit => 'Editează';
+
+  @override
+  String get upload => 'Încarcă';
+
+  @override
+  String get delete => 'Șterge';
+
+  @override
   String get propertyType => 'Tip locuniță';
 
   @override
