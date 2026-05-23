@@ -289,5 +289,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorites => 'Favorites';
 
   @override
+  String get save => 'Save';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
   String get noResults => 'No results found';
 }

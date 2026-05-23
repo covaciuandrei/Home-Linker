@@ -10,6 +10,7 @@ import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';
+import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
@@ -17,15 +18,17 @@ import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
-class ListingPage extends StatelessWidget implements AutoRouteWrapper {
+class ListingPage extends StatefulWidget implements AutoRouteWrapper {
   const ListingPage({
     super.key,
     required this.listing,
     required this.user,
+    this.isSaved = false,
   });
 
   final Listing listing;
   final User user;
+  final bool isSaved;
 
   @override
   Widget wrappedRoute(BuildContext context) {
@@ -36,14 +39,52 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
   }
 
   @override
+  State<ListingPage> createState() => _ListingPageState();
+}
+
+class _ListingPageState extends State<ListingPage> {
+  late bool _isSaved;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSaved = widget.isSaved;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final listing = widget.listing;
+    final user = widget.user;
 
     return BlocConsumer<ListingCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingDeletedState) {
           BlocProvider.of<HomeCubit>(context).refresh();
           AutoRouter.of(context).popForced();
+        } else if (state is ListingFavoritedState) {
+          setState(() => _isSaved = true);
+          AppToast.show(
+            context,
+            message: AppLocalizations.of(context).listingAddedToFavorites,
+            icon: Icons.favorite_rounded,
+            accentColor: AppColors.success,
+          );
+        } else if (state is ListingUnfavoritedState) {
+          setState(() => _isSaved = false);
+          AppToast.show(
+            context,
+            message: AppLocalizations.of(context).listingRemovedFromFavorites,
+            icon: Icons.favorite_border_rounded,
+            accentColor: AppColors.textSecondary,
+          );
+        } else if (state is SomethingWentWrongState) {
+          AppToast.show(
+            context,
+            message: AppLocalizations.of(context).somethingWrong,
+            icon: Icons.error_outline_rounded,
+            accentColor: AppColors.error,
+          );
         }
       },
       builder: (context, state) {
@@ -88,148 +129,186 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
                 SafeArea(child: const BackArrowButton()),
 
                 // ── Content Sheet ────────────────────────────
-                Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.35,
-                      ),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.65,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(28),
-                            topRight: Radius.circular(28),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, -4),
-                            ),
-                          ],
+                _SlideUpOnEnter(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.35,
                         ),
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Column(
-                            children: [
-                              // ── Handle bar ────────────────
-                              Container(
-                                margin: const EdgeInsets.only(top: 12),
-                                width: 40,
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: AppColors.divider,
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.65,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBackground,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(28),
+                              topRight: Radius.circular(28),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, -4),
                               ),
+                            ],
+                          ),
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              children: [
+                                // ── Handle bar ────────────────
+                                Container(
+                                  margin: const EdgeInsets.only(top: 12),
+                                  width: 40,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.divider,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
 
-                              // ── Header Info ───────────────
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            listing.property.propertyType.name
-                                                .translate(context, listing.property.propertyType.name)
-                                                .capitalize(),
-                                            style: theme.textTheme.headlineSmall?.copyWith(
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColors.textPrimary,
+                                // ── Header Info ───────────────
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              listing.property.propertyType.name
+                                                  .translate(context, listing.property.propertyType.name)
+                                                  .capitalize(),
+                                              style: theme.textTheme.headlineSmall?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                                color: AppColors.textPrimary,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.location_on_outlined,
-                                                size: 16,
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on_outlined,
+                                                  size: 16,
+                                                  color: AppColors.textTertiary,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Expanded(
+                                                  child: Text(
+                                                    listing.property.location,
+                                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                                      color: AppColors.textSecondary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${AppLocalizations.of(context).listedBy} ${listing.property.ownerName}',
+                                              style: theme.textTheme.bodySmall?.copyWith(
                                                 color: AppColors.textTertiary,
                                               ),
-                                              const SizedBox(width: 4),
-                                              Expanded(
-                                                child: Text(
-                                                  listing.property.location,
-                                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                                    color: AppColors.textSecondary,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          ListingPrice(
+                                            property: listing.property,
+                                            textSize: 24,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Material(
+                                            color: _isSaved
+                                                ? AppColors.error.withValues(alpha: 0.10)
+                                                : AppColors.primary.withValues(alpha: 0.08),
+                                            shape: const CircleBorder(),
+                                            child: InkWell(
+                                              customBorder: const CircleBorder(),
+                                              onTap: () {
+                                                if (_isSaved) {
+                                                  BlocProvider.of<ListingCubit>(context)
+                                                      .removeFavorite(id: listing.property.id);
+                                                } else {
+                                                  BlocProvider.of<ListingCubit>(context)
+                                                      .addFavorite(id: listing.property.id);
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(10),
+                                                child: AnimatedSwitcher(
+                                                  duration: const Duration(milliseconds: 250),
+                                                  child: Icon(
+                                                    _isSaved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                                    key: ValueKey<bool>(_isSaved),
+                                                    color: _isSaved ? AppColors.error : AppColors.primary,
+                                                    size: 22,
                                                   ),
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${AppLocalizations.of(context).listedBy} ${listing.property.ownerName}',
-                                            style: theme.textTheme.bodySmall?.copyWith(
-                                              color: AppColors.textTertiary,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    ListingPrice(
-                                      property: listing.property,
-                                      textSize: 24,
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              // ── Selling Points ────────────
-                              PropertySellingPointLine(
-                                property: listing.property,
-                                icons: const [
-                                  Icons.calendar_month_outlined,
-                                  Icons.real_estate_agent_outlined,
-                                  Icons.landscape_outlined,
-                                ],
-                                isFirstLine: true,
-                              ),
-                              PropertySellingPointLine(
-                                property: listing.property,
-                                icons: const [
-                                  Icons.bathroom_outlined,
-                                  Icons.bed_outlined,
-                                  Icons.local_parking_outlined,
-                                ],
-                                isFirstLine: false,
-                              ),
-
-                              // ── Description ───────────────
-                              PropertyDescription(
-                                description: listing.property.description,
-                              ),
-                              const SizedBox(height: 20),
-
-                              // ── Delete Button ─────────────
-                              if (listing.property.ownerEmail == user.email)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: MainButton(
-                                    isDestructive: true,
-                                    width: 220,
-                                    text: AppLocalizations.of(context).deleteListing,
-                                    icon: Icons.delete_outline_rounded,
-                                    onPressed: () {
-                                      _confirmDelete(context);
-                                    },
+                                    ],
                                   ),
                                 ),
-                              const SizedBox(height: 40),
-                            ],
+
+                                // ── Selling Points ────────────
+                                PropertySellingPointLine(
+                                  property: listing.property,
+                                  icons: const [
+                                    Icons.calendar_month_outlined,
+                                    Icons.real_estate_agent_outlined,
+                                    Icons.landscape_outlined,
+                                  ],
+                                  isFirstLine: true,
+                                ),
+                                PropertySellingPointLine(
+                                  property: listing.property,
+                                  icons: const [
+                                    Icons.bathroom_outlined,
+                                    Icons.bed_outlined,
+                                    Icons.local_parking_outlined,
+                                  ],
+                                  isFirstLine: false,
+                                ),
+
+                                // ── Description ───────────────
+                                PropertyDescription(
+                                  description: listing.property.description,
+                                ),
+                                const SizedBox(height: 20),
+
+                                // ── Delete Button ─────────────
+                                if (listing.property.ownerEmail == user.email)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: MainButton(
+                                      isDestructive: true,
+                                      width: 220,
+                                      text: AppLocalizations.of(context).deleteListing,
+                                      icon: Icons.delete_outline_rounded,
+                                      onPressed: () {
+                                        _confirmDelete(context);
+                                      },
+                                    ),
+                                  ),
+                                const SizedBox(height: 40),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -286,7 +365,7 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
                     text: AppLocalizations.of(context).deleteListing,
                     onPressed: () {
                       Navigator.of(bottomSheetContext).pop();
-                      BlocProvider.of<ListingCubit>(context).deleteListing(property: listing.property);
+                      BlocProvider.of<ListingCubit>(context).deleteListing(property: widget.listing.property);
                     },
                   ),
                 ),
@@ -437,6 +516,35 @@ class PropertySellingPoint extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Slides its child up from the bottom while the route is pushing in, so the
+/// content sheet appears to rise from below the hero image. On pop, it slides
+/// back down. While the route is settled, no transform is applied.
+class _SlideUpOnEnter extends StatelessWidget {
+  const _SlideUpOnEnter({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final route = ModalRoute.of(context);
+    if (route == null) return child;
+
+    final animation = CurvedAnimation(
+      parent: route.animation ?? const AlwaysStoppedAnimation(1),
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0, 1),
+        end: Offset.zero,
+      ).animate(animation),
+      child: child,
     );
   }
 }

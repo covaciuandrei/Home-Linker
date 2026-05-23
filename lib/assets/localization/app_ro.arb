@@ -91,5 +91,7 @@
   "listingAlreadyInFavorites": "Anunțul este deja în lista de favorite.",
   "listingAlreadyRemovedFromFavorites": "Anunțul a fost deja eliminat din lista de favorite.",
   "favorites": "Favorite",
+  "save": "Salvează",
+  "saved": "Salvat",
   "noResults": "Niciun rezultat găsit"
 }

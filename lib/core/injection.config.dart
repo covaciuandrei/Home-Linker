@@ -113,6 +113,7 @@ _i174.GetIt $initGetIt(
   gh.factory<_i225.ListingCubit>(() => _i225.ListingCubit(
         gh<_i428.PropertyService>(),
         gh<_i208.ImageService>(),
+        gh<_i261.UserService>(),
       ));
   gh.factory<_i420.FileService>(() => _i420.FileService(
         gh<_i893.StorageSource>(),

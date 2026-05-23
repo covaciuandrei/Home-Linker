@@ -1,4 +1,3 @@
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
@@ -11,36 +10,26 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i19;
 import 'package:flutter/material.dart' as _i20;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:homelinker/models/listing.dart' as _i21;
 import 'package:homelinker/models/place_location.dart' as _i9;
 import 'package:homelinker/models/user.dart' as _i22;
-import 'package:homelinker/presentation/pages/favorites/favorites_page.dart'
-    as _i2;
+import 'package:homelinker/presentation/pages/favorites/favorites_page.dart' as _i2;
 import 'package:homelinker/presentation/pages/home/home_page.dart' as _i4;
-import 'package:homelinker/presentation/pages/introductive/introductive_page.dart'
-    as _i5;
+import 'package:homelinker/presentation/pages/introductive/introductive_page.dart' as _i5;
 import 'package:homelinker/presentation/pages/listing/listing_page.dart' as _i6;
 import 'package:homelinker/presentation/pages/login/login_page.dart' as _i7;
 import 'package:homelinker/presentation/pages/map_page.dart' as _i8;
-import 'package:homelinker/presentation/pages/new_property/new_property_page.dart'
-    as _i10;
-import 'package:homelinker/presentation/pages/profile/profile_page.dart'
-    as _i11;
-import 'package:homelinker/presentation/pages/reset_password/email_sent_successfully_page.dart'
-    as _i1;
-import 'package:homelinker/presentation/pages/reset_password/forgot_password_page.dart'
-    as _i3;
-import 'package:homelinker/presentation/pages/reset_password/reset_password_page.dart'
-    as _i12;
-import 'package:homelinker/presentation/pages/reset_password/reset_password_successfully_page.dart'
-    as _i13;
-import 'package:homelinker/presentation/pages/settings/settings_page.dart'
-    as _i14;
+import 'package:homelinker/presentation/pages/new_property/new_property_page.dart' as _i10;
+import 'package:homelinker/presentation/pages/profile/profile_page.dart' as _i11;
+import 'package:homelinker/presentation/pages/reset_password/email_sent_successfully_page.dart' as _i1;
+import 'package:homelinker/presentation/pages/reset_password/forgot_password_page.dart' as _i3;
+import 'package:homelinker/presentation/pages/reset_password/reset_password_page.dart' as _i12;
+import 'package:homelinker/presentation/pages/reset_password/reset_password_successfully_page.dart' as _i13;
+import 'package:homelinker/presentation/pages/settings/settings_page.dart' as _i14;
 import 'package:homelinker/presentation/pages/signup/signup_page.dart' as _i16;
-import 'package:homelinker/presentation/pages/signup/signup_second_page.dart'
-    as _i17;
-import 'package:homelinker/presentation/pages/signup/signup_successfully_page.dart'
-    as _i15;
+import 'package:homelinker/presentation/pages/signup/signup_second_page.dart' as _i17;
+import 'package:homelinker/presentation/pages/signup/signup_successfully_page.dart' as _i15;
 import 'package:homelinker/presentation/pages/splash/splash_page.dart' as _i18;
 
 abstract class $AppRouter extends _i19.RootStackRouter {
@@ -82,12 +71,12 @@ abstract class $AppRouter extends _i19.RootStackRouter {
       final args = routeData.argsAs<ListingRouteArgs>();
       return _i19.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: _i19.WrappedRoute(
-            child: _i6.ListingPage(
+        child: _i6.ListingPage(
           key: args.key,
           listing: args.listing,
           user: args.user,
-        )),
+          isSaved: args.isSaved,
+        ),
       );
     },
     LoginRoute.name: (routeData) {
@@ -97,8 +86,7 @@ abstract class $AppRouter extends _i19.RootStackRouter {
       );
     },
     MapRoute.name: (routeData) {
-      final args =
-          routeData.argsAs<MapRouteArgs>(orElse: () => const MapRouteArgs());
+      final args = routeData.argsAs<MapRouteArgs>(orElse: () => const MapRouteArgs());
       return _i19.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: _i8.MapPage(
@@ -248,6 +236,7 @@ class ListingRoute extends _i19.PageRouteInfo<ListingRouteArgs> {
     _i20.Key? key,
     required _i21.Listing listing,
     required _i22.User user,
+    bool isSaved = false,
     List<_i19.PageRouteInfo>? children,
   }) : super(
           ListingRoute.name,
@@ -255,14 +244,14 @@ class ListingRoute extends _i19.PageRouteInfo<ListingRouteArgs> {
             key: key,
             listing: listing,
             user: user,
+            isSaved: isSaved,
           ),
           initialChildren: children,
         );
 
   static const String name = 'ListingRoute';
 
-  static const _i19.PageInfo<ListingRouteArgs> page =
-      _i19.PageInfo<ListingRouteArgs>(name);
+  static const _i19.PageInfo<ListingRouteArgs> page = _i19.PageInfo<ListingRouteArgs>(name);
 }
 
 class ListingRouteArgs {
@@ -270,6 +259,7 @@ class ListingRouteArgs {
     this.key,
     required this.listing,
     required this.user,
+    this.isSaved = false,
   });
 
   final _i20.Key? key;
@@ -278,9 +268,11 @@ class ListingRouteArgs {
 
   final _i22.User user;
 
+  final bool isSaved;
+
   @override
   String toString() {
-    return 'ListingRouteArgs{key: $key, listing: $listing, user: $user}';
+    return 'ListingRouteArgs{key: $key, listing: $listing, user: $user, isSaved: $isSaved}';
   }
 }
 
@@ -303,8 +295,7 @@ class LoginRoute extends _i19.PageRouteInfo<void> {
 class MapRoute extends _i19.PageRouteInfo<MapRouteArgs> {
   MapRoute({
     _i20.Key? key,
-    _i9.PlaceLocation location =
-        const _i9.PlaceLocation(latLng: LatLng(44.43, 26), address: ''),
+    _i9.PlaceLocation location = const _i9.PlaceLocation(latLng: LatLng(44.43, 26), address: ''),
     bool isSelecting = true,
     List<_i19.PageRouteInfo>? children,
   }) : super(
@@ -319,15 +310,13 @@ class MapRoute extends _i19.PageRouteInfo<MapRouteArgs> {
 
   static const String name = 'MapRoute';
 
-  static const _i19.PageInfo<MapRouteArgs> page =
-      _i19.PageInfo<MapRouteArgs>(name);
+  static const _i19.PageInfo<MapRouteArgs> page = _i19.PageInfo<MapRouteArgs>(name);
 }
 
 class MapRouteArgs {
   const MapRouteArgs({
     this.key,
-    this.location =
-        const _i9.PlaceLocation(latLng: LatLng(44.43, 26), address: ''),
+    this.location = const _i9.PlaceLocation(latLng: LatLng(44.43, 26), address: ''),
     this.isSelecting = true,
   });
 
@@ -461,8 +450,7 @@ class SignupSecondRoute extends _i19.PageRouteInfo<SignupSecondRouteArgs> {
 
   static const String name = 'SignupSecondRoute';
 
-  static const _i19.PageInfo<SignupSecondRouteArgs> page =
-      _i19.PageInfo<SignupSecondRouteArgs>(name);
+  static const _i19.PageInfo<SignupSecondRouteArgs> page = _i19.PageInfo<SignupSecondRouteArgs>(name);
 }
 
 class SignupSecondRouteArgs {

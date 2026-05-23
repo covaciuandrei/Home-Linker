@@ -245,7 +245,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           return _PropertyItem(
                             listing: listings[index].listing,
                             onPressed: () =>
-                                AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user)),
+                                AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user, isSaved: listings[index].isSaved)),
                             onFavoriteIconPressed: () {
                               if (listings[index].isSaved) {
                                 BlocProvider.of<FavoritesCubit>(context)

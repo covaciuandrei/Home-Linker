@@ -91,6 +91,8 @@
   "listingAlreadyInFavorites": "Listing is already in favorites.",
   "listingAlreadyRemovedFromFavorites": "Listing was already removed from favorites.",
   "favorites": "Favorites",
+  "save": "Save",
+  "saved": "Saved",
   "noResults": "No results found"
 }
 

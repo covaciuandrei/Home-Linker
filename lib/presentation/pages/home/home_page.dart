@@ -198,8 +198,8 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         return PropertyItem(
                           listing: listings[index].listing,
-                          onPressed: () =>
-                              AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user)),
+                          onPressed: () => AutoRouter.of(context).push(ListingRoute(
+                              listing: listings[index].listing, user: user, isSaved: listings[index].isSaved)),
                           onFavoriteIconPressed: () {
                             if (listings[index].isSaved) {
                               BlocProvider.of<HomeCubit>(context)
