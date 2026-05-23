@@ -55,7 +55,9 @@ class ImageService {
     }
 
     if (await _imageRepository.isExpired(additionalParam: 'image:$imageId')) {
-      final Image imageFromSource = await _imageSource.get(imageId: imageId);
+      final Image? imageFromSource = await _imageSource.get(imageId: imageId);
+      if (imageFromSource == null) return null;
+
       final File? image = await _storageSource.downloadImage(
         imagePath: imageFromSource.path,
         name: '$imageId-${imageFromSource.name}',
@@ -78,13 +80,18 @@ class ImageService {
   }
 
   Future<void> delete({required String imageId}) async {
+    final normalizedImageId = imageId.trim();
+    if (normalizedImageId.isEmpty) return;
+
     try {
-      final image = await _imageSource.get(imageId: imageId);
-      await _storageSource.deleteImage(path: image.path);
-      await _imageSource.delete(imageId: imageId);
-      await _imageRepository.clear(imageId: imageId);
-      _evictFromMemoryCache(imageId);
-    } on Exception {
+      final image = await _imageSource.get(imageId: normalizedImageId);
+      if (image != null) {
+        await _storageSource.deleteImage(path: image.path);
+      }
+      await _imageSource.delete(imageId: normalizedImageId);
+      await _imageRepository.clear(imageId: normalizedImageId);
+      _evictFromMemoryCache(normalizedImageId);
+    } catch (_) {
       throw Exception();
     }
   }

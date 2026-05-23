@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/cubit/base_cubit.dart';
@@ -31,7 +33,7 @@ class HomeCubit extends BaseCubit {
   final UserService _userService;
   final DatabaseProvider _databaseProvider;
 
-  static const int _pageSize = 20;
+  static const int _pageSize = 7;
 
   List<ListingData> _listingsData = [];
   List<String> _languages = [];
@@ -39,6 +41,7 @@ class HomeCubit extends BaseCubit {
   User? _user;
 
   String? _lastId;
+  String? _lastCreatedAt;
   bool _hasMore = true;
   bool _isLoadingMore = false;
 
@@ -46,8 +49,27 @@ class HomeCubit extends BaseCubit {
     await _databaseProvider.get.clear();
   }
 
+  /// Dev helper: assigns a random `createdAt` to every property in Firestore
+  /// (within 2025-01-01 to 2026-05-20), then reloads the feed.
+  Future<void> randomizeCreatedAt() async {
+    final previousState = state;
+    safeEmit(PendingState());
+    try {
+      await _propertyService.randomizeAllCreatedAt();
+      await refresh();
+    } catch (_) {
+      safeEmit(SomethingWentWrongState());
+      if (previousState is DataLoadedState) {
+        safeEmit(previousState);
+      } else {
+        await _loadFirstPage(forceRefresh: true);
+      }
+    }
+  }
+
   Future<void> refresh() async {
     _lastId = null;
+    _lastCreatedAt = null;
     _hasMore = true;
     _listingsData = [];
     await _loadFirstPage(forceRefresh: true);
@@ -67,7 +89,13 @@ class HomeCubit extends BaseCubit {
 
     final firstPage = await _propertyService.getPage(pageSize: _pageSize);
     _hasMore = firstPage.length == _pageSize;
-    _lastId = firstPage.isNotEmpty ? firstPage.last.id : null;
+    if (firstPage.isNotEmpty) {
+      _lastId = firstPage.last.id;
+      _lastCreatedAt = firstPage.last.createdAt?.toIso8601String();
+    } else {
+      _lastId = null;
+      _lastCreatedAt = null;
+    }
 
     _listingsData = await _hydrate(firstPage, savedListings);
     _maxPrice = _computeMaxPrice(_listingsData);
@@ -82,31 +110,44 @@ class HomeCubit extends BaseCubit {
     try {
       final user = _user!;
       final savedListings = user.favoriteListingsIds.toSet();
-      final next = await _propertyService.getPage(pageSize: _pageSize, startAfterId: _lastId);
+      final next = await _propertyService.getPage(
+        pageSize: _pageSize,
+        startAfterCreatedAt: _lastCreatedAt,
+        startAfterId: _lastId,
+      );
       _hasMore = next.length == _pageSize;
       if (next.isNotEmpty) {
         _lastId = next.last.id;
+        _lastCreatedAt = next.last.createdAt?.toIso8601String();
         final hydrated = await _hydrate(next, savedListings);
         _listingsData = [..._listingsData, ...hydrated];
         _maxPrice = _computeMaxPrice(_listingsData);
-        safeEmit(_buildLoadedState());
       }
+      safeEmit(_buildLoadedState());
+    } catch (_) {
+      safeEmit(SomethingWentWrongState());
+      safeEmit(_buildLoadedState());
     } finally {
       _isLoadingMore = false;
     }
   }
 
-  Future<List<ListingData>> _hydrate(List<Property> properties, Set<String> saved) async {
-    final hydrated = <ListingData>[];
-    for (final property in properties) {
-      final image = await _imageService.getImage(imageId: property.imageId);
-      if (image == null) continue;
-      hydrated.add(ListingData(
+  Future<List<ListingData>> _hydrate(List<Property> properties, Set<String> saved) {
+    return Future.wait(properties.map((property) async {
+      final image = await _getListingImage(property.imageId);
+      return ListingData(
         listing: Listing(image: image, property: property),
         isSaved: saved.contains(property.id),
-      ));
+      );
+    }));
+  }
+
+  Future<File?> _getListingImage(String imageId) async {
+    try {
+      return await _imageService.getImage(imageId: imageId);
+    } catch (_) {
+      return null;
     }
-    return hydrated;
   }
 
   double _computeMaxPrice(List<ListingData> data) {

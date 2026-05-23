@@ -11,12 +11,11 @@ class ImagesSource {
 
   final ImageMapper _imageMapper;
 
-  CollectionReference<ImageDto> get _collectionRef => FirebaseFirestore.instance
-      .collection(RemoteSourceNames.images)
-      .withConverter<ImageDto>(
-        fromFirestore: (snapshots, _) => ImageDto.fromJson(snapshots.data()!),
-        toFirestore: (user, _) => user.toJson(),
-      );
+  CollectionReference<ImageDto> get _collectionRef =>
+      FirebaseFirestore.instance.collection(RemoteSourceNames.images).withConverter<ImageDto>(
+            fromFirestore: (snapshots, _) => ImageDto.fromJson(snapshots.data()!),
+            toFirestore: (user, _) => user.toJson(),
+          );
 
   Future<List<Image>> getAll() async {
     final querySnapshot = await _collectionRef.get();
@@ -25,10 +24,14 @@ class ImagesSource {
     return _imageMapper.mapImageDtos(imageDtos);
   }
 
-  Future<Image> get({required String imageId}) async {
-    final imageDto = (await _collectionRef.doc(imageId).get()).data();
+  Future<Image?> get({required String imageId}) async {
+    final normalizedImageId = imageId.trim();
+    if (normalizedImageId.isEmpty) return null;
 
-    return _imageMapper.mapDtoToImage(imageDto!);
+    final imageDto = (await _collectionRef.doc(normalizedImageId).get()).data();
+    if (imageDto == null) return null;
+
+    return _imageMapper.mapDtoToImage(imageDto);
   }
 
   Future<String> insert(Image newImage) async {
@@ -38,7 +41,10 @@ class ImagesSource {
   }
 
   Future<void> delete({required String imageId}) async {
-    final documentRef = _collectionRef.doc(imageId);
+    final normalizedImageId = imageId.trim();
+    if (normalizedImageId.isEmpty) return;
+
+    final documentRef = _collectionRef.doc(normalizedImageId);
     await documentRef.delete();
   }
 }

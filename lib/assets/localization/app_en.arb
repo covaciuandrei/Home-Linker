@@ -57,7 +57,7 @@
   "accountCreatedSuccessfully": "Your account has been created successfully. Click on the link in the email you recived to finalize your account setup.",
   "pickLocation": "Pick your location",
   "yourLocation": "Your location",
-  "noLocationChosen": "No location chosen.",
+  "noLocationChosen": "No location selected",
   "currentLocation": "Current location",
   "selectOnMap": "Select on map",
   "somethingWrong": "Something went wrong, please try again.",

@@ -24,12 +24,22 @@ class PropertyService {
     return _propertyRepository.getAll();
   }
 
+  Future<int> randomizeAllCreatedAt() => _propertySource.randomizeAllCreatedAt();
+
   /// Fetches a single page of properties from the remote source.
   ///
   /// Pagination bypasses the local cache by design — the cache is an
   /// offline-first snapshot for [getAll] and isn't sliced for ranged reads.
-  Future<List<Property>> getPage({int pageSize = 20, String? startAfterId}) {
-    return _propertySource.getPage(pageSize: pageSize, startAfterId: startAfterId);
+  Future<List<Property>> getPage({
+    int pageSize = 20,
+    String? startAfterCreatedAt,
+    String? startAfterId,
+  }) {
+    return _propertySource.getPage(
+      pageSize: pageSize,
+      startAfterCreatedAt: startAfterCreatedAt,
+      startAfterId: startAfterId,
+    );
   }
 
   Future<void> addNewProperty({

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:homelinker/data/mappers/property_mapper.dart';
@@ -21,81 +22,129 @@ class PropertySource {
             toFirestore: (user, _) => user.toJson(),
           );
 
+  /// Dev helper: assigns a random `created_at` (date + time) within the
+  /// 2025-01-01 → 2026-05-20 interval to every existing property document.
+  Future<int> randomizeAllCreatedAt() async {
+    final rawCollection = FirebaseFirestore.instance.collection(RemoteSourceNames.properties);
+    final snapshot = await rawCollection.get();
+    if (snapshot.docs.isEmpty) return 0;
+
+    final start = DateTime.utc(2025, 1, 1);
+    final end = DateTime.utc(2026, 5, 20, 23, 59, 59);
+    final spanSeconds = end.difference(start).inSeconds + 1;
+    final rng = Random();
+
+    final batch = FirebaseFirestore.instance.batch();
+    for (final doc in snapshot.docs) {
+      final randomDate = start.add(Duration(seconds: rng.nextInt(spanSeconds)));
+      batch.update(doc.reference, {'created_at': randomDate.toIso8601String()});
+    }
+    await batch.commit();
+    return snapshot.docs.length;
+  }
+
   Future<List<Property>> getAll() async {
     final querySnapshot = await _collectionRef.get();
 
-    final propertyDtos = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      final String locationJsonString = data.location;
-      String address = '';
-      if (locationJsonString.isNotEmpty) {
-        final Map<String, dynamic> jsonMap = jsonDecode(locationJsonString);
-        address = PlaceLocation.fromJson(jsonMap).address;
-      }
-
-      return PropertyDto(
-        id: doc.id,
-        data.areaSize,
-        data.bathrooms,
-        data.bedrooms,
-        data.constructionYear,
-        data.description,
-        data.imageId,
-        data.listingType,
-        address,
-        data.ownerEmail,
-        data.ownerName,
-        data.parkingSpaces,
-        data.price,
-        data.propertyType,
-        createdAt: data.createdAt,
-      );
-    }).toList();
+    final propertyDtos = querySnapshot.docs.map(_mapDocumentToDto).toList();
 
     return _propertyMapper.mapPropertyDtos(propertyDtos);
   }
 
-  /// Cursor-based pagination over the properties collection.
+  /// Cursor-based pagination over every property document.
   ///
-  /// Ordered by document id so the cursor is stable. Pass [startAfterId] from
-  /// the last id of the previous page to fetch the next page. When fewer than
-  /// [pageSize] items are returned, the end of the collection has been reached.
-  Future<List<Property>> getPage({int pageSize = 20, String? startAfterId}) async {
-    Query<PropertyDto> query = _collectionRef.orderBy(FieldPath.documentId).limit(pageSize);
-    if (startAfterId != null && startAfterId.isNotEmpty) {
-      query = query.startAfter([startAfterId]);
+  /// Firestore orderBy excludes documents that are missing the ordered field,
+  /// so we sort in memory here to guarantee legacy/incomplete listings still
+  /// appear. Listings with `created_at` are shown newest first; missing dates
+  /// are kept at the end and ordered by id.
+  Future<List<Property>> getPage({
+    int pageSize = 20,
+    String? startAfterCreatedAt,
+    String? startAfterId,
+  }) async {
+    final querySnapshot = await _collectionRef.get();
+    final properties = _propertyMapper.mapPropertyDtos(querySnapshot.docs.map(_mapDocumentToDto).toList())
+      ..sort(_comparePropertiesForFeed);
+
+    final startIndex = _startIndexAfterCursor(
+      properties,
+      startAfterCreatedAt: startAfterCreatedAt,
+      startAfterId: startAfterId,
+    );
+    return properties.skip(startIndex).take(pageSize).toList();
+  }
+
+  PropertyDto _mapDocumentToDto(QueryDocumentSnapshot<PropertyDto> doc) {
+    final data = doc.data();
+    final address = _addressFromLocation(data.location);
+
+    return PropertyDto(
+      id: doc.id,
+      data.areaSize,
+      data.bathrooms,
+      data.bedrooms,
+      data.constructionYear,
+      data.description,
+      data.imageId,
+      data.listingType,
+      address,
+      data.ownerEmail,
+      data.ownerName,
+      data.parkingSpaces,
+      data.price,
+      data.propertyType,
+      createdAt: data.createdAt,
+    );
+  }
+
+  String _addressFromLocation(String locationJsonString) {
+    if (locationJsonString.isEmpty) return '';
+    try {
+      final Map<String, dynamic> jsonMap = jsonDecode(locationJsonString);
+      return PlaceLocation.fromJson(jsonMap).address;
+    } catch (_) {
+      return '';
     }
-    final querySnapshot = await query.get();
+  }
 
-    final propertyDtos = querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      final String locationJsonString = data.location;
-      String address = '';
-      if (locationJsonString.isNotEmpty) {
-        final Map<String, dynamic> jsonMap = jsonDecode(locationJsonString);
-        address = PlaceLocation.fromJson(jsonMap).address;
-      }
+  int _comparePropertiesForFeed(Property a, Property b) {
+    final aCreatedAt = a.createdAt;
+    final bCreatedAt = b.createdAt;
+    if (aCreatedAt == null && bCreatedAt == null) return a.id.compareTo(b.id);
+    if (aCreatedAt == null) return 1;
+    if (bCreatedAt == null) return -1;
 
-      return PropertyDto(
-        id: doc.id,
-        data.areaSize,
-        data.bathrooms,
-        data.bedrooms,
-        data.constructionYear,
-        data.description,
-        data.imageId,
-        data.listingType,
-        address,
-        data.ownerEmail,
-        data.ownerName,
-        data.parkingSpaces,
-        data.price,
-        data.propertyType,
-        createdAt: data.createdAt,
-      );
-    }).toList();
+    final byCreatedAt = bCreatedAt.compareTo(aCreatedAt);
+    if (byCreatedAt != 0) return byCreatedAt;
+    return a.id.compareTo(b.id);
+  }
 
-    return _propertyMapper.mapPropertyDtos(propertyDtos);
+  int _startIndexAfterCursor(
+    List<Property> properties, {
+    required String? startAfterCreatedAt,
+    required String? startAfterId,
+  }) {
+    if (startAfterId == null || startAfterId.isEmpty) return 0;
+
+    final exactCursorIndex = properties.indexWhere((property) => property.id == startAfterId);
+    if (exactCursorIndex >= 0) return exactCursorIndex + 1;
+
+    final cursorDate = startAfterCreatedAt != null ? DateTime.tryParse(startAfterCreatedAt) : null;
+    final inferredIndex = properties.indexWhere((property) => _isAfterCursor(property, cursorDate, startAfterId));
+    return inferredIndex == -1 ? properties.length : inferredIndex;
+  }
+
+  bool _isAfterCursor(Property property, DateTime? cursorDate, String cursorId) {
+    final propertyCreatedAt = property.createdAt;
+    if (cursorDate == null) {
+      if (propertyCreatedAt != null) return false;
+      return property.id.compareTo(cursorId) > 0;
+    }
+    if (propertyCreatedAt == null) return true;
+
+    final byCreatedAt = cursorDate.compareTo(propertyCreatedAt);
+    if (byCreatedAt != 0) return byCreatedAt > 0;
+    return property.id.compareTo(cursorId) > 0;
   }
 
   Future<void> insert(Property newProperty) async {

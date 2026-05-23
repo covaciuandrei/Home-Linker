@@ -38,21 +38,45 @@ class PropertyDto {
 }
 
 PropertyDto _$PropertyDtoFromJson(Map<String, dynamic> json) => PropertyDto(
-      json['area_size'] as int,
-      json['bathrooms'] as int,
-      json['bedrooms'] as int,
-      json['construction_year'] as int,
-      json['description'] as String,
-      json['image_id'] as String,
-      json['listing_type'] as String,
-      json['location'] as String,
-      json['owner_email'] as String,
-      json['owner_name'] as String,
-      json['parking_spaces'] as int,
-      (json['price'] as num).toDouble(),
-      json['property_type'] as String,
-      createdAt: json['created_at'] as String?,
+      _jsonInt(json['area_size']),
+      _jsonInt(json['bathrooms']),
+      _jsonInt(json['bedrooms']),
+      _jsonInt(json['construction_year']),
+      _jsonString(json['description']),
+      _jsonString(json['image_id']),
+      _jsonString(json['listing_type'], fallback: 'sale'),
+      _jsonString(json['location']),
+      _jsonString(json['owner_email']),
+      _jsonString(json['owner_name']),
+      _jsonInt(json['parking_spaces']),
+      _jsonDouble(json['price']),
+      _jsonString(json['property_type'], fallback: 'apartment'),
+      createdAt: _jsonNullableString(json['created_at']),
     );
+
+String _jsonString(Object? value, {String fallback = ''}) {
+  if (value is String) return value;
+  if (value == null) return fallback;
+  return value.toString();
+}
+
+String? _jsonNullableString(Object? value) {
+  if (value is String && value.isNotEmpty) return value;
+  return null;
+}
+
+int _jsonInt(Object? value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
+}
+
+double _jsonDouble(Object? value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0;
+  return 0;
+}
 
 Map<String, dynamic> _$PropertyDtoToJson(PropertyDto instance) => <String, dynamic>{
       'area_size': instance.areaSize,

@@ -5,13 +5,13 @@ import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
-import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/listing/listing_cubit.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/back_arrow_button.dart';
+import 'package:homelinker/presentation/widgets/listing_image.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
@@ -55,13 +55,17 @@ class _ListingPageState extends State<ListingPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final listing = widget.listing;
+    final location = listing.property.location.trim();
     final user = widget.user;
 
     return BlocConsumer<ListingCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingDeletedState) {
-          BlocProvider.of<HomeCubit>(context).refresh();
-          AutoRouter.of(context).popForced();
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop(true);
+          } else {
+            AutoRouter.of(context).popForced<bool>(true);
+          }
         } else if (state is ListingFavoritedState) {
           setState(() => _isSaved = true);
           AppToast.show(
@@ -101,9 +105,9 @@ class _ListingPageState extends State<ListingPage> {
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: Hero(
                     tag: 'property_${listing.property.id}',
-                    child: Image.file(
-                      listing.image,
-                      fit: BoxFit.cover,
+                    child: ListingImage(
+                      image: listing.image,
+                      iconSize: 64,
                     ),
                   ),
                 ),
@@ -198,7 +202,9 @@ class _ListingPageState extends State<ListingPage> {
                                               const SizedBox(width: 4),
                                               Expanded(
                                                 child: Text(
-                                                  listing.property.location,
+                                                  location.isNotEmpty
+                                                      ? location
+                                                      : AppLocalizations.of(context).noLocationChosen,
                                                   style: theme.textTheme.bodyMedium?.copyWith(
                                                     color: AppColors.textSecondary,
                                                   ),

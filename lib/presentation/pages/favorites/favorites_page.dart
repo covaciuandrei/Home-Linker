@@ -17,6 +17,7 @@ import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/range.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
+import 'package:homelinker/presentation/widgets/listing_image.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -244,8 +245,19 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         itemBuilder: (context, index) {
                           return _PropertyItem(
                             listing: listings[index].listing,
-                            onPressed: () =>
-                                AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user, isSaved: listings[index].isSaved)),
+                            onPressed: () async {
+                              final result = await AutoRouter.of(context).push(
+                                ListingRoute(
+                                  listing: listings[index].listing,
+                                  user: user,
+                                  isSaved: listings[index].isSaved,
+                                ),
+                              );
+                              if (!context.mounted) return;
+                              if (result == true) {
+                                unawaited(BlocProvider.of<FavoritesCubit>(context).refresh());
+                              }
+                            },
                             onFavoriteIconPressed: () {
                               if (listings[index].isSaved) {
                                 BlocProvider.of<FavoritesCubit>(context)
@@ -425,6 +437,7 @@ class _PropertyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final location = listing.property.location.trim();
 
     return GestureDetector(
       onTap: onPressed,
@@ -447,10 +460,7 @@ class _PropertyItem extends StatelessWidget {
               ),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
-                child: Image.file(
-                  listing.image,
-                  fit: BoxFit.cover,
-                ),
+                child: ListingImage(image: listing.image),
               ),
             ),
 
@@ -475,27 +485,29 @@ class _PropertyItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          color: AppColors.textTertiary,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(
-                            listing.property.location,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            color: AppColors.textTertiary,
+                            size: 14,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

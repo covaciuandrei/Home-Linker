@@ -186,7 +186,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourLocation => 'Your location';
 
   @override
-  String get noLocationChosen => 'No location chosen.';
+  String get noLocationChosen => 'No location selected';
 
   @override
   String get currentLocation => 'Current location';

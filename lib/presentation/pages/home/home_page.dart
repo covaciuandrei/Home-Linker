@@ -15,6 +15,7 @@ import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
+import 'package:homelinker/presentation/widgets/listing_image.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
@@ -63,9 +64,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
+    _loadMoreIfNearBottom();
+  }
+
+  void _loadMoreIfNearBottom() {
     if (!_scrollController.hasClients) return;
     final position = _scrollController.position;
-    if (position.pixels >= position.maxScrollExtent - 200) {
+    if (position.extentAfter < 240) {
+      BlocProvider.of<HomeCubit>(context).loadMore();
+    }
+  }
+
+  void _loadMoreIfListCannotScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.maxScrollExtent <= 0) {
       BlocProvider.of<HomeCubit>(context).loadMore();
     }
   }
@@ -105,6 +117,11 @@ class _HomePageState extends State<HomePage> {
             builder: (context, filterStateBase) {
               final filterState = filterStateBase as PropertyFilterState;
               final visibleListings = loaded == null ? const <ListingData>[] : filterState.applyTo(loaded.listings);
+              if (loaded?.hasMore ?? false) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) _loadMoreIfListCannotScroll();
+                });
+              }
 
               return LoadingScreen(
                 loading: homeState is PendingState,
@@ -141,6 +158,11 @@ class _HomePageState extends State<HomePage> {
                   appBar: MainAppBar(
                     title: AppLocalizations.of(context).appTitle,
                     actions: [
+                      IconButton(
+                        icon: const Icon(Icons.shuffle_rounded, color: Colors.white),
+                        tooltip: 'Randomize listing dates (dev)',
+                        onPressed: () => BlocProvider.of<HomeCubit>(context).randomizeCreatedAt(),
+                      ),
                       IconButton(
                         icon: const Icon(Icons.favorite_rounded, color: Colors.white),
                         tooltip: AppLocalizations.of(context).favorites,
@@ -191,13 +213,19 @@ class _HomePageState extends State<HomePage> {
                               final sourceIndex = loaded!.listings.indexOf(item);
                               return PropertyItem(
                                 listing: item.listing,
-                                onPressed: () => AutoRouter.of(context).push(
-                                  ListingRoute(
-                                    listing: item.listing,
-                                    user: user!,
-                                    isSaved: item.isSaved,
-                                  ),
-                                ),
+                                onPressed: () async {
+                                  final result = await AutoRouter.of(context).push(
+                                    ListingRoute(
+                                      listing: item.listing,
+                                      user: user!,
+                                      isSaved: item.isSaved,
+                                    ),
+                                  );
+                                  if (!context.mounted) return;
+                                  if (result == true) {
+                                    unawaited(BlocProvider.of<HomeCubit>(context).refresh());
+                                  }
+                                },
                                 onFavoriteIconPressed: () {
                                   final cubit = BlocProvider.of<HomeCubit>(context);
                                   if (item.isSaved) {
@@ -689,6 +717,7 @@ class PropertyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final location = listing.property.location.trim();
 
     return GestureDetector(
       onTap: onPressed,
@@ -713,10 +742,7 @@ class PropertyItem extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Hero(
                   tag: 'property_${listing.property.id}',
-                  child: Image.file(
-                    listing.image,
-                    fit: BoxFit.cover,
-                  ),
+                  child: ListingImage(image: listing.image),
                 ),
               ),
             ),
@@ -745,29 +771,31 @@ class PropertyItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
 
-                    // Location
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color: AppColors.textTertiary,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(
-                            listing.property.location,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      // Location
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: AppColors.textTertiary,
+                            size: 14,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     if (listing.property.createdAt != null) ...[
                       const SizedBox(height: 4),
                       Row(
@@ -779,8 +807,11 @@ class PropertyItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            DateFormat.yMMMd(Localizations.localeOf(context).toString())
-                                .format(listing.property.createdAt!.toLocal()),
+                            () {
+                              final locale = Localizations.localeOf(context).toString();
+                              final dt = listing.property.createdAt!.toLocal();
+                              return '${DateFormat.yMMMd(locale).format(dt)} · ${DateFormat.Hm(locale).format(dt)}';
+                            }(),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),

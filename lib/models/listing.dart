@@ -9,7 +9,10 @@ class Listing extends Equatable {
     required this.property,
   });
 
-  final File image;
+  /// Resolved image file for the listing. `null` when the image could not be
+  /// fetched (missing in storage, no network, etc.) — the UI must show a
+  /// placeholder in that case.
+  final File? image;
   final Property property;
 
   @override
