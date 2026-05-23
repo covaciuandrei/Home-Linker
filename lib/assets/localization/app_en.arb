@@ -93,6 +93,12 @@
   "favorites": "Favorites",
   "save": "Save",
   "saved": "Saved",
-  "noResults": "No results found"
+  "noResults": "No results found",
+  "invalidEmail": "Please enter a valid email address",
+  "fillAllFields": "Please fill in all required fields",
+  "selectPhoto": "Please select a photo",
+  "selectLocation": "Please select a location",
+  "invalidPrice": "Please enter a valid price",
+  "invalidAreaSize": "Please enter a valid area size"
 }
 

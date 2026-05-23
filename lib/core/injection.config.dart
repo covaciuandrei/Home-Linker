@@ -69,28 +69,24 @@ _i174.GetIt $initGetIt(
   gh.factory<_i488.ValidatorService>(() => _i488.ValidatorService());
   gh.factory<_i838.PropertyFilterCubit>(() => _i838.PropertyFilterCubit());
   gh.singleton<_i1014.DatabaseProvider>(() => _i1014.DatabaseProvider());
-  gh.factory<_i20.ImageRepository>(
-      () => _i20.ImageRepository(gh<_i1014.DatabaseProvider>()));
+  gh.factory<_i20.ImageRepository>(() => _i20.ImageRepository(gh<_i1014.DatabaseProvider>()));
   gh.factory<_i646.PropertyRepository>(() => _i646.PropertyRepository(
         gh<_i347.PropertyMapper>(),
         gh<_i1014.DatabaseProvider>(),
       ));
-  gh.factory<_i328.ImagesSource>(
-      () => _i328.ImagesSource(gh<_i1051.ImageMapper>()));
+  gh.factory<_i328.ImagesSource>(() => _i328.ImagesSource(gh<_i1051.ImageMapper>()));
   gh.factory<_i905.UserSource>(() => _i905.UserSource(gh<_i455.UserMapper>()));
   gh.factory<_i361.UserRepository>(() => _i361.UserRepository(
         gh<_i455.UserMapper>(),
         gh<_i1014.DatabaseProvider>(),
       ));
-  gh.factory<_i910.PropertySource>(
-      () => _i910.PropertySource(gh<_i347.PropertyMapper>()));
+  gh.factory<_i910.PropertySource>(() => _i910.PropertySource(gh<_i347.PropertyMapper>()));
   gh.factory<_i208.ImageService>(() => _i208.ImageService(
         gh<_i328.ImagesSource>(),
         gh<_i893.StorageSource>(),
         gh<_i20.ImageRepository>(),
       ));
-  gh.factory<_i956.AppVersionSource>(
-      () => _i956.AppVersionSource(gh<_i7.AppVersionMapper>()));
+  gh.factory<_i956.AppVersionSource>(() => _i956.AppVersionSource(gh<_i7.AppVersionMapper>()));
   gh.factory<_i428.PropertyService>(() => _i428.PropertyService(
         gh<_i910.PropertySource>(),
         gh<_i646.PropertyRepository>(),
@@ -128,8 +124,7 @@ _i174.GetIt $initGetIt(
         gh<_i905.UserSource>(),
         gh<_i1014.DatabaseProvider>(),
       ));
-  gh.factory<_i45.AppVersionService>(
-      () => _i45.AppVersionService(gh<_i956.AppVersionSource>()));
+  gh.factory<_i45.AppVersionService>(() => _i45.AppVersionService(gh<_i956.AppVersionSource>()));
   gh.factory<_i289.ProfileCubit>(() => _i289.ProfileCubit(
         gh<_i420.FileService>(),
         gh<_i261.UserService>(),
@@ -151,8 +146,10 @@ _i174.GetIt $initGetIt(
         gh<_i261.UserService>(),
         gh<_i1014.DatabaseProvider>(),
       ));
-  gh.factory<_i110.ForgotPasswordCubit>(
-      () => _i110.ForgotPasswordCubit(gh<_i1018.AccountService>()));
+  gh.factory<_i110.ForgotPasswordCubit>(() => _i110.ForgotPasswordCubit(
+        gh<_i1018.AccountService>(),
+        gh<_i488.ValidatorService>(),
+      ));
   gh.factory<_i411.SettingsCubit>(() => _i411.SettingsCubit(
         gh<_i1018.AccountService>(),
         gh<_i261.UserService>(),

@@ -667,6 +667,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results found'**
   String get noResults;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get invalidEmail;
+
+  /// No description provided for @fillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required fields'**
+  String get fillAllFields;
+
+  /// No description provided for @selectPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a photo'**
+  String get selectPhoto;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a location'**
+  String get selectLocation;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid price'**
+  String get invalidPrice;
+
+  /// No description provided for @invalidAreaSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid area size'**
+  String get invalidAreaSize;
 }
 
 class _AppLocalizationsDelegate

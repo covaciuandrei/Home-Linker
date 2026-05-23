@@ -57,6 +57,9 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
   @override
   void initState() {
     BlocProvider.of<NewPropertyCubit>(context).loadPage();
+    priceTextController.addListener(_recomputeButtonEnabled);
+    areaTextController.addListener(_recomputeButtonEnabled);
+    descriptionTextController.addListener(_recomputeButtonEnabled);
     super.initState();
   }
 
@@ -66,6 +69,47 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
     areaTextController.dispose();
     descriptionTextController.dispose();
     super.dispose();
+  }
+
+  // ── Validation helpers ───────────────────────────────────────────
+  double? _parsedPrice() => double.tryParse(priceTextController.text.trim());
+  int? _parsedArea() => int.tryParse(areaTextController.text.trim());
+
+  bool _isFormValid() {
+    final price = _parsedPrice();
+    final area = _parsedArea();
+    return _selectedImage != null && price != null && price > 0 && area != null && area > 0;
+  }
+
+  void _recomputeButtonEnabled() {
+    final enabled = _isFormValid();
+    if (enabled != _isButtonEnabled) {
+      setState(() => _isButtonEnabled = enabled);
+    }
+  }
+
+  String? _firstValidationError(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    if (_selectedImage == null) return l.selectPhoto;
+    final price = _parsedPrice();
+    if (price == null || price <= 0) return l.invalidPrice;
+    final area = _parsedArea();
+    if (area == null || area <= 0) return l.invalidAreaSize;
+    return null;
+  }
+
+  void _showValidationError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -87,7 +131,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
         } else if (state is LocationPickedState) {
           _location = state.location;
         }
-        _isButtonEnabled = _selectedImage != null;
+        _isButtonEnabled = _isFormValid();
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
@@ -426,17 +470,22 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                       text: AppLocalizations.of(context).addProperty,
                       icon: Icons.add_home_rounded,
                       onPressed: () {
+                        final error = _firstValidationError(context);
+                        if (error != null) {
+                          _showValidationError(context, error);
+                          return;
+                        }
                         BlocProvider.of<NewPropertyCubit>(context).addProperty(
-                          areaSize: int.parse(areaTextController.text),
+                          areaSize: _parsedArea()!,
                           bathrooms: bathrooms,
                           bedrooms: bedrooms,
                           constructionYear: constructionYear,
-                          description: descriptionTextController.text,
+                          description: descriptionTextController.text.trim(),
                           selectedImage: _selectedImage!,
                           propertyType: propertyType,
                           location: _location != null ? jsonEncode(_location!.toJson()) : '',
                           parkingSpaces: parkingSpaces,
-                          price: double.parse(priceTextController.text),
+                          price: _parsedPrice()!,
                           listingType: listingType,
                         );
                       },

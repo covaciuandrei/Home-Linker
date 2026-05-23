@@ -93,5 +93,11 @@
   "favorites": "Favorite",
   "save": "Salvează",
   "saved": "Salvat",
-  "noResults": "Niciun rezultat găsit"
+  "noResults": "Niciun rezultat găsit",
+  "invalidEmail": "Vă rugăm introduceți o adresă de email validă",
+  "fillAllFields": "Vă rugăm completați toate câmpurile obligatorii",
+  "selectPhoto": "Vă rugăm selectați o fotografie",
+  "selectLocation": "Vă rugăm selectați o locație",
+  "invalidPrice": "Vă rugăm introduceți un preț valid",
+  "invalidAreaSize": "Vă rugăm introduceți o suprafață validă"
 }

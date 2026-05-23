@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -126,8 +127,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get phoneNumber => 'Număr de telefon';
 
   @override
-  String get emailSentSuccessfully =>
-      'Mail-ul de confirmare al contului a fost trimis cu succes.';
+  String get emailSentSuccessfully => 'Mail-ul de confirmare al contului a fost trimis cu succes.';
 
   @override
   String get done => 'Gata';
@@ -204,8 +204,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
-  String get wrongCode =>
-      'Codul/adresa de email nu sunt corecte, te rugăm încearca iar.';
+  String get wrongCode => 'Codul/adresa de email nu sunt corecte, te rugăm încearca iar.';
 
   @override
   String get sendCodeAgain => 'Retrimite codul';
@@ -277,16 +276,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get listingAddedToFavorites => 'Proprietate adaugată la favorite';
 
   @override
-  String get listingRemovedFromFavorites =>
-      'Proprietate ștearsă de la favorite';
+  String get listingRemovedFromFavorites => 'Proprietate ștearsă de la favorite';
 
   @override
-  String get listingAlreadyInFavorites =>
-      'Anunțul este deja în lista de favorite.';
+  String get listingAlreadyInFavorites => 'Anunțul este deja în lista de favorite.';
 
   @override
-  String get listingAlreadyRemovedFromFavorites =>
-      'Anunțul a fost deja eliminat din lista de favorite.';
+  String get listingAlreadyRemovedFromFavorites => 'Anunțul a fost deja eliminat din lista de favorite.';
 
   @override
   String get favorites => 'Favorite';
@@ -299,4 +295,22 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get noResults => 'Niciun rezultat găsit';
+
+  @override
+  String get invalidEmail => 'Vă rugăm introduceți o adresă de email validă';
+
+  @override
+  String get fillAllFields => 'Vă rugăm completați toate câmpurile obligatorii';
+
+  @override
+  String get selectPhoto => 'Vă rugăm selectați o fotografie';
+
+  @override
+  String get selectLocation => 'Vă rugăm selectați o locație';
+
+  @override
+  String get invalidPrice => 'Vă rugăm introduceți un preț valid';
+
+  @override
+  String get invalidAreaSize => 'Vă rugăm introduceți o suprafață validă';
 }

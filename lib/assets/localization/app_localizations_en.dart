@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -126,8 +127,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumber => 'Phone number';
 
   @override
-  String get emailSentSuccessfully =>
-      'The confirmation mail was sent successfully';
+  String get emailSentSuccessfully => 'The confirmation mail was sent successfully';
 
   @override
   String get done => 'Done';
@@ -282,8 +282,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listingAlreadyInFavorites => 'Listing is already in favorites.';
 
   @override
-  String get listingAlreadyRemovedFromFavorites =>
-      'Listing was already removed from favorites.';
+  String get listingAlreadyRemovedFromFavorites => 'Listing was already removed from favorites.';
 
   @override
   String get favorites => 'Favorites';
@@ -296,4 +295,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noResults => 'No results found';
+
+  @override
+  String get invalidEmail => 'Please enter a valid email address';
+
+  @override
+  String get fillAllFields => 'Please fill in all required fields';
+
+  @override
+  String get selectPhoto => 'Please select a photo';
+
+  @override
+  String get selectLocation => 'Please select a location';
+
+  @override
+  String get invalidPrice => 'Please enter a valid price';
+
+  @override
+  String get invalidAreaSize => 'Please enter a valid area size';
 }

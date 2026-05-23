@@ -30,11 +30,15 @@ class ForgotPasswordPage extends StatefulWidget implements AutoRouteWrapper {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final emailTextController = TextEditingController();
+  bool _isButtonEnabled = false;
 
   @override
   void initState() {
-    BlocProvider.of<ForgotPasswordCubit>(context).loadPage();
     super.initState();
+    BlocProvider.of<ForgotPasswordCubit>(context).loadPage();
+    emailTextController.addListener(() {
+      BlocProvider.of<ForgotPasswordCubit>(context).checkEmailValidity(emailTextController.text);
+    });
   }
 
   @override
@@ -43,15 +47,38 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.dispose();
   }
 
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ForgotPasswordCubit, BaseState>(
       listener: (context, state) {
         if (state is EmailSentSuccessfullyState) {
           AutoRouter.of(context).push(const EmailSentSuccessfullyRoute());
+        } else if (state is InvalidEmailState) {
+          _showError(context, AppLocalizations.of(context).invalidEmail);
+        } else if (state is SomethingWentWrongState) {
+          _showError(context, AppLocalizations.of(context).somethingWrong);
         }
       },
       builder: (context, state) {
+        if (state is RightInputState) {
+          _isButtonEnabled = true;
+        } else if (state is InputsErrorState) {
+          _isButtonEnabled = false;
+        }
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
@@ -111,6 +138,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           textColor: AppColors.primary,
                           text: AppLocalizations.of(context).send,
                           icon: Icons.send_rounded,
+                          isEnabled: _isButtonEnabled,
                           onPressed: () {
                             BlocProvider.of<ForgotPasswordCubit>(context)
                                 .resetPassword(email: emailTextController.text);
