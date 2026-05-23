@@ -745,12 +745,9 @@ class PropertyItem extends StatelessWidget {
               ),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
-                child: Hero(
-                  tag: 'property_${listing.property.id}',
-                  child: Image.file(
-                    listing.image,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.file(
+                  listing.image,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -784,7 +781,7 @@ class PropertyItem extends StatelessWidget {
                     // Location
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on_outlined,
                           color: AppColors.textTertiary,
                           size: 14,
