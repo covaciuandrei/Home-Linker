@@ -49,24 +49,6 @@ class HomeCubit extends BaseCubit {
     await _databaseProvider.get.clear();
   }
 
-  /// Dev helper: assigns a random `createdAt` to every property in Firestore
-  /// (within 2025-01-01 to 2026-05-20), then reloads the feed.
-  Future<void> randomizeCreatedAt() async {
-    final previousState = state;
-    safeEmit(PendingState());
-    try {
-      await _propertyService.randomizeAllCreatedAt();
-      await refresh();
-    } catch (_) {
-      safeEmit(SomethingWentWrongState());
-      if (previousState is DataLoadedState) {
-        safeEmit(previousState);
-      } else {
-        await _loadFirstPage(forceRefresh: true);
-      }
-    }
-  }
-
   Future<void> refresh() async {
     _lastId = null;
     _lastCreatedAt = null;

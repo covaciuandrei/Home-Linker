@@ -24,8 +24,6 @@ class PropertyService {
     return _propertyRepository.getAll();
   }
 
-  Future<int> randomizeAllCreatedAt() => _propertySource.randomizeAllCreatedAt();
-
   /// Fetches a single page of properties from the remote source.
   ///
   /// Pagination bypasses the local cache by design — the cache is an

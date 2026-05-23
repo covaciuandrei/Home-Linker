@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:homelinker/data/mappers/property_mapper.dart';
@@ -21,27 +20,6 @@ class PropertySource {
             fromFirestore: (snapshots, _) => PropertyDto.fromJson(snapshots.data()!),
             toFirestore: (user, _) => user.toJson(),
           );
-
-  /// Dev helper: assigns a random `created_at` (date + time) within the
-  /// 2025-01-01 → 2026-05-20 interval to every existing property document.
-  Future<int> randomizeAllCreatedAt() async {
-    final rawCollection = FirebaseFirestore.instance.collection(RemoteSourceNames.properties);
-    final snapshot = await rawCollection.get();
-    if (snapshot.docs.isEmpty) return 0;
-
-    final start = DateTime.utc(2025, 1, 1);
-    final end = DateTime.utc(2026, 5, 20, 23, 59, 59);
-    final spanSeconds = end.difference(start).inSeconds + 1;
-    final rng = Random();
-
-    final batch = FirebaseFirestore.instance.batch();
-    for (final doc in snapshot.docs) {
-      final randomDate = start.add(Duration(seconds: rng.nextInt(spanSeconds)));
-      batch.update(doc.reference, {'created_at': randomDate.toIso8601String()});
-    }
-    await batch.commit();
-    return snapshot.docs.length;
-  }
 
   Future<List<Property>> getAll() async {
     final querySnapshot = await _collectionRef.get();

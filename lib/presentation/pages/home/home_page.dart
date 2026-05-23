@@ -160,11 +160,6 @@ class _HomePageState extends State<HomePage> {
                     title: AppLocalizations.of(context).appTitle,
                     actions: [
                       IconButton(
-                        icon: const Icon(Icons.shuffle_rounded, color: Colors.white),
-                        tooltip: 'Randomize listing dates (dev)',
-                        onPressed: () => BlocProvider.of<HomeCubit>(context).randomizeCreatedAt(),
-                      ),
-                      IconButton(
                         icon: const Icon(Icons.favorite_rounded, color: Colors.white),
                         tooltip: AppLocalizations.of(context).favorites,
                         onPressed: () => AutoRouter.of(context).push(const FavoritesRoute()),
