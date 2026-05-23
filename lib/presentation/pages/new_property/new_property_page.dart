@@ -10,7 +10,6 @@ import 'package:homelinker/core/app_router.gr.dart';
 import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
-import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/cubit/new_property/new_property_cubit.dart';
 import 'package:homelinker/models/place_location.dart';
 import 'package:homelinker/models/property.dart';
@@ -74,17 +73,21 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
     return BlocConsumer<NewPropertyCubit, BaseState>(
       listener: (context, state) {
         if (state is PropertyAddedSuccessfullyState) {
-          BlocProvider.of<HomeCubit>(context).refresh();
-          AutoRouter.of(context).popForced();
+          debugPrint('[NewProperty] PropertyAddedSuccessfullyState received -> popping');
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop(true);
+          } else {
+            AutoRouter.of(context).popForced<bool>(true);
+          }
         } else if (state is NoFileChosenState) {}
       },
       builder: (context, state) {
         if (state is FileUploadedState) {
           _selectedImage = state.imageFile;
-          _isButtonEnabled = true;
         } else if (state is LocationPickedState) {
           _location = state.location;
         }
+        _isButtonEnabled = _selectedImage != null;
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
@@ -431,7 +434,7 @@ class _NewPropertyPageState extends State<NewPropertyPage> {
                           description: descriptionTextController.text,
                           selectedImage: _selectedImage!,
                           propertyType: propertyType,
-                          location: jsonEncode(_location!.toJson()),
+                          location: _location != null ? jsonEncode(_location!.toJson()) : '',
                           parkingSpaces: parkingSpaces,
                           price: double.parse(priceTextController.text),
                           listingType: listingType,

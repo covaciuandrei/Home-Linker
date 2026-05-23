@@ -13,10 +13,10 @@ class PropertyDto {
       this.parkingSpaces,
       this.price,
       this.propertyType,
-      {this.id = ''});
+      {this.id = '',
+      this.createdAt});
 
-  factory PropertyDto.fromJson(Map<String, dynamic> json) =>
-      _$PropertyDtoFromJson(json);
+  factory PropertyDto.fromJson(Map<String, dynamic> json) => _$PropertyDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$PropertyDtoToJson(this);
 
@@ -34,6 +34,7 @@ class PropertyDto {
   final double price;
   final String propertyType;
   final String? id;
+  final String? createdAt;
 }
 
 PropertyDto _$PropertyDtoFromJson(Map<String, dynamic> json) => PropertyDto(
@@ -50,10 +51,10 @@ PropertyDto _$PropertyDtoFromJson(Map<String, dynamic> json) => PropertyDto(
       json['parking_spaces'] as int,
       (json['price'] as num).toDouble(),
       json['property_type'] as String,
+      createdAt: json['created_at'] as String?,
     );
 
-Map<String, dynamic> _$PropertyDtoToJson(PropertyDto instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$PropertyDtoToJson(PropertyDto instance) => <String, dynamic>{
       'area_size': instance.areaSize,
       'bathrooms': instance.bathrooms,
       'bedrooms': instance.bedrooms,
@@ -67,4 +68,5 @@ Map<String, dynamic> _$PropertyDtoToJson(PropertyDto instance) =>
       'parking_spaces': instance.parkingSpaces,
       'price': instance.price,
       'property_type': instance.propertyType,
+      if (instance.createdAt != null) 'created_at': instance.createdAt,
     };

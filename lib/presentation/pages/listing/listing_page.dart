@@ -99,9 +99,12 @@ class _ListingPageState extends State<ListingPage> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.4,
-                  child: Image.file(
-                    listing.image,
-                    fit: BoxFit.cover,
+                  child: Hero(
+                    tag: 'property_${listing.property.id}',
+                    child: Image.file(
+                      listing.image,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
 
@@ -123,7 +126,7 @@ class _ListingPageState extends State<ListingPage> {
                 ),
 
                 // ── Back Button ──────────────────────────────
-                const SafeArea(child: BackArrowButton()),
+                SafeArea(child: const BackArrowButton()),
 
                 // ── Content Sheet ────────────────────────────
                 Column(
@@ -187,7 +190,7 @@ class _ListingPageState extends State<ListingPage> {
                                           const SizedBox(height: 6),
                                           Row(
                                             children: [
-                                              const Icon(
+                                              Icon(
                                                 Icons.location_on_outlined,
                                                 size: 16,
                                                 color: AppColors.textTertiary,
@@ -330,7 +333,7 @@ class _ListingPageState extends State<ListingPage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Icon(
+            Icon(
               Icons.warning_amber_rounded,
               color: AppColors.error,
               size: 48,

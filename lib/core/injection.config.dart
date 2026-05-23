@@ -18,6 +18,7 @@ import '../cubit/listing/listing_cubit.dart' as _i225;
 import '../cubit/login/login_cubit.dart' as _i983;
 import '../cubit/new_property/new_property_cubit.dart' as _i1070;
 import '../cubit/profile/profile_cubit.dart' as _i289;
+import '../cubit/property_filter/property_filter_cubit.dart' as _i838;
 import '../cubit/reset_password/forgot_password_cubit.dart' as _i110;
 import '../cubit/reset_password/reset_password_cubit.dart' as _i980;
 import '../cubit/settings/settings_cubit.dart' as _i411;
@@ -66,6 +67,7 @@ _i174.GetIt $initGetIt(
   gh.factory<_i347.PropertyMapper>(() => _i347.PropertyMapper());
   gh.factory<_i893.StorageSource>(() => _i893.StorageSource());
   gh.factory<_i488.ValidatorService>(() => _i488.ValidatorService());
+  gh.factory<_i838.PropertyFilterCubit>(() => _i838.PropertyFilterCubit());
   gh.singleton<_i1014.DatabaseProvider>(() => _i1014.DatabaseProvider());
   gh.factory<_i20.ImageRepository>(
       () => _i20.ImageRepository(gh<_i1014.DatabaseProvider>()));

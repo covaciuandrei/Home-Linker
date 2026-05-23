@@ -164,6 +164,10 @@ class NewPropertyCubit extends BaseCubit {
     try {
       final user = await _userService.getLoggedUser();
       final imageId = await uploadImage(image: selectedImage);
+      if (imageId.isEmpty) {
+        safeEmit(SomethingWentWrongState());
+        return;
+      }
       final property = Property(
         areaSize: areaSize,
         bathrooms: bathrooms,
@@ -178,6 +182,7 @@ class NewPropertyCubit extends BaseCubit {
         parkingSpaces: parkingSpaces,
         price: price,
         propertyType: propertyType == PropertyType.apartment.name ? PropertyType.apartment : PropertyType.house,
+        createdAt: DateTime.now().toUtc(),
       );
 
       await _propertyService.addNewProperty(property: property);

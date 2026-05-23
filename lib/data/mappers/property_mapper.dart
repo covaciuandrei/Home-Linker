@@ -20,6 +20,7 @@ class PropertyMapper {
         parkingSpaces: dto.parkingSpaces,
         price: dto.price,
         propertyType: PropertyType.values.byName(dto.propertyType),
+        createdAt: dto.createdAt != null ? DateTime.tryParse(dto.createdAt!) : null,
       );
 
   List<Property> mapPropertyDtos(List<PropertyDto> propertyDtos) => propertyDtos.map(mapDtoToProperty).toList();
@@ -38,6 +39,7 @@ class PropertyMapper {
         property.parkingSpaces,
         property.price,
         property.propertyType.name,
+        createdAt: property.createdAt?.toIso8601String(),
       );
   List<PropertyDto> mapPropertiesToDtos(List<Property> properties) => properties.map(mapPropertyToDto).toList();
 
