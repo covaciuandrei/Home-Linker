@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:homelinker/core/app_theme.dart';
 
 class GlassCard extends StatefulWidget {
   const GlassCard({
@@ -47,13 +48,17 @@ class _GlassCardState extends State<GlassCard> {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: widget.isHighlighted
-                  ? (widget.highlightColor ?? Theme.of(context).colorScheme.primary)
-                  : (isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
+                  ? (widget.highlightColor ?? AppColors.primary)
+                  : (isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05)),
               width: widget.isHighlighted ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.1),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : AppColors.primary.withValues(alpha: 0.08),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -70,12 +75,12 @@ class _GlassCardState extends State<GlassCard> {
                     end: Alignment.bottomRight,
                     colors: isDark
                         ? [
-                            Colors.lightBlue.withOpacity(0.6),
-                            Colors.lightBlue.withOpacity(0.4),
+                            AppColors.primaryLight.withValues(alpha: 0.6),
+                            AppColors.primaryLight.withValues(alpha: 0.4),
                           ]
                         : [
-                            Colors.white.withOpacity(0.8),
-                            Colors.white.withOpacity(0.6),
+                            Colors.white.withValues(alpha: 0.8),
+                            Colors.white.withValues(alpha: 0.6),
                           ],
                   ),
                   borderRadius: BorderRadius.circular(24),
@@ -87,7 +92,7 @@ class _GlassCardState extends State<GlassCard> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                        (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
                         Colors.transparent,
                       ],
                       stops: const [0.0, 0.3],
@@ -107,7 +112,9 @@ class _GlassCardState extends State<GlassCard> {
                                   child: Text(
                                     widget.cardTitle,
                                     style: widget.titleStyle.copyWith(
-                                      color: isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.8),
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.9)
+                                          : Colors.black.withValues(alpha: 0.8),
                                     ),
                                   ),
                                 ),
@@ -116,13 +123,13 @@ class _GlassCardState extends State<GlassCard> {
                                   Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: Colors.lightBlue.withOpacity(0.1),
+                                      color: AppColors.primary.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
                                       widget.leadingIcon,
                                       size: 16,
-                                      color: Colors.lightBlue,
+                                      color: AppColors.primary,
                                     ),
                                   ),
                                 ],
@@ -133,7 +140,8 @@ class _GlassCardState extends State<GlassCard> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                                color: (isDark ? Colors.white : Colors.black)
+                                    .withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: widget.suffixIcon!,

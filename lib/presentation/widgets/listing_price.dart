@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/models/property.dart';
 
 class ListingPrice extends StatelessWidget {
@@ -15,27 +16,27 @@ class ListingPrice extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: formatPrice(property.price),
+        text: '\$',
         style: TextStyle(
           fontSize: textSize,
-          color: const Color.fromRGBO(28, 83, 119, 1),
-          fontWeight: FontWeight.bold,
+          color: AppColors.primary,
+          fontWeight: FontWeight.w800,
         ),
         children: <TextSpan>[
           TextSpan(
-            text: '\$',
+            text: formatPrice(property.price),
             style: TextStyle(
-              color: const Color.fromRGBO(28, 83, 119, 1),
-              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w800,
               fontSize: textSize,
             ),
           ),
           TextSpan(
-            text: property.listingType == ListingType.rent ? '/month' : '',
+            text: property.listingType == ListingType.rent ? '/mo' : '',
             style: TextStyle(
-              color: const Color.fromRGBO(28, 83, 119, 1),
-              fontWeight: FontWeight.bold,
-              fontSize: textSize * 0.7,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+              fontSize: textSize * 0.6,
             ),
           ),
         ],

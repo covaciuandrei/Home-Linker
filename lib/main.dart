@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_keys.dart';
 import 'package:homelinker/data/secure_storage/secure_storage_source.dart';
@@ -63,6 +64,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
       routerConfig: appRouter.config(
         navigatorObservers: () => [AutoRouteObserver()],
       ),

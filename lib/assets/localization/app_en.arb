@@ -39,12 +39,12 @@
   "done": "Done",
   "emailNeededForValidatingAccount": "Please enter your email to recive the steps for resetting the password",
   "send": "Send",
-  "send": "Trimite",
   "oldPassword": "Old Password",
   "newPassword": "New Password",
   "repeatNewPassword": "Repeat New Password",
   "repeatPassword": "Repeat Password",
   "reset": "Reset",
+  "resetPassword": "Reset Password",
   "passwordChangedSuccessfully": "Password Changed Successfully",
   "privacyPolicy": "Privacy policy",
   "termsAndCons": "Termens and conditions",
@@ -82,6 +82,8 @@
   "listingAddedToFavorites": "Listing added to favorites",
   "listingRemovedFromFavorites": "Listing removed from favorites",
   "listingAlreadyInFavorites": "Listing is already in favorites.",
-  "listingAlreadyRemovedFromFavorites": "Listing was already removed from favorites."
+  "listingAlreadyRemovedFromFavorites": "Listing was already removed from favorites.",
+  "favorites": "Favorites",
+  "noResults": "No results found"
 }
 

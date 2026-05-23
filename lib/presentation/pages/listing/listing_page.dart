@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
@@ -36,6 +37,8 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocConsumer<ListingCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingDeletedState) {
@@ -47,19 +50,44 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
         return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
-            backgroundColor: Colors.lightBlue,
+            backgroundColor: AppColors.surface,
             extendBody: true,
             body: Stack(
               children: [
+                // ── Hero Image ────────────────────────────────
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.4,
-                  child: Image.file(
-                    listing.image,
-                    fit: BoxFit.cover,
+                  child: Hero(
+                    tag: 'property_${listing.property.id}',
+                    child: Image.file(
+                      listing.image,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                const BackArrowButton(),
+
+                // ── Gradient overlay on image ────────────────
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.1),
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                  ),
+                ),
+
+                // ── Back Button ──────────────────────────────
+                SafeArea(child: const BackArrowButton()),
+
+                // ── Content Sheet ────────────────────────────
                 Column(
                   children: [
                     Padding(
@@ -69,66 +97,79 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.65,
                         width: MediaQuery.of(context).size.width,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(28),
+                            topRight: Radius.circular(28),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, -4),
+                            ),
+                          ],
                         ),
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                  horizontal: 20,
+                              // ── Handle bar ────────────────
+                              Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                width: 40,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.divider,
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
+                              ),
+
+                              // ── Header Info ───────────────
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 4),
-                                            child: Text(
-                                              listing.property.propertyType.name
-                                                  .translate(context, listing.property.propertyType.name)
-                                                  .capitalize(),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Color.fromRGBO(28, 83, 119, 1),
-                                                fontSize: 20,
-                                              ),
+                                          Text(
+                                            listing.property.propertyType.name
+                                                .translate(context, listing.property.propertyType.name)
+                                                .capitalize(),
+                                            style: theme.textTheme.headlineSmall?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: AppColors.textPrimary,
                                             ),
                                           ),
+                                          const SizedBox(height: 6),
                                           Row(
                                             children: [
-                                              const Icon(
+                                              Icon(
                                                 Icons.location_on_outlined,
-                                                size: 20,
-                                                color: Color.fromRGBO(20, 112, 161, 1),
+                                                size: 16,
+                                                color: AppColors.textTertiary,
                                               ),
-                                              Text(
-                                                listing.property.location,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color.fromRGBO(20, 112, 161, 1),
-                                                  fontSize: 14,
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  listing.property.location,
+                                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                                    color: AppColors.textSecondary,
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           ),
+                                          const SizedBox(height: 4),
                                           Text(
                                             '${AppLocalizations.of(context).listedBy} ${listing.property.ownerName}',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Color.fromRGBO(20, 112, 161, 1),
-                                              fontSize: 14,
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: AppColors.textTertiary,
                                             ),
                                           ),
                                         ],
@@ -136,17 +177,19 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
                                     ),
                                     ListingPrice(
                                       property: listing.property,
-                                      textSize: 26,
+                                      textSize: 24,
                                     ),
                                   ],
                                 ),
                               ),
+
+                              // ── Selling Points ────────────
                               PropertySellingPointLine(
                                 property: listing.property,
                                 icons: const [
                                   Icons.calendar_month_outlined,
                                   Icons.real_estate_agent_outlined,
-                                  Icons.landscape_outlined
+                                  Icons.landscape_outlined,
                                 ],
                                 isFirstLine: true,
                               ),
@@ -159,21 +202,28 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
                                 ],
                                 isFirstLine: false,
                               ),
+
+                              // ── Description ───────────────
                               PropertyDescription(
                                 description: listing.property.description,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
+
+                              // ── Delete Button ─────────────
                               if (listing.property.ownerEmail == user.email)
-                                MainButton(
-                                  color: const Color.fromARGB(255, 141, 12, 3),
-                                  textColor: Colors.white,
-                                  width: 200,
-                                  text: AppLocalizations.of(context).deleteListing,
-                                  onPressed: () {
-                                    BlocProvider.of<ListingCubit>(context).deleteListing(property: listing.property);
-                                  },
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: MainButton(
+                                    isDestructive: true,
+                                    width: 220,
+                                    text: AppLocalizations.of(context).deleteListing,
+                                    icon: Icons.delete_outline_rounded,
+                                    onPressed: () {
+                                      _confirmDelete(context);
+                                    },
+                                  ),
                                 ),
-                              const SizedBox(height: 30),
+                              const SizedBox(height: 40),
                             ],
                           ),
                         ),
@@ -188,8 +238,68 @@ class ListingPage extends StatelessWidget implements AutoRouteWrapper {
       },
     );
   }
+
+  void _confirmDelete(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (bottomSheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.error,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context).deleteListing,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: MainButton(
+                    isOutlined: true,
+                    text: AppLocalizations.of(context).cancel,
+                    onPressed: () => Navigator.of(bottomSheetContext).pop(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: MainButton(
+                    isDestructive: true,
+                    text: AppLocalizations.of(context).deleteListing,
+                    onPressed: () {
+                      Navigator.of(bottomSheetContext).pop();
+                      BlocProvider.of<ListingCubit>(context).deleteListing(property: listing.property);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
+// ── Property Description ───────────────────────────────────────────
 class PropertyDescription extends StatelessWidget {
   const PropertyDescription({
     super.key,
@@ -200,36 +310,26 @@ class PropertyDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 4,
-        horizontal: 20,
-      ),
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  AppLocalizations.of(context).description,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(28, 83, 119, 1),
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            AppLocalizations.of(context).description,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
+          const SizedBox(height: 8),
           Text(
             description,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(20, 112, 161, 1),
-              fontSize: 14,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
             ),
           ),
         ],
@@ -238,6 +338,7 @@ class PropertyDescription extends StatelessWidget {
   }
 }
 
+// ── Property Selling Point Line ────────────────────────────────────
 class PropertySellingPointLine extends StatelessWidget {
   const PropertySellingPointLine({
     super.key,
@@ -281,12 +382,13 @@ class PropertySellingPointLine extends StatelessWidget {
   }
 }
 
+// ── Property Selling Point ─────────────────────────────────────────
 class PropertySellingPoint extends StatelessWidget {
   const PropertySellingPoint({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final String text;
@@ -297,9 +399,9 @@ class PropertySellingPoint extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFE3EDF4),
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.06),
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -308,23 +410,29 @@ class PropertySellingPoint extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.only(bottom: 6),
                 padding: const EdgeInsets.all(10),
-                decoration:
-                    const BoxDecoration(color: Color(0xFFBFDCEF), borderRadius: BorderRadius.all(Radius.circular(30))),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                ),
                 child: Icon(
                   icon,
-                  color: const Color.fromRGBO(20, 112, 161, 1),
+                  color: AppColors.primary,
+                  size: 20,
                 ),
               ),
               Flexible(
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(28, 83, 119, 1),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

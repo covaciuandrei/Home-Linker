@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/splash/splash_cubit.dart';
@@ -66,16 +67,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         return Scaffold(
           body: Container(
             width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.lightBlue,
-                  Colors.lightBlue.withOpacity(0.9),
-                  Colors.lightBlue.withOpacity(0.6),
-                ],
-                end: Alignment.topRight,
-                begin: Alignment.bottomLeft,
-              ),
+            decoration: const BoxDecoration(
+              gradient: AppColors.splashGradient,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +78,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   builder: (context, child) {
                     return Transform.scale(
                       scale: _animation.value,
-                      child: child,
+                      child: Opacity(
+                        opacity: _animation.value,
+                        child: child,
+                      ),
                     );
                   },
                   child: Column(
@@ -96,9 +92,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                             begin: Alignment.bottomLeft,
                             end: Alignment.topRight,
                             colors: [
-                              Colors.white.withOpacity(0.7),
-                              Colors.white.withOpacity(0.8),
-                              Colors.white.withOpacity(0.9),
+                              Colors.white.withValues(alpha: 0.7),
+                              Colors.white.withValues(alpha: 0.8),
+                              Colors.white.withValues(alpha: 0.9),
                               Colors.white,
                             ],
                           ).createShader(bounds);
@@ -115,20 +111,19 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                             begin: Alignment.bottomLeft,
                             end: Alignment.topRight,
                             colors: [
-                              Colors.white.withOpacity(0.7),
-                              Colors.white.withOpacity(0.8),
-                              Colors.white.withOpacity(0.9),
+                              Colors.white.withValues(alpha: 0.7),
+                              Colors.white.withValues(alpha: 0.8),
+                              Colors.white.withValues(alpha: 0.9),
                               Colors.white,
                             ],
                           ).createShader(bounds);
                         },
                         child: Text(
                           AppLocalizations.of(context).appTitle,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 36.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                       ),
                     ],

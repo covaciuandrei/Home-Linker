@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @send.
   ///
   /// In en, this message translates to:
-  /// **'Trimite'**
+  /// **'Send'**
   String get send;
 
   /// No description provided for @oldPassword.
@@ -367,6 +367,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset'**
   String get reset;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
 
   /// No description provided for @passwordChangedSuccessfully.
   ///
@@ -595,6 +601,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Listing was already removed from favorites.'**
   String get listingAlreadyRemovedFromFavorites;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @noResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResults;
 }
 
 class _AppLocalizationsDelegate

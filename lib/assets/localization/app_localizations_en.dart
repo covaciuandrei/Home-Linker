@@ -128,7 +128,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please enter your email to recive the steps for resetting the password';
 
   @override
-  String get send => 'Trimite';
+  String get send => 'Send';
 
   @override
   String get oldPassword => 'Old Password';
@@ -144,6 +144,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reset => 'Reset';
+
+  @override
+  String get resetPassword => 'Reset Password';
 
   @override
   String get passwordChangedSuccessfully => 'Password Changed Successfully';
@@ -260,4 +263,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get listingAlreadyRemovedFromFavorites =>
       'Listing was already removed from favorites.';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get noResults => 'No results found';
 }

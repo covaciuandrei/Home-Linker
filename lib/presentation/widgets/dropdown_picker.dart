@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 class DropdownPicker extends StatefulWidget {
   const DropdownPicker({
     super.key,
     required this.list,
-    this.width = 140,
+    this.width = double.infinity,
     this.onValueChanged,
+    this.isDarkMode = true,
   });
+
   final List<String> list;
   final double width;
   final void Function(String)? onValueChanged;
+  final bool isDarkMode;
 
   @override
   State<DropdownPicker> createState() => _DropdownPickerState();
@@ -27,40 +31,54 @@ class _DropdownPickerState extends State<DropdownPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = widget.isDarkMode;
+    final textColor = isDark ? Colors.white : AppColors.textPrimary;
+    final borderColor = isDark ? Colors.white.withValues(alpha: 0.4) : AppColors.divider;
+    final bgColor = isDark ? Colors.white.withValues(alpha: 0.1) : AppColors.surfaceVariant;
+
     return Container(
       width: widget.width,
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor),
+        color: bgColor,
       ),
-      child: Center(
+      child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-          borderRadius: BorderRadius.circular(20),
-          dropdownColor: Colors.lightBlue,
           isDense: true,
-          focusColor: Colors.purple,
+          isExpanded: true,
+          borderRadius: BorderRadius.circular(14),
+          dropdownColor: isDark ? AppColors.primaryLight : AppColors.cardBackground,
+          focusColor: AppColors.secondary,
           value: dropdownValue,
-          icon: const Icon(
-            Icons.arrow_drop_down,
-            color: Colors.white,
-            size: 24,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: isDark ? Colors.white.withValues(alpha: 0.8) : AppColors.textTertiary,
+            size: 22,
           ),
-          elevation: 16,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          // await paymentCubit.refresh();
-          underline: Container(height: 0),
-          // await appRouter.maybePop();
+          elevation: 4,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
           onChanged: (String? value) {
             setState(() {
               dropdownValue = value!;
-              widget.onValueChanged!(dropdownValue);
+              widget.onValueChanged?.call(dropdownValue);
             });
           },
           items: widget.list.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value.capitalize()),
+              child: Text(
+                value.capitalize(),
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
             );
           }).toList(),
         ),

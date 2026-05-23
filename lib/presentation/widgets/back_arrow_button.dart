@@ -1,4 +1,5 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class BackArrowButton extends StatelessWidget {
@@ -8,25 +9,33 @@ class BackArrowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
       child: Container(
-        margin: EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.075,
-          left: MediaQuery.of(context).size.width * 0.075,
-        ),
-        padding: const EdgeInsets.only(right: 2),
-        height: 40,
+        margin: const EdgeInsets.all(12),
         width: 40,
+        height: 40,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: const Color.fromRGBO(255, 255, 255, 07),
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.2),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
-        child: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          color: Color.fromRGBO(20, 112, 161, 1),
+        child: ClipOval(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: const Center(
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
         ),
       ),
-      onTap: () => AutoRouter.of(context).popForced(),
     );
   }
 }

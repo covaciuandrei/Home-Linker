@@ -66,6 +66,7 @@ dependencies:
   location: ^6.0.2
   google_maps_flutter: ^2.5.3
   flutter_dotenv: ^5.1.0
+  google_fonts: ^6.1.0
   flutter_email_sender: ^6.0.3
   mailer: ^6.1.0
 

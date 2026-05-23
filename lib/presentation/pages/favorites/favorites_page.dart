@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/favorites/favorites_cubit.dart';
@@ -13,11 +14,11 @@ import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
 import 'package:homelinker/models/range.dart';
 import 'package:homelinker/models/user.dart';
+import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
-import 'package:homelinker/presentation/widgets/main_drawer.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
@@ -38,7 +39,6 @@ class FavoritesPage extends StatefulWidget implements AutoRouteWrapper {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   List<ListingData> listings = [];
-  List<String> languages = [];
   bool _isPagePriceFiltered = false;
   double _minimumPrice = 0;
   double _maximumPrice = 0;
@@ -66,210 +66,180 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return BlocConsumer<FavoritesCubit, BaseState>(
       listener: (context, state) {
         if (state is ListingAddedToFavoritesState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).listingAddedToFavorites),
-              duration: const Duration(seconds: 1),
-            ),
+          _showThemedSnackBar(
+            context,
+            AppLocalizations.of(context).listingAddedToFavorites,
+            Icons.favorite_rounded,
+            AppColors.success,
           );
         } else if (state is ListingRemovedToFavoritesState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).listingRemovedFromFavorites),
-              duration: const Duration(seconds: 1),
-            ),
+          _showThemedSnackBar(
+            context,
+            AppLocalizations.of(context).listingRemovedFromFavorites,
+            Icons.favorite_border_rounded,
+            AppColors.textSecondary,
           );
         } else if (state is ListingAlreadyInFavoritesState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).listingAlreadyInFavorites),
-              duration: const Duration(seconds: 1),
-            ),
+          _showThemedSnackBar(
+            context,
+            AppLocalizations.of(context).listingAlreadyInFavorites,
+            Icons.info_outline_rounded,
+            AppColors.warning,
           );
         } else if (state is ListingAlreadyRemovedFromFavoritesState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).listingAlreadyRemovedFromFavorites),
-              duration: const Duration(seconds: 1),
-            ),
+          _showThemedSnackBar(
+            context,
+            AppLocalizations.of(context).listingAlreadyRemovedFromFavorites,
+            Icons.info_outline_rounded,
+            AppColors.warning,
           );
         } else if (state is SomethingWentWrongState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                AppLocalizations.of(context).somethingWrong,
-                style: const TextStyle(color: Colors.white),
-              ),
-              duration: const Duration(seconds: 1),
-            ),
+          _showThemedSnackBar(
+            context,
+            AppLocalizations.of(context).somethingWrong,
+            Icons.error_outline_rounded,
+            AppColors.error,
           );
         }
       },
       builder: (context, state) {
         if (state is DataLoadedState) {
           listings = state.listings;
-          languages = state.languages;
           priceRange = state.priceRange;
           _isPagePriceFiltered = state.isPageFiltered;
           user = state.user;
         }
-        return GestureDetector(
-          onTap: () => BlocProvider.of<FavoritesCubit>(context).resetFilter(),
-          child: LoadingScreen(
-            loading: state is PendingState,
-            child: Scaffold(
-              floatingActionButton: user.type == AccountType.propertyOwner
-                  ? FloatingActionButton(
-                      backgroundColor: Colors.lightBlue,
+        return LoadingScreen(
+          loading: state is PendingState,
+          child: Scaffold(
+            backgroundColor: AppColors.surface,
+            floatingActionButton: user.type == AccountType.propertyOwner
+                ? Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: AppColors.primaryGradient,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.35),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: FloatingActionButton(
+                      backgroundColor: Colors.transparent,
                       foregroundColor: Colors.white,
+                      elevation: 0,
                       onPressed: () => AutoRouter.of(context).push(const NewPropertyRoute()),
-                      child: const Icon(
-                        Icons.add,
-                        size: 30,
+                      child: const Icon(Icons.add_rounded, size: 28),
+                    ),
+                  )
+                : null,
+            appBar: MainAppBar(title: AppLocalizations.of(context).favorites),
+            body: RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () async {
+                await BlocProvider.of<FavoritesCubit>(context).refresh();
+              },
+              child: Column(
+                children: [
+                  // ── Filter Chips ─────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _FilterItem(
+                            filterType: FilterType.house,
+                            icon: Icons.home_rounded,
+                            onPressed: () =>
+                                BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.house),
+                          ),
+                          _FilterItem(
+                            filterType: FilterType.apartment,
+                            icon: Icons.apartment_rounded,
+                            onPressed: () =>
+                                BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.apartment),
+                          ),
+                          _FilterItem(
+                            filterType: FilterType.rent,
+                            icon: Icons.home_work_rounded,
+                            onPressed: () =>
+                                BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.rent),
+                          ),
+                          _FilterItem(
+                            filterType: FilterType.sale,
+                            icon: Icons.local_offer_rounded,
+                            onPressed: () =>
+                                BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.sale),
+                          ),
+                          _FilterItem(
+                            filterType: FilterType.price,
+                            icon: Icons.attach_money_rounded,
+                            onPressed: () async {
+                              await _showPriceFilterBottomSheet(context);
+                            },
+                          ),
+                          _FilterItem(
+                            filterType: FilterType.location,
+                            icon: Icons.location_on_rounded,
+                            onPressed: () =>
+                                BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.location),
+                          ),
+                        ],
                       ),
-                    )
-                  : null,
-              appBar: MainAppBar(title: AppLocalizations.of(context).appTitle),
-              drawer: MainDrawer(languages: languages),
-              body: RefreshIndicator(
-                onRefresh: () async {
-                  await BlocProvider.of<FavoritesCubit>(context).refresh();
-                },
-                child: Column(
-                  children: [
+                    ),
+                  ),
+
+                  // ── Remove Filter Button ─────────────────────
+                  if (_isPagePriceFiltered)
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: MainButton(
+                        width: 200,
+                        height: 38,
+                        isOutlined: true,
+                        text: AppLocalizations.of(context).removeFilter,
+                        icon: Icons.close_rounded,
+                        onPressed: () {
+                          BlocProvider.of<FavoritesCubit>(context).resetFilter();
+                        },
+                      ),
+                    ),
+
+                  // ── Empty State ──────────────────────────────
+                  if (listings.isEmpty && state is! PendingState)
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.house,
-                              icon: Icons.home,
-                              onPressed: () =>
-                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.house),
+                            const Icon(
+                              Icons.favorite_border_rounded,
+                              size: 64,
+                              color: AppColors.textTertiary,
                             ),
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.apartment,
-                              icon: Icons.apartment_rounded,
-                              onPressed: () =>
-                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.apartment),
-                            ),
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.rent,
-                              icon: Icons.home_work,
-                              onPressed: () =>
-                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.rent),
-                            ),
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.sale,
-                              icon: Icons.local_offer,
-                              onPressed: () =>
-                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.sale),
-                            ),
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.price,
-                              icon: Icons.attach_money_rounded,
-                              onPressed: () async {
-                                await showDialog<double>(
-                                  context: context,
-                                  builder: (context) => StatefulBuilder(builder: (context, setState) {
-                                    return Center(
-                                      child: SizedBox(
-                                        height: 300,
-                                        width: 300,
-                                        child: Card(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Text('${AppLocalizations.of(context).minimumPrice}: $_minimumPrice'),
-                                              MainButton(
-                                                width: 200,
-                                                color: Colors.lightBlue,
-                                                textColor: Colors.white,
-                                                onPressed: () async {
-                                                  final minimumPrice = await _showMinPricePickerDialog();
-                                                  setState(
-                                                    () {
-                                                      _minimumPrice = minimumPrice;
-                                                    },
-                                                  );
-                                                },
-                                                text: AppLocalizations.of(context).selectMinimumPrice,
-                                              ),
-                                              Text('${AppLocalizations.of(context).maximumPrice}: $_maximumPrice'),
-                                              MainButton(
-                                                width: 200,
-                                                color: Colors.lightBlue,
-                                                textColor: Colors.white,
-                                                onPressed: () async {
-                                                  final maximumPrice = await _showMaxPricePickerDialog();
-                                                  setState(
-                                                    () {
-                                                      _maximumPrice = maximumPrice;
-                                                    },
-                                                  );
-                                                },
-                                                text: AppLocalizations.of(context).selectMaximumPrice,
-                                              ),
-                                              const SizedBox(height: 30),
-                                              MainButton(
-                                                color: Colors.lightBlue,
-                                                textColor: Colors.white,
-                                                width: 120,
-                                                text: AppLocalizations.of(context).filter,
-                                                onPressed: () {
-                                                  BlocProvider.of<FavoritesCubit>(context).filter(
-                                                    filterType: FilterType.price,
-                                                    minimPrice: _minimumPrice,
-                                                    maxPrice: _maximumPrice,
-                                                  );
-                                                  AutoRouter.of(context).popForced();
-                                                },
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                );
-                              },
-                            ),
-                            FilterItem(
-                              context: context,
-                              filterType: FilterType.location,
-                              icon: Icons.location_on,
-                              onPressed: () =>
-                                  BlocProvider.of<FavoritesCubit>(context).filter(filterType: FilterType.location),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppLocalizations.of(context).noResults,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    if (_isPagePriceFiltered)
-                      MainButton(
-                        width: 200,
-                        color: Colors.lightBlue,
-                        textColor: Colors.white,
-                        text: AppLocalizations.of(context).removeFilter,
-                        onPressed: () {
-                          BlocProvider.of<FavoritesCubit>(context).resetFilter();
-                        },
-                      ),
+
+                  // ── Property List ────────────────────────────
+                  if (listings.isNotEmpty)
                     Expanded(
                       child: ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 60),
+                        padding: const EdgeInsets.only(bottom: 80, top: 4),
                         itemCount: listings.length,
                         itemBuilder: (context, index) {
-                          return PropertyItem(
+                          return _PropertyItem(
                             listing: listings[index].listing,
                             onPressed: () =>
                                 AutoRouter.of(context).push(ListingRoute(listing: listings[index].listing, user: user)),
@@ -281,20 +251,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                 BlocProvider.of<FavoritesCubit>(context)
                                     .addListingToFavorites(id: listings[index].listing.property.id);
                               }
-                              setState(() {
-                                listings[index] = ListingData(
-                                  listing: listings[index].listing,
-                                  isSaved: !listings[index].isSaved,
-                                );
-                              });
                             },
                             isSaved: listings[index].isSaved,
                           );
                         },
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
@@ -303,44 +266,148 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Future<double> _showMinPricePickerDialog() async {
-    final selectedPrice = await showDialog<double>(
-      context: context,
-      builder: (context) => PricePickerDialog(
-        initialPrice: _minimumPrice,
-        range: Range(min: priceRange.start, max: priceRange.end),
-      ),
+  void _showThemedSnackBar(BuildContext context, String message, IconData icon, Color accentColor) {
+    AppToast.show(
+      context,
+      message: message,
+      icon: icon,
+      accentColor: accentColor,
     );
-
-    if (selectedPrice != null) {
-      setState(() {
-        _minimumPrice = selectedPrice;
-      });
-    }
-    return selectedPrice ?? _minimumPrice;
   }
 
-  Future<double> _showMaxPricePickerDialog() async {
-    final selectedPrice = await showDialog<double>(
+  Future<void> _showPriceFilterBottomSheet(BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
-      builder: (context) => PricePickerDialog(
-        initialPrice: _maximumPrice,
-        range: Range(min: priceRange.start, max: priceRange.end),
+      isScrollControlled: true,
+      builder: (bottomSheetContext) => StatefulBuilder(
+        builder: (bottomSheetContext, setModalState) {
+          return Container(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.divider,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  AppLocalizations.of(context).selectPrice,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 24),
+                _PriceInputRow(
+                  label: AppLocalizations.of(context).minimumPrice,
+                  value: _minimumPrice,
+                  onTap: () async {
+                    final price = await _showPricePickerDialog(
+                      _minimumPrice,
+                      Range(min: priceRange.start, max: priceRange.end),
+                    );
+                    setModalState(() => _minimumPrice = price);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _PriceInputRow(
+                  label: AppLocalizations.of(context).maximumPrice,
+                  value: _maximumPrice,
+                  onTap: () async {
+                    final price = await _showPricePickerDialog(
+                      _maximumPrice,
+                      Range(min: priceRange.start, max: priceRange.end),
+                    );
+                    setModalState(() => _maximumPrice = price);
+                  },
+                ),
+                const SizedBox(height: 28),
+                MainButton(
+                  isGradient: true,
+                  text: AppLocalizations.of(context).filter,
+                  onPressed: () {
+                    BlocProvider.of<FavoritesCubit>(context).filter(
+                      filterType: FilterType.price,
+                      minimPrice: _minimumPrice,
+                      maxPrice: _maximumPrice,
+                    );
+                    Navigator.of(bottomSheetContext).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
+  }
 
-    if (selectedPrice != null) {
-      setState(() {
-        _maximumPrice = selectedPrice;
-      });
-    }
-    return selectedPrice ?? _maximumPrice;
+  Future<double> _showPricePickerDialog(double initial, Range range) async {
+    final selectedPrice = await showDialog<double>(
+      context: context,
+      builder: (context) => _PricePickerDialog(
+        initialPrice: initial,
+        range: range,
+      ),
+    );
+    return selectedPrice ?? initial;
   }
 }
 
-class PropertyItem extends StatelessWidget {
-  const PropertyItem({
-    super.key,
+// ── Price Input Row ────────────────────────────────────────────────
+class _PriceInputRow extends StatelessWidget {
+  const _PriceInputRow({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  final String label;
+  final double value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.divider),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            Text(
+              '\$${value.round()}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Property Item ──────────────────────────────────────────────────
+class _PropertyItem extends StatelessWidget {
+  const _PropertyItem({
     required this.onPressed,
     required this.listing,
     required this.isSaved,
@@ -354,194 +421,174 @@ class PropertyItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final theme = Theme.of(context);
+
+    return GestureDetector(
       onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: SizedBox(
-          height: 170,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: const Color.fromRGBO(250, 250, 250, 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.7),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 0.5),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: AppColors.cardBackground,
+          boxShadow: AppColors.cardShadow,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: Image.file(
+                  listing.image,
+                  fit: BoxFit.cover,
                 ),
-              ],
+              ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    child: Image.file(
-                      listing.image,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
+
+            // Details
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListingPrice(
+                      property: listing.property,
+                      textSize: 20,
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(9),
-                    child: Column(
+                    const SizedBox(height: 6),
+                    Text(
+                      '${listing.property.propertyType.name.translate(context, listing.property.propertyType.name).capitalize()} · ${listing.property.areaSize} m²',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
                       children: [
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 6),
-                                  child: ListingPrice(
-                                    property: listing.property,
-                                    textSize: 20,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  '${listing.property.propertyType.name.translate(context, listing.property.propertyType.name).capitalize()} ${listing.property.areaSize} m²',
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(20, 112, 161, 1),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on_outlined,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 20,
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        listing.property.location,
-                                        style: const TextStyle(
-                                          color: Color.fromRGBO(20, 112, 161, 1),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Flexible(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: listing.property.listingType == ListingType.sale
-                                          ? Colors.lightGreen
-                                          : const Color.fromARGB(255, 132, 101, 216),
-                                      size: 12,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                                      child: Text(
-                                        '${AppLocalizations.of(context).perntru} ${listing.property.listingType.name.translate(context, listing.property.listingType.name).capitalize()}',
-                                        style: const TextStyle(
-                                          color: Color.fromRGBO(20, 112, 161, 1),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          color: AppColors.textTertiary,
+                          size: 14,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: onFavoriteIconPressed,
-                              child: isSaved
-                                  ? const Icon(
-                                      Icons.favorite,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    )
-                                  : const Icon(
-                                      Icons.favorite_border_outlined,
-                                      color: Color.fromRGBO(20, 112, 161, 1),
-                                      size: 30,
-                                    ),
-                            )
-                          ],
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            listing.property.location,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: (listing.property.listingType == ListingType.sale
+                                ? AppColors.saleIndicator
+                                : AppColors.rentIndicator)
+                            .withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${AppLocalizations.of(context).perntru} ${listing.property.listingType.name.translate(context, listing.property.listingType.name).capitalize()}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: listing.property.listingType == ListingType.sale
+                              ? AppColors.saleIndicator
+                              : AppColors.rentIndicator,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: GestureDetector(
+                        onTap: onFavoriteIconPressed,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(
+                            isSaved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            key: ValueKey<bool>(isSaved),
+                            color: isSaved ? AppColors.error : AppColors.textTertiary,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class FilterItem extends StatelessWidget {
-  const FilterItem({
-    super.key,
+// ── Filter Item ────────────────────────────────────────────────────
+class _FilterItem extends StatelessWidget {
+  const _FilterItem({
     required this.icon,
     required this.filterType,
     required this.onPressed,
-    required this.context,
   });
 
   final IconData icon;
   final FilterType filterType;
   final VoidCallback onPressed;
-  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: const BorderRadius.all(Radius.circular(20)),
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Color.fromRGBO(70, 179, 231, 1),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          height: 90,
-          width: 90,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 50,
-                color: Colors.white,
-              ),
-              Text(
-                filterType.name.translate(context, filterType.name).capitalize(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onPressed,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-              )
-            ],
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 20, color: Colors.white),
+                const SizedBox(width: 6),
+                Text(
+                  filterType.name.translate(context, filterType.name).capitalize(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -549,20 +596,21 @@ class FilterItem extends StatelessWidget {
   }
 }
 
-class PricePickerDialog extends StatefulWidget {
-  const PricePickerDialog({
-    super.key,
+// ── Price Picker Dialog ────────────────────────────────────────────
+class _PricePickerDialog extends StatefulWidget {
+  const _PricePickerDialog({
     required this.initialPrice,
     required this.range,
   });
+
   final double initialPrice;
   final Range range;
 
   @override
-  State<PricePickerDialog> createState() => _PricePickerDialogState();
+  State<_PricePickerDialog> createState() => _PricePickerDialogState();
 }
 
-class _PricePickerDialogState extends State<PricePickerDialog> {
+class _PricePickerDialogState extends State<_PricePickerDialog> {
   late double _selectedPrice;
 
   @override
@@ -574,13 +622,26 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.of(context).selectPrice),
+      title: Text(
+        AppLocalizations.of(context).selectPrice,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
       content: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("${AppLocalizations.of(context).selectedPrice}: ${_selectedPrice.round()}"),
+              Text(
+                "\$${_selectedPrice.round()}",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 16),
               Slider(
                 value: _selectedPrice,
                 min: widget.range.min,
@@ -598,14 +659,21 @@ class _PricePickerDialogState extends State<PricePickerDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(_selectedPrice);
-          },
-          child: Text(AppLocalizations.of(context).done),
+          onPressed: () => Navigator.of(context).pop(null),
+          child: Text(
+            AppLocalizations.of(context).cancel,
+            style: const TextStyle(color: AppColors.textSecondary),
+          ),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
-          child: Text(AppLocalizations.of(context).cancel),
+          onPressed: () => Navigator.of(context).pop(_selectedPrice),
+          child: Text(
+            AppLocalizations.of(context).done,
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ],
     );

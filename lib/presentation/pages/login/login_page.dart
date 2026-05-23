@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:homelinker/assets/localization/app_localizations.dart';
 import 'package:homelinker/core/app_router.gr.dart';
+import 'package:homelinker/core/app_theme.dart';
 import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/login/login_cubit.dart';
@@ -29,16 +30,32 @@ class LoginPage extends StatefulWidget implements AutoRouteWrapper {
   }
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
   bool isButtonAvailable = false;
 
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
+
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       BlocProvider.of<LoginCubit>(context).loadPage();
+      _animController.forward();
     });
 
     emailTextController
@@ -49,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _animController.dispose();
     emailTextController.dispose();
     passwordTextController.dispose();
     super.dispose();
@@ -71,7 +89,13 @@ class _LoginPageState extends State<LoginPage> {
           AutoRouter.of(context).popForced();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context).somethingWrong),
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(AppLocalizations.of(context).somethingWrong)),
+                ],
+              ),
             ),
           );
         }
@@ -83,82 +107,115 @@ class _LoginPageState extends State<LoginPage> {
           isButtonAvailable = false;
         }
 
-        return LoadingScreen<LoginCubit>(
+        return LoadingScreen(
           loading: state is PendingState,
           child: Scaffold(
             extendBodyBehindAppBar: true,
-            appBar: AppBar(),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
             body: BlueShadowBackground(
               child: Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SvgIcon(
-                          iconName: 'home',
-                          color: Colors.lightBlue,
-                          size: 80,
-                        ),
-                        Text(
-                          AppLocalizations.of(context).appTitle,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 36,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.12),
+
+                      // ── Logo ─────────────────────────────────
+                      FadeTransition(
+                        opacity: _fadeAnimation,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            MainTextField(
-                              textController: emailTextController,
-                              placeholder: AppLocalizations.of(context).email,
-                            ),
-                            const SizedBox(height: 16),
-                            MainTextField(
-                              textController: passwordTextController,
-                              placeholder: AppLocalizations.of(context).password,
-                              isPassword: true,
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: MainTextButton(
-                                text: AppLocalizations.of(context).forgotPassword,
-                                onPressed: () => AutoRouter.of(context).push(
-                                  const ForgotPasswordRoute(),
-                                ),
+                            ShaderMask(
+                              shaderCallback: (Rect bounds) {
+                                return LinearGradient(
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.8),
+                                    Colors.white,
+                                  ],
+                                ).createShader(bounds);
+                              },
+                              child: const SvgIcon(
+                                iconName: 'home',
+                                color: Colors.white,
+                                size: 80,
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            MainButton(
-                              width: 150,
-                              text: AppLocalizations.of(context).login,
-                              isEnabled: isButtonAvailable,
-                              onPressed: () => BlocProvider.of<LoginCubit>(context).login(
-                                email: emailTextController.text,
-                                password: passwordTextController.text,
-                              ),
+                            const SizedBox(height: 8),
+                            Text(
+                              AppLocalizations.of(context).appTitle,
+                              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 40),
-                      child: MainTextButton(
+
+                      const SizedBox(height: 48),
+
+                      // ── Form ─────────────────────────────────
+                      SlideTransition(
+                        position: _slideAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: Column(
+                              children: [
+                                MainTextField(
+                                  textController: emailTextController,
+                                  placeholder: AppLocalizations.of(context).email,
+                                  prefixIcon: Icons.email_outlined,
+                                ),
+                                const SizedBox(height: 16),
+                                MainTextField(
+                                  textController: passwordTextController,
+                                  placeholder: AppLocalizations.of(context).password,
+                                  isPassword: true,
+                                  prefixIcon: Icons.lock_outline_rounded,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: MainTextButton(
+                                    text: AppLocalizations.of(context).forgotPassword,
+                                    onPressed: () => AutoRouter.of(context).push(
+                                      const ForgotPasswordRoute(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                MainButton(
+                                  width: 200,
+                                  isGradient: false,
+                                  color: Colors.white,
+                                  textColor: AppColors.primary,
+                                  text: AppLocalizations.of(context).login,
+                                  isEnabled: isButtonAvailable,
+                                  onPressed: () => BlocProvider.of<LoginCubit>(context).login(
+                                    email: emailTextController.text,
+                                    password: passwordTextController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+
+                      // ── Bottom Link ──────────────────────────
+                      MainTextButton(
                         text: AppLocalizations.of(context).createNewAccount,
                         onPressed: () => BlocProvider.of<LoginCubit>(context).goToSignup(),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -167,80 +224,4 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
-  // void showVerificationDialog({
-  //   required BuildContext context,
-  //   required String email,
-  //   required String password,
-  // }) {
-  //   final TextEditingController controller = TextEditingController();
-  //   String message = '';
-  //   Color textColor = Colors.grey;
-
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return StatefulBuilder(
-  //         builder: (context, setState) {
-  //           return AlertDialog(
-  //             title: Text(AppLocalizations.of(context).enterCodeRecived),
-  //             content: SizedBox(
-  //               height: MediaQuery.of(context).size.height * 0.2,
-  //               child: Column(
-  //                 children: [
-  //                   Align(
-  //                     alignment: Alignment.center,
-  //                     child: Text(
-  //                       message,
-  //                       style: TextStyle(
-  //                         color: textColor,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   TextField(controller: controller),
-  //                 ],
-  //               ),
-  //             ),
-  //             actions: [
-  //               TextButton(
-  //                 child: Text(AppLocalizations.of(context).confirm),
-  //                 onPressed: () async {
-  //                   final wasCodeOk = await BlocProvider.of<LoginCubit>(context).verifyCodeAndLogin(
-  //                     context: context,
-  //                     email: email,
-  //                     password: password,
-  //                     code: controller.text,
-  //                   );
-  //                   if (!wasCodeOk) {
-  //                     setState(() {
-  //                       textColor = Colors.red;
-  //                       message = AppLocalizations.of(context).wrongCode;
-  //                     });
-  //                   }
-  //                 },
-  //               ),
-  //               TextButton(
-  //                 child: Text(AppLocalizations.of(context).sendCodeAgain),
-  //                 onPressed: () async {
-  //                   final wasEmailSent = await BlocProvider.of<LoginCubit>(context).sendEmail(email: email);
-  //                   if (wasEmailSent) {
-  //                     setState(() {
-  //                       textColor = Colors.green;
-  //                       message = AppLocalizations.of(context).mailSent;
-  //                     });
-  //                   } else {
-  //                     setState(() {
-  //                       textColor = Colors.red;
-  //                       message = AppLocalizations.of(context).mailNotSent;
-  //                     });
-  //                   }
-  //                 },
-  //               )
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
 }

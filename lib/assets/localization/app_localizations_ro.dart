@@ -146,6 +146,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get reset => 'Resetează';
 
   @override
+  String get resetPassword => 'Resetează parola';
+
+  @override
   String get passwordChangedSuccessfully => 'Parola a fost resetată cu succes.';
 
   @override
@@ -263,4 +266,10 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get listingAlreadyRemovedFromFavorites =>
       'Anunțul a fost deja eliminat din lista de favorite.';
+
+  @override
+  String get favorites => 'Favorite';
+
+  @override
+  String get noResults => 'Niciun rezultat găsit';
 }

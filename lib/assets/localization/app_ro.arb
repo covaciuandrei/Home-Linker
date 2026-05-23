@@ -44,6 +44,7 @@
   "repeatNewPassword": "Repetă noua parolă",
   "repeatPassword": "Repetă parola",
   "reset": "Resetează",
+  "resetPassword": "Resetează parola",
   "passwordChangedSuccessfully": "Parola a fost resetată cu succes.",
   "privacyPolicy": "Politica de confidiențialitate",
   "termsAndCons": "Termenii si condițiile de utilizare",
@@ -81,5 +82,7 @@
   "listingAddedToFavorites": "Proprietate adaugată la favorite",
   "listingRemovedFromFavorites": "Proprietate ștearsă de la favorite",
   "listingAlreadyInFavorites": "Anunțul este deja în lista de favorite.",
-  "listingAlreadyRemovedFromFavorites": "Anunțul a fost deja eliminat din lista de favorite."
+  "listingAlreadyRemovedFromFavorites": "Anunțul a fost deja eliminat din lista de favorite.",
+  "favorites": "Favorite",
+  "noResults": "Niciun rezultat găsit"
 }

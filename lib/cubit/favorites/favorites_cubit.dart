@@ -52,9 +52,10 @@ class FavoritesCubit extends BaseCubit {
     await Future.delayed(const Duration(milliseconds: 200));
 
     final user = await _userService.getLoggedUser(forceRefresh: forceRefresh);
-    final savedListings = user.favoriteListingsIds;
+    final savedListings = user.favoriteListingsIds.toSet();
 
-    properties = await _propertyService.getAll(forceRefresh: forceRefresh);
+    final allProperties = await _propertyService.getAll(forceRefresh: forceRefresh);
+    properties = allProperties.where((property) => savedListings.contains(property.id)).toList();
 
     listingsData = [];
 
@@ -63,9 +64,7 @@ class FavoritesCubit extends BaseCubit {
 
       final listing = Listing(image: image!, property: property);
 
-      final isSaved = savedListings.contains(property.id);
-
-      final listingData = ListingData(listing: listing, isSaved: isSaved);
+      final listingData = ListingData(listing: listing, isSaved: true);
 
       listingsData.add(listingData);
     }
@@ -168,6 +167,7 @@ class FavoritesCubit extends BaseCubit {
       await _userService.addListingToFavorites(id: id);
 
       safeEmit(const ListingAddedToFavoritesState());
+      await _internalLoad(forceRefresh: true);
     } catch (_) {
       safeEmit(SomethingWentWrongState());
     }
@@ -186,7 +186,20 @@ class FavoritesCubit extends BaseCubit {
     try {
       await _userService.removeListingToFavorites(id: id);
 
+      listingsData = listingsData.where((element) => element.listing.property.id != id).toList();
+      properties = properties.where((property) => property.id != id).toList();
+      priceRange = RangeValues(0, getPropertyMaxPrice());
+
       safeEmit(const ListingRemovedToFavoritesState());
+
+      final updatedUser = await _userService.getLoggedUser();
+      safeEmit(DataLoadedState(
+        listings: listingsData,
+        languages: languages,
+        priceRange: priceRange,
+        isPageFiltered: false,
+        user: updatedUser,
+      ));
     } catch (_) {
       safeEmit(SomethingWentWrongState());
     }
