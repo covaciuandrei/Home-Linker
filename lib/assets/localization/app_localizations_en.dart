@@ -249,6 +249,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
+  String get filters => 'Filters';
+
+  @override
+  String get applyLabel => 'Apply';
+
+  @override
+  String get any => 'Any';
+
+  @override
+  String get priceRange => 'Price range';
+
+  @override
   String get minimumPrice => 'Minimum price';
 
   @override

@@ -10,10 +10,8 @@ import 'package:homelinker/core/injection.dart';
 import 'package:homelinker/cubit/base_state.dart';
 import 'package:homelinker/cubit/home/home_cubit.dart';
 import 'package:homelinker/models/enums/account_type.dart';
-import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/property.dart';
-import 'package:homelinker/models/range.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/listing_price.dart';
@@ -42,10 +40,14 @@ class HomePage extends StatefulWidget implements AutoRouteWrapper {
 class _HomePageState extends State<HomePage> {
   List<ListingData> listings = [];
   List<String> languages = [];
-  bool _isPagePriceFiltered = false;
-  double _minimumPrice = 0;
-  double _maximumPrice = 0;
+  bool _isPageFiltered = false;
   RangeValues priceRange = const RangeValues(0, 100000);
+
+  // Active filter selections.
+  PropertyType? _propertyType;
+  ListingType? _listingType;
+  RangeValues? _priceFilter;
+
   User user = const User(
     email: '',
     id: '',
@@ -128,7 +130,7 @@ class _HomePageState extends State<HomePage> {
           listings = state.listings;
           languages = state.languages;
           priceRange = state.priceRange;
-          _isPagePriceFiltered = state.isPageFiltered;
+          _isPageFiltered = state.isPageFiltered;
           user = state.user;
         }
         return LoadingScreen(
@@ -167,73 +169,26 @@ class _HomePageState extends State<HomePage> {
               },
               child: Column(
                 children: [
-                  // ── Filter Chips ─────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.house,
-                            icon: Icons.home_rounded,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.house),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.apartment,
-                            icon: Icons.apartment_rounded,
-                            onPressed: () =>
-                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.apartment),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.rent,
-                            icon: Icons.home_work_rounded,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.rent),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.sale,
-                            icon: Icons.local_offer_rounded,
-                            onPressed: () => BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.sale),
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.price,
-                            icon: Icons.attach_money_rounded,
-                            onPressed: () async {
-                              await _showPriceFilterBottomSheet(context);
-                            },
-                          ),
-                          FilterItem(
-                            context: context,
-                            filterType: FilterType.location,
-                            icon: Icons.location_on_rounded,
-                            onPressed: () =>
-                                BlocProvider.of<HomeCubit>(context).filter(filterType: FilterType.location),
-                          ),
-                        ],
-                      ),
-                    ),
+                  // ── Filter Toolbar ─────────────────────────────
+                  _FilterToolbar(
+                    propertyType: _propertyType,
+                    listingType: _listingType,
+                    priceFilter: _priceFilter,
+                    isFiltered: _isPageFiltered,
+                    onOpenFilters: () => _showFiltersBottomSheet(context),
+                    onClearPropertyType: () {
+                      setState(() => _propertyType = null);
+                      _applyCurrentFilters();
+                    },
+                    onClearListingType: () {
+                      setState(() => _listingType = null);
+                      _applyCurrentFilters();
+                    },
+                    onClearPrice: () {
+                      setState(() => _priceFilter = null);
+                      _applyCurrentFilters();
+                    },
                   ),
-
-                  // ── Remove Filter Button ─────────────────────
-                  if (_isPagePriceFiltered)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: MainButton(
-                        width: 200,
-                        height: 38,
-                        isOutlined: true,
-                        text: AppLocalizations.of(context).removeFilter,
-                        icon: Icons.close_rounded,
-                        onPressed: () {
-                          BlocProvider.of<HomeCubit>(context).resetFilter();
-                        },
-                      ),
-                    ),
 
                   // ── Property List ────────────────────────────
                   Expanded(
@@ -283,139 +238,468 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _showPriceFilterBottomSheet(BuildContext context) async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (bottomSheetContext) => StatefulBuilder(
-        builder: (bottomSheetContext, setModalState) {
-          return Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                Text(
-                  AppLocalizations.of(context).selectPrice,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-                const SizedBox(height: 24),
-
-                // Min price
-                _PriceInputRow(
-                  label: AppLocalizations.of(context).minimumPrice,
-                  value: _minimumPrice,
-                  onTap: () async {
-                    final price = await _showPricePickerDialog(
-                      _minimumPrice,
-                      Range(min: priceRange.start, max: priceRange.end),
-                    );
-                    setModalState(() => _minimumPrice = price);
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                // Max price
-                _PriceInputRow(
-                  label: AppLocalizations.of(context).maximumPrice,
-                  value: _maximumPrice,
-                  onTap: () async {
-                    final price = await _showPricePickerDialog(
-                      _maximumPrice,
-                      Range(min: priceRange.start, max: priceRange.end),
-                    );
-                    setModalState(() => _maximumPrice = price);
-                  },
-                ),
-                const SizedBox(height: 28),
-
-                // Apply button
-                MainButton(
-                  isGradient: true,
-                  text: AppLocalizations.of(context).filter,
-                  onPressed: () {
-                    BlocProvider.of<HomeCubit>(context).filter(
-                      filterType: FilterType.price,
-                      minimPrice: _minimumPrice,
-                      maxPrice: _maximumPrice,
-                    );
-                    Navigator.of(bottomSheetContext).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+  void _applyCurrentFilters() {
+    BlocProvider.of<HomeCubit>(context).applyFilters(
+      propertyType: _propertyType,
+      listingType: _listingType,
+      minPrice: _priceFilter?.start,
+      maxPrice: _priceFilter?.end,
     );
   }
 
-  Future<double> _showPricePickerDialog(double initial, Range range) async {
-    final selectedPrice = await showDialog<double>(
+  Future<void> _showFiltersBottomSheet(BuildContext context) async {
+    PropertyType? draftPropertyType = _propertyType;
+    ListingType? draftListingType = _listingType;
+    RangeValues draftPrice = _priceFilter ?? priceRange;
+
+    await showModalBottomSheet<void>(
       context: context,
-      builder: (context) => PricePickerDialog(
-        initialPrice: initial,
-        range: range,
+      isScrollControlled: true,
+      backgroundColor: AppColors.cardBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (bottomSheetContext, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 12,
+                bottom: 24 + MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle bar
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.divider,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    AppLocalizations.of(context).filters,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Property Type
+                  _FilterSectionLabel(
+                    text: AppLocalizations.of(context).propertyType,
+                  ),
+                  const SizedBox(height: 10),
+                  _SegmentedSelector<PropertyType?>(
+                    value: draftPropertyType,
+                    options: [
+                      _SegmentOption(
+                        value: null,
+                        label: AppLocalizations.of(context).any,
+                        icon: Icons.apps_rounded,
+                      ),
+                      _SegmentOption(
+                        value: PropertyType.house,
+                        label: AppLocalizations.of(context).house.capitalize(),
+                        icon: Icons.home_rounded,
+                      ),
+                      _SegmentOption(
+                        value: PropertyType.apartment,
+                        label: AppLocalizations.of(context).apartment.capitalize(),
+                        icon: Icons.apartment_rounded,
+                      ),
+                    ],
+                    onChanged: (v) => setSheetState(() => draftPropertyType = v),
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Listing Type
+                  _FilterSectionLabel(
+                    text: AppLocalizations.of(context).listType,
+                  ),
+                  const SizedBox(height: 10),
+                  _SegmentedSelector<ListingType?>(
+                    value: draftListingType,
+                    options: [
+                      _SegmentOption(
+                        value: null,
+                        label: AppLocalizations.of(context).any,
+                        icon: Icons.apps_rounded,
+                      ),
+                      _SegmentOption(
+                        value: ListingType.rent,
+                        label: AppLocalizations.of(context).rent.capitalize(),
+                        icon: Icons.home_work_rounded,
+                      ),
+                      _SegmentOption(
+                        value: ListingType.sale,
+                        label: AppLocalizations.of(context).sale.capitalize(),
+                        icon: Icons.local_offer_rounded,
+                      ),
+                    ],
+                    onChanged: (v) => setSheetState(() => draftListingType = v),
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Price Range
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _FilterSectionLabel(
+                        text: AppLocalizations.of(context).priceRange,
+                      ),
+                      Text(
+                        '\$${draftPrice.start.round()} – \$${draftPrice.end.round()}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ],
+                  ),
+                  RangeSlider(
+                    values: draftPrice,
+                    min: priceRange.start,
+                    max: priceRange.end == priceRange.start ? priceRange.start + 1 : priceRange.end,
+                    divisions: 100,
+                    activeColor: AppColors.primary,
+                    inactiveColor: AppColors.divider,
+                    labels: RangeLabels(
+                      '\$${draftPrice.start.round()}',
+                      '\$${draftPrice.end.round()}',
+                    ),
+                    onChanged: (values) => setSheetState(() => draftPrice = values),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MainButton(
+                          isOutlined: true,
+                          text: AppLocalizations.of(context).reset,
+                          onPressed: () {
+                            setSheetState(() {
+                              draftPropertyType = null;
+                              draftListingType = null;
+                              draftPrice = priceRange;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: MainButton(
+                          isGradient: true,
+                          text: AppLocalizations.of(context).applyLabel,
+                          onPressed: () {
+                            setState(() {
+                              _propertyType = draftPropertyType;
+                              _listingType = draftListingType;
+                              final usingFullRange =
+                                  draftPrice.start <= priceRange.start && draftPrice.end >= priceRange.end;
+                              _priceFilter = usingFullRange ? null : draftPrice;
+                            });
+                            _applyCurrentFilters();
+                            Navigator.of(bottomSheetContext).pop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
-    return selectedPrice ?? initial;
   }
 }
 
-// ── Price Input Row ────────────────────────────────────────────────
-class _PriceInputRow extends StatelessWidget {
-  const _PriceInputRow({
-    required this.label,
-    required this.value,
-    required this.onTap,
+// ── Filter Toolbar ─────────────────────────────────────────────────
+class _FilterToolbar extends StatelessWidget {
+  const _FilterToolbar({
+    required this.propertyType,
+    required this.listingType,
+    required this.priceFilter,
+    required this.isFiltered,
+    required this.onOpenFilters,
+    required this.onClearPropertyType,
+    required this.onClearListingType,
+    required this.onClearPrice,
   });
 
-  final String label;
-  final double value;
-  final VoidCallback onTap;
+  final PropertyType? propertyType;
+  final ListingType? listingType;
+  final RangeValues? priceFilter;
+  final bool isFiltered;
+  final VoidCallback onOpenFilters;
+  final VoidCallback onClearPropertyType;
+  final VoidCallback onClearListingType;
+  final VoidCallback onClearPrice;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    final hasActive = propertyType != null || listingType != null || priceFilter != null;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      child: Row(
+        children: [
+          // Primary "Filters" button
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: onOpenFilters,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.tune_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      AppLocalizations.of(context).filters,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (hasActive) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          // Active filter chips
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  if (propertyType != null)
+                    _ActiveChip(
+                      icon: propertyType == PropertyType.house ? Icons.home_rounded : Icons.apartment_rounded,
+                      label: propertyType!.name.translate(context, propertyType!.name).capitalize(),
+                      onRemove: onClearPropertyType,
+                    ),
+                  if (listingType != null)
+                    _ActiveChip(
+                      icon: listingType == ListingType.rent ? Icons.home_work_rounded : Icons.local_offer_rounded,
+                      label: listingType!.name.translate(context, listingType!.name).capitalize(),
+                      onRemove: onClearListingType,
+                    ),
+                  if (priceFilter != null)
+                    _ActiveChip(
+                      icon: Icons.attach_money_rounded,
+                      label: '\$${priceFilter!.start.round()}–\$${priceFilter!.end.round()}',
+                      onRemove: onClearPrice,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Active Filter Chip ─────────────────────────────────────────────
+class _ActiveChip extends StatelessWidget {
+  const _ActiveChip({
+    required this.icon,
+    required this.label,
+    required this.onRemove,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.only(left: 10, right: 4, top: 4, bottom: 4),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.divider),
+          color: AppColors.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
+            Icon(icon, size: 14, color: AppColors.primary),
+            const SizedBox(width: 4),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
-            Text(
-              '\$${value.round()}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
+            const SizedBox(width: 2),
+            InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: onRemove,
+              child: const Padding(
+                padding: EdgeInsets.all(4),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 14,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Filter Section Label ───────────────────────────────────────────
+class _FilterSectionLabel extends StatelessWidget {
+  const _FilterSectionLabel({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+      ),
+    );
+  }
+}
+
+// ── Segmented Selector ─────────────────────────────────────────────
+class _SegmentOption<T> {
+  const _SegmentOption({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
+
+  final T value;
+  final String label;
+  final IconData icon;
+}
+
+class _SegmentedSelector<T> extends StatelessWidget {
+  const _SegmentedSelector({
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final T value;
+  final List<_SegmentOption<T>> options;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: options.map((option) {
+          final isSelected = option.value == value;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onChanged(option.value),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.cardBackground : Colors.transparent,
+                  borderRadius: BorderRadius.circular(11),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.10),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      option.icon,
+                      size: 16,
+                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        option.label,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -566,150 +850,6 @@ class PropertyItem extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-// ── Filter Item ────────────────────────────────────────────────────
-class FilterItem extends StatelessWidget {
-  const FilterItem({
-    super.key,
-    required this.icon,
-    required this.filterType,
-    required this.onPressed,
-    required this.context,
-  });
-
-  final IconData icon;
-  final FilterType filterType;
-  final VoidCallback onPressed;
-  final BuildContext context;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onPressed,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 20, color: Colors.white),
-                const SizedBox(width: 6),
-                Text(
-                  filterType.name.translate(context, filterType.name).capitalize(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Price Picker Dialog ────────────────────────────────────────────
-class PricePickerDialog extends StatefulWidget {
-  const PricePickerDialog({
-    super.key,
-    required this.initialPrice,
-    required this.range,
-  });
-
-  final double initialPrice;
-  final Range range;
-
-  @override
-  State<PricePickerDialog> createState() => _PricePickerDialogState();
-}
-
-class _PricePickerDialogState extends State<PricePickerDialog> {
-  late double _selectedPrice;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedPrice = widget.initialPrice;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        AppLocalizations.of(context).selectPrice,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-      ),
-      content: StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "\$${_selectedPrice.round()}",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              const SizedBox(height: 16),
-              Slider(
-                value: _selectedPrice,
-                min: widget.range.min,
-                max: widget.range.max,
-                divisions: 100,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPrice = value;
-                  });
-                },
-              ),
-            ],
-          );
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
-          child: Text(
-            AppLocalizations.of(context).cancel,
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_selectedPrice),
-          child: Text(
-            AppLocalizations.of(context).done,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -572,6 +572,30 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get filter;
 
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @applyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyLabel;
+
+  /// No description provided for @any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get any;
+
+  /// No description provided for @priceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get priceRange;
+
   /// No description provided for @minimumPrice.
   ///
   /// In en, this message translates to:

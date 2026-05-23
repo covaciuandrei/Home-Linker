@@ -97,6 +97,41 @@ class HomeCubit extends BaseCubit {
     ));
   }
 
+  Future<void> applyFilters({
+    PropertyType? propertyType,
+    ListingType? listingType,
+    double? minPrice,
+    double? maxPrice,
+  }) async {
+    safeEmit(PendingState());
+
+    final hasPrice = minPrice != null && maxPrice != null;
+    final isFiltered = propertyType != null || listingType != null || hasPrice;
+
+    final filtered = listingsData.where((element) {
+      final property = element.listing.property;
+      if (propertyType != null && property.propertyType != propertyType) {
+        return false;
+      }
+      if (listingType != null && property.listingType != listingType) {
+        return false;
+      }
+      if (hasPrice && (property.price < minPrice || property.price > maxPrice)) {
+        return false;
+      }
+      return true;
+    }).toList();
+
+    final user = await _userService.getLoggedUser();
+    safeEmit(DataLoadedState(
+      listings: filtered,
+      languages: languages,
+      priceRange: priceRange,
+      isPageFiltered: isFiltered,
+      user: user,
+    ));
+  }
+
   void filter({
     required FilterType filterType,
     double? minimPrice,
