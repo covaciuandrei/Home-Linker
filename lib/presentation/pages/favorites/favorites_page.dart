@@ -14,7 +14,6 @@ import 'package:homelinker/models/enums/filter_type.dart';
 import 'package:homelinker/models/listing.dart';
 import 'package:homelinker/models/listing_data.dart';
 import 'package:homelinker/models/property.dart';
-import 'package:homelinker/models/range.dart';
 import 'package:homelinker/models/user.dart';
 import 'package:homelinker/presentation/widgets/app_toast.dart';
 import 'package:homelinker/presentation/widgets/listing_image.dart';
@@ -22,6 +21,7 @@ import 'package:homelinker/presentation/widgets/listing_price.dart';
 import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
+import 'package:homelinker/presentation/widgets/price_range_inputs.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 
 @RoutePage()
@@ -291,129 +291,72 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> _showPriceFilterBottomSheet(BuildContext context) async {
+    final initialRange = normalizedPriceRange(
+      minimumText: formatPriceInputValue(_minimumPrice),
+      maximumText: formatPriceInputValue(_maximumPrice > 0 ? _maximumPrice : priceRange.end),
+      bounds: priceRange,
+    );
+    var minimumPriceText = formatPriceInputValue(initialRange.start);
+    var maximumPriceText = formatPriceInputValue(initialRange.end);
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (bottomSheetContext) => StatefulBuilder(
-        builder: (bottomSheetContext, setModalState) {
-          return Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+      builder: (bottomSheetContext) => SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.fromLTRB(24, 16, 24, 32 + MediaQuery.of(bottomSheetContext).viewInsets.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  AppLocalizations.of(context).selectPrice,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-                const SizedBox(height: 24),
-                _PriceInputRow(
-                  label: AppLocalizations.of(context).minimumPrice,
-                  value: _minimumPrice,
-                  onTap: () async {
-                    final price = await _showPricePickerDialog(
-                      _minimumPrice,
-                      Range(min: priceRange.start, max: priceRange.end),
-                    );
-                    setModalState(() => _minimumPrice = price);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _PriceInputRow(
-                  label: AppLocalizations.of(context).maximumPrice,
-                  value: _maximumPrice,
-                  onTap: () async {
-                    final price = await _showPricePickerDialog(
-                      _maximumPrice,
-                      Range(min: priceRange.start, max: priceRange.end),
-                    );
-                    setModalState(() => _maximumPrice = price);
-                  },
-                ),
-                const SizedBox(height: 28),
-                MainButton(
-                  isGradient: true,
-                  text: AppLocalizations.of(context).filter,
-                  onPressed: () {
-                    BlocProvider.of<FavoritesCubit>(context).filter(
-                      filterType: FilterType.price,
-                      minimPrice: _minimumPrice,
-                      maxPrice: _maximumPrice,
-                    );
-                    Navigator.of(bottomSheetContext).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Future<double> _showPricePickerDialog(double initial, Range range) async {
-    final selectedPrice = await showDialog<double>(
-      context: context,
-      builder: (context) => _PricePickerDialog(
-        initialPrice: initial,
-        range: range,
-      ),
-    );
-    return selectedPrice ?? initial;
-  }
-}
-
-// ── Price Input Row ────────────────────────────────────────────────
-class _PriceInputRow extends StatelessWidget {
-  const _PriceInputRow({
-    required this.label,
-    required this.value,
-    required this.onTap,
-  });
-
-  final String label;
-  final double value;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.divider),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-            Text(
-              '\$${value.round()}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context).selectPrice,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 24),
+              PriceRangeInputs(
+                initialMinimum: minimumPriceText,
+                initialMaximum: maximumPriceText,
+                minimumLabel: AppLocalizations.of(context).minimumPrice,
+                maximumLabel: AppLocalizations.of(context).maximumPrice,
+                onChanged: (value) {
+                  minimumPriceText = value.minimumText;
+                  maximumPriceText = value.maximumText;
+                },
+              ),
+              const SizedBox(height: 28),
+              MainButton(
+                isGradient: true,
+                text: AppLocalizations.of(context).filter,
+                onPressed: () {
+                  final selectedRange = normalizedPriceRange(
+                    minimumText: minimumPriceText,
+                    maximumText: maximumPriceText,
+                    bounds: priceRange,
+                  );
+                  _minimumPrice = selectedRange.start;
+                  _maximumPrice = selectedRange.end;
+                  BlocProvider.of<FavoritesCubit>(context).filter(
+                    filterType: FilterType.price,
+                    minimPrice: _minimumPrice,
+                    maxPrice: _maximumPrice,
+                  );
+                  Navigator.of(bottomSheetContext).pop();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -607,90 +550,6 @@ class _FilterItem extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-// ── Price Picker Dialog ────────────────────────────────────────────
-class _PricePickerDialog extends StatefulWidget {
-  const _PricePickerDialog({
-    required this.initialPrice,
-    required this.range,
-  });
-
-  final double initialPrice;
-  final Range range;
-
-  @override
-  State<_PricePickerDialog> createState() => _PricePickerDialogState();
-}
-
-class _PricePickerDialogState extends State<_PricePickerDialog> {
-  late double _selectedPrice;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedPrice = widget.initialPrice;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        AppLocalizations.of(context).selectPrice,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-      ),
-      content: StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "\$${_selectedPrice.round()}",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              const SizedBox(height: 16),
-              Slider(
-                value: _selectedPrice,
-                min: widget.range.min,
-                max: widget.range.max,
-                divisions: 100,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPrice = value;
-                  });
-                },
-              ),
-            ],
-          );
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
-          child: Text(
-            AppLocalizations.of(context).cancel,
-            style: const TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_selectedPrice),
-          child: Text(
-            AppLocalizations.of(context).done,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

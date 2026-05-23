@@ -21,6 +21,7 @@ import 'package:homelinker/presentation/widgets/loading_screen.dart';
 import 'package:homelinker/presentation/widgets/main_appbar.dart';
 import 'package:homelinker/presentation/widgets/main_button.dart';
 import 'package:homelinker/presentation/widgets/main_drawer.dart';
+import 'package:homelinker/presentation/widgets/price_range_inputs.dart';
 import 'package:homelinker/utils/extension_methods.dart';
 import 'package:intl/intl.dart';
 
@@ -262,6 +263,9 @@ class _HomePageState extends State<HomePage> {
     PropertyType? draftPropertyType = filterState.propertyType;
     ListingType? draftListingType = filterState.listingType;
     RangeValues draftPrice = filterState.priceRange ?? bounds;
+    var minimumPriceText = formatPriceInputValue(draftPrice.start);
+    var maximumPriceText = formatPriceInputValue(draftPrice.end);
+    var priceInputsResetSignal = 0;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -273,145 +277,142 @@ class _HomePageState extends State<HomePage> {
       builder: (bottomSheetContext) {
         return StatefulBuilder(
           builder: (bottomSheetContext, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 12,
-                bottom: 24 + MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppColors.divider,
-                        borderRadius: BorderRadius.circular(2),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 12,
+                  bottom: 24 + MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.divider,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    AppLocalizations.of(context).filters,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                  ),
-                  const SizedBox(height: 20),
-                  _FilterSectionLabel(text: AppLocalizations.of(context).propertyType),
-                  const SizedBox(height: 10),
-                  _SegmentedSelector<PropertyType?>(
-                    value: draftPropertyType,
-                    options: [
-                      _SegmentOption(
-                        value: null,
-                        label: AppLocalizations.of(context).any,
-                        icon: Icons.apps_rounded,
-                      ),
-                      _SegmentOption(
-                        value: PropertyType.house,
-                        label: AppLocalizations.of(context).house.capitalize(),
-                        icon: Icons.home_rounded,
-                      ),
-                      _SegmentOption(
-                        value: PropertyType.apartment,
-                        label: AppLocalizations.of(context).apartment.capitalize(),
-                        icon: Icons.apartment_rounded,
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => draftPropertyType = v),
-                  ),
-                  const SizedBox(height: 22),
-                  _FilterSectionLabel(text: AppLocalizations.of(context).listType),
-                  const SizedBox(height: 10),
-                  _SegmentedSelector<ListingType?>(
-                    value: draftListingType,
-                    options: [
-                      _SegmentOption(
-                        value: null,
-                        label: AppLocalizations.of(context).any,
-                        icon: Icons.apps_rounded,
-                      ),
-                      _SegmentOption(
-                        value: ListingType.rent,
-                        label: AppLocalizations.of(context).rent.capitalize(),
-                        icon: Icons.home_work_rounded,
-                      ),
-                      _SegmentOption(
-                        value: ListingType.sale,
-                        label: AppLocalizations.of(context).sale.capitalize(),
-                        icon: Icons.local_offer_rounded,
-                      ),
-                    ],
-                    onChanged: (v) => setSheetState(() => draftListingType = v),
-                  ),
-                  const SizedBox(height: 22),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _FilterSectionLabel(text: AppLocalizations.of(context).priceRange),
-                      Text(
-                        '\$${draftPrice.start.round()} – \$${draftPrice.end.round()}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                    ],
-                  ),
-                  RangeSlider(
-                    values: draftPrice,
-                    min: bounds.start,
-                    max: bounds.end == bounds.start ? bounds.start + 1 : bounds.end,
-                    divisions: 100,
-                    activeColor: AppColors.primary,
-                    inactiveColor: AppColors.divider,
-                    labels: RangeLabels(
-                      '\$${draftPrice.start.round()}',
-                      '\$${draftPrice.end.round()}',
+                    const SizedBox(height: 18),
+                    Text(
+                      AppLocalizations.of(context).filters,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
-                    onChanged: (values) => setSheetState(() => draftPrice = values),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MainButton(
-                          isOutlined: true,
-                          text: AppLocalizations.of(context).reset,
-                          onPressed: () {
-                            setSheetState(() {
-                              draftPropertyType = null;
-                              draftListingType = null;
-                              draftPrice = bounds;
-                            });
-                          },
+                    const SizedBox(height: 20),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).propertyType),
+                    const SizedBox(height: 10),
+                    _SegmentedSelector<PropertyType?>(
+                      value: draftPropertyType,
+                      options: [
+                        _SegmentOption(
+                          value: null,
+                          label: AppLocalizations.of(context).any,
+                          icon: Icons.apps_rounded,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: MainButton(
-                          isGradient: true,
-                          text: AppLocalizations.of(context).applyLabel,
-                          onPressed: () {
-                            final usingFullRange = draftPrice.start <= bounds.start && draftPrice.end >= bounds.end;
-                            filterCubit.apply(
-                              propertyType: draftPropertyType,
-                              listingType: draftListingType,
-                              priceRange: usingFullRange ? null : draftPrice,
-                            );
-                            Navigator.of(bottomSheetContext).pop();
-                          },
+                        _SegmentOption(
+                          value: PropertyType.house,
+                          label: AppLocalizations.of(context).house.capitalize(),
+                          icon: Icons.home_rounded,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        _SegmentOption(
+                          value: PropertyType.apartment,
+                          label: AppLocalizations.of(context).apartment.capitalize(),
+                          icon: Icons.apartment_rounded,
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => draftPropertyType = v),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).listType),
+                    const SizedBox(height: 10),
+                    _SegmentedSelector<ListingType?>(
+                      value: draftListingType,
+                      options: [
+                        _SegmentOption(
+                          value: null,
+                          label: AppLocalizations.of(context).any,
+                          icon: Icons.apps_rounded,
+                        ),
+                        _SegmentOption(
+                          value: ListingType.rent,
+                          label: AppLocalizations.of(context).rent.capitalize(),
+                          icon: Icons.home_work_rounded,
+                        ),
+                        _SegmentOption(
+                          value: ListingType.sale,
+                          label: AppLocalizations.of(context).sale.capitalize(),
+                          icon: Icons.local_offer_rounded,
+                        ),
+                      ],
+                      onChanged: (v) => setSheetState(() => draftListingType = v),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSectionLabel(text: AppLocalizations.of(context).priceRange),
+                    const SizedBox(height: 10),
+                    PriceRangeInputs(
+                      initialMinimum: minimumPriceText,
+                      initialMaximum: maximumPriceText,
+                      minimumLabel: AppLocalizations.of(context).minimumPrice,
+                      maximumLabel: AppLocalizations.of(context).maximumPrice,
+                      resetSignal: priceInputsResetSignal,
+                      onChanged: (value) {
+                        minimumPriceText = value.minimumText;
+                        maximumPriceText = value.maximumText;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: MainButton(
+                            isOutlined: true,
+                            text: AppLocalizations.of(context).reset,
+                            onPressed: () {
+                              setSheetState(() {
+                                draftPropertyType = null;
+                                draftListingType = null;
+                                draftPrice = bounds;
+                                minimumPriceText = formatPriceInputValue(bounds.start);
+                                maximumPriceText = formatPriceInputValue(bounds.end);
+                                priceInputsResetSignal++;
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: MainButton(
+                            isGradient: true,
+                            text: AppLocalizations.of(context).applyLabel,
+                            onPressed: () {
+                              draftPrice = normalizedPriceRange(
+                                minimumText: minimumPriceText,
+                                maximumText: maximumPriceText,
+                                bounds: bounds,
+                              );
+                              final usingFullRange = draftPrice.start <= bounds.start && draftPrice.end >= bounds.end;
+                              filterCubit.apply(
+                                propertyType: draftPropertyType,
+                                listingType: draftListingType,
+                                priceRange: usingFullRange ? null : draftPrice,
+                              );
+                              Navigator.of(bottomSheetContext).pop();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           },

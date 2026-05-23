@@ -57,17 +57,13 @@ class FavoritesCubit extends BaseCubit {
     final allProperties = await _propertyService.getAll(forceRefresh: forceRefresh);
     properties = allProperties.where((property) => savedListings.contains(property.id)).toList();
 
-    listingsData = [];
-
-    for (final property in properties) {
-      final image = await _imageService.getImage(imageId: property.imageId);
-
-      final listing = Listing(image: image!, property: property);
-
-      final listingData = ListingData(listing: listing, isSaved: true);
-
-      listingsData.add(listingData);
-    }
+    listingsData = await Future.wait(properties.map((property) async {
+      final image = await _imageService.getImage(imageId: property.imageId).catchError((_) => null);
+      return ListingData(
+        listing: Listing(image: image, property: property),
+        isSaved: true,
+      );
+    }));
 
     final maxPropertyPrice = getPropertyMaxPrice();
     priceRange = RangeValues(0, maxPropertyPrice);
@@ -120,7 +116,7 @@ class FavoritesCubit extends BaseCubit {
             listingsData.where((element) => element.listing.property.listingType == ListingType.sale).toList();
       case FilterType.price:
         filteredListings = listingsData.where((element) {
-          return element.listing.property.price > minimPrice! && element.listing.property.price < maxPrice!;
+          return element.listing.property.price >= minimPrice! && element.listing.property.price <= maxPrice!;
         }).toList();
       case FilterType.location:
         filteredListings = listingsData;
