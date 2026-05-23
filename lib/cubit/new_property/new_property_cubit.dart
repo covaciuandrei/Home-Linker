@@ -183,7 +183,6 @@ class NewPropertyCubit extends BaseCubit {
       await _propertyService.addNewProperty(property: property);
 
       safeEmit(PropertyAddedSuccessfullyState());
-      safeEmit(SomethingWentWrongState());
     } on Exception {
       safeEmit(SomethingWentWrongState());
     }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -138,8 +140,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
             appBar: MainAppBar(title: AppLocalizations.of(context).favorites),
             body: RefreshIndicator(
               color: AppColors.primary,
-              onRefresh: () async {
-                await BlocProvider.of<FavoritesCubit>(context).refresh();
+              onRefresh: () {
+                unawaited(BlocProvider.of<FavoritesCubit>(context).refresh());
+                return Future<void>.value();
               },
               child: Column(
                 children: [

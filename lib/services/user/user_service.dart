@@ -75,6 +75,8 @@ class UserService {
       imageId: imageId,
       favoriteListingsIds: favoriteListingsIds,
     );
+
+    await _userRepository.invalidateCache(additionalParam: user.id);
   }
 
   Future<List<Object>> getAuthentificationCode({required String email}) async {
@@ -87,7 +89,6 @@ class UserService {
 
     if (!user.favoriteListingsIds.contains(id)) {
       await updateUser(favoriteListingsIds: [...user.favoriteListingsIds, id]);
-      await _userRepository.invalidateCache(additionalParam: user.id);
     }
   }
 
@@ -96,10 +97,8 @@ class UserService {
     List<String> newFavoriteListingsIds = [];
 
     if (user.favoriteListingsIds.contains(id)) {
-      newFavoriteListingsIds = user.favoriteListingsIds;
-      newFavoriteListingsIds.remove(id);
+      newFavoriteListingsIds = user.favoriteListingsIds.where((listingId) => listingId != id).toList();
       await updateUser(favoriteListingsIds: newFavoriteListingsIds);
-      await _userRepository.invalidateCache(additionalParam: user.id);
     }
   }
 }

@@ -23,7 +23,7 @@ class ImageService {
       final Image imageFromSource = await _imageSource.get(imageId: imageId);
       final File? image = await _storageSource.downloadImage(
         imagePath: imageFromSource.path,
-        name: imageFromSource.name,
+        name: '$imageId-${imageFromSource.name}',
       );
       await _imageRepository.clear(imageId: imageId);
       await _imageRepository.insert(

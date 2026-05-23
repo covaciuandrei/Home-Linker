@@ -29,6 +29,7 @@ class PropertyService {
   }) async {
     final newProperty = property;
     await _propertySource.insert(newProperty);
+    await _propertyRepository.invalidateCache(additionalParam: 'documents');
   }
 
   Future<void> delete({required String propertyId}) async {

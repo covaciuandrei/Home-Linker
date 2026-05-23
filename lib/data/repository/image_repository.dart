@@ -38,6 +38,7 @@ class ImageRepository extends BaseRepository {
 
   Future<void> clear({required String imageId}) async {
     await (database.delete(database.images)..where((t) => t.identifier.equals(imageId))).go();
+    await invalidateCache(additionalParam: 'image:$imageId');
   }
 
   Future<File> getImage({required String imageId}) async {
@@ -45,7 +46,8 @@ class ImageRepository extends BaseRepository {
         (await (database.select(database.images)..where((tbl) => tbl.identifier.equals(imageId))).get())[0];
 
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/${image.name}');
+    final file = File('${dir.path}/$imageId-${image.name}');
+    await file.writeAsBytes(image.data);
 
     return file;
   }

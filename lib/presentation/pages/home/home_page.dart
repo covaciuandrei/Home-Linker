@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -159,8 +161,9 @@ class _HomePageState extends State<HomePage> {
             drawer: MainDrawer(languages: languages),
             body: RefreshIndicator(
               color: AppColors.primary,
-              onRefresh: () async {
-                await BlocProvider.of<HomeCubit>(context).refresh();
+              onRefresh: () {
+                unawaited(BlocProvider.of<HomeCubit>(context).refresh());
+                return Future<void>.value();
               },
               child: Column(
                 children: [
