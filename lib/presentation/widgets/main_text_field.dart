@@ -29,13 +29,12 @@ class _MainTextFieldState extends State<MainTextField> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           width: _isFocused ? 1.5 : 1,
-          color: _isFocused
-              ? Colors.white
-              : Colors.white.withValues(alpha: 0.4),
+          color: _isFocused ? Colors.white : Colors.white.withValues(alpha: 0.4),
         ),
         color: Colors.white.withValues(alpha: _isFocused ? 0.2 : 0.1),
       ),
@@ -54,7 +53,7 @@ class _MainTextFieldState extends State<MainTextField> {
           ),
           cursorColor: Colors.white,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.fromLTRB(24, 14, 16, 14),
+            contentPadding: const EdgeInsets.fromLTRB(20, 14, 12, 14),
             hintText: widget.placeholder,
             hintStyle: TextStyle(
               color: Colors.white.withValues(alpha: 0.6),
@@ -64,24 +63,29 @@ class _MainTextFieldState extends State<MainTextField> {
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
             prefixIcon: widget.prefixIcon != null
-                ? Icon(
-                    widget.prefixIcon,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    size: 20,
-                  )
-                : null,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _obscureText
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 8),
+                    child: Icon(
+                      widget.prefixIcon,
                       color: Colors.white.withValues(alpha: 0.7),
                       size: 20,
                     ),
-                    onPressed: () {
-                      setState(() => _obscureText = !_obscureText);
-                    },
+                  )
+                : null,
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            suffixIcon: widget.isPassword
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        setState(() => _obscureText = !_obscureText);
+                      },
+                    ),
                   )
                 : null,
           ),

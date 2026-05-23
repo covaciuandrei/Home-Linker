@@ -136,25 +136,26 @@ class _IntroductivePageState extends State<IntroductivePage> with SingleTickerPr
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 60),
+                        padding: const EdgeInsets.fromLTRB(32, 0, 32, 48),
                         child: Column(
                           children: [
-                            // Primary CTA — Login
+                            // Primary CTA — Login (solid white on blue gradient)
                             MainButton(
                               text: AppLocalizations.of(context).login,
-                              width: 260,
-                              height: 50,
-                              isGradient: true,
+                              width: double.infinity,
+                              height: 54,
+                              color: Colors.white,
+                              textColor: AppColors.primary,
                               onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToLogin(),
                             ),
                             const SizedBox(height: 14),
-                            // Secondary CTA — Sign Up
+                            // Secondary CTA — Sign Up (white outline on blue gradient)
                             MainButton(
                               text: AppLocalizations.of(context).signup,
-                              width: 260,
-                              height: 50,
+                              width: double.infinity,
+                              height: 54,
                               isOutlined: true,
-                              color: AppColors.primary,
+                              color: Colors.white,
                               onPressed: () => BlocProvider.of<IntroductiveCubit>(context).goToSignup(),
                             ),
                           ],
